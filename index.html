@@ -13,13 +13,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .logo-t{font-size:15px;font-weight:500;color:#1a1a18}
 .logo-s{font-size:11px;color:#888780;margin-top:2px}
 .nav{padding:10px 8px}
-.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:13px;color:#888780;margin-bottom:2px;transition:background 0.15s;text-decoration:none}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:13px;color:#888780;margin-bottom:2px;transition:background 0.15s;text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left}
 .ni.active{background:#e6f1fb;color:#185FA5;font-weight:500}
 .ni:hover:not(.active){background:#f5f5f3}
+.ml-connect{margin:10px 8px;padding:9px 10px;background:#FFE600;color:#1a1a18;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity 0.15s;width:calc(100% - 16px)}
+.ml-connect:hover{opacity:0.85}
+.ml-connected{margin:10px 8px;padding:9px 10px;background:#eaf3de;border:0.5px solid #3B6D11;border-radius:8px;font-size:11px;color:#3B6D11;display:flex;align-items:center;gap:6px}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .topbar{padding:12px 20px;background:#fff;border-bottom:0.5px solid #e0ddd6;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .topbar-t{font-size:14px;font-weight:500;color:#1a1a18}
 .badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#eaf3de;color:#3B6D11}
+.badge.ml{background:#FFE600;color:#1a1a18;font-weight:600}
 .content{flex:1;overflow-y:auto;padding:18px;display:flex;gap:14px}
 .lp{width:275px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
 .rp{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -49,17 +53,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .rs{font-size:13px;color:#888780;margin-top:7px}
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
 .met{background:#f5f5f3;border-radius:8px;padding:9px 11px}
-.ml{font-size:11px;color:#888780;margin-bottom:2px}
 .mv{font-size:15px;font-weight:500;color:#1a1a18}
 .ms{font-size:11px;color:#888780;margin-top:1px}
 .cl{display:flex;flex-direction:column;gap:5px}
-.ci{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;background:#f5f5f3;border-radius:8px;gap:8px}
-.ci-link{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#185FA5;background:#e6f1fb;border:0.5px solid #9BB8D8;border-radius:6px;padding:3px 7px;text-decoration:none;white-space:nowrap;flex-shrink:0;cursor:pointer;transition:background 0.15s}
-.ci-link:hover{background:#cce0f5}
-.ca{font-size:12px;color:#1a1a18}
+.ci{display:flex;align-items:center;padding:8px 10px;background:#f5f5f3;border-radius:8px;gap:8px;cursor:pointer;transition:background 0.15s;border:0.5px solid transparent}
+.ci:hover{background:#e6f1fb;border-color:#9BB8D8}
+.ca{font-size:12px;color:#1a1a18;font-weight:500}
 .cd{font-size:11px;color:#888780;margin-top:1px}
 .cp{font-size:13px;font-weight:500;color:#1a1a18;text-align:right}
 .cm{font-size:11px;color:#888780}
+.ci-days{font-size:10px;padding:2px 6px;border-radius:10px;background:#fff;border:0.5px solid #e0ddd6;color:#888780;white-space:nowrap}
+.ci-days.fresh{border-color:#3B6D11;color:#3B6D11;background:#eaf3de}
+.ci-days.old{border-color:#BA7517;color:#BA7517;background:#FFF3E0}
 .bc{display:flex;flex-direction:column;gap:7px}
 .br-row{display:flex;align-items:center;gap:7px}
 .bl{font-size:11px;color:#888780;width:110px;text-align:right;flex-shrink:0}
@@ -79,22 +84,28 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ld span:nth-child(3){animation-delay:0.4s}
 @keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
 .src-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.src-tag{font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
+.src-tag.real{border-color:#3B6D11;color:#3B6D11;background:#eaf3de}
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:1000;align-items:center;justify-content:center}
 .modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:14px;padding:22px 24px;width:340px;max-width:92vw;box-shadow:0 8px 40px rgba(0,0,0,0.18);position:relative}
-.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:#888780;cursor:pointer;line-height:1}
+.modal{background:#fff;border-radius:14px;width:420px;max-width:94vw;box-shadow:0 8px 40px rgba(0,0,0,0.18);position:relative;overflow:hidden}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:#888780;cursor:pointer;z-index:2}
 .modal-close:hover{color:#1a1a18}
+.modal-img{width:100%;height:160px;object-fit:cover;background:#f5f5f3}
+.modal-img-ph{width:100%;height:100px;background:#f5f5f3;display:flex;align-items:center;justify-content:center;color:#b4b2a9;font-size:12px}
+.modal-body{padding:18px 20px}
 .modal-dir{font-size:16px;font-weight:500;color:#1a1a18;margin-bottom:3px}
-.modal-det{font-size:12px;color:#888780;margin-bottom:16px}
+.modal-det{font-size:12px;color:#888780;margin-bottom:14px}
 .modal-price{font-size:28px;font-weight:500;color:#1a1a18;margin-bottom:2px}
-.modal-m2{font-size:13px;color:#888780;margin-bottom:16px}
-.modal-row{display:flex;justify-content:space-between;padding:8px 0;border-top:0.5px solid #e0ddd6;font-size:13px}
+.modal-m2{font-size:13px;color:#888780;margin-bottom:14px}
+.modal-row{display:flex;justify-content:space-between;padding:7px 0;border-top:0.5px solid #e0ddd6;font-size:13px}
 .modal-row span:first-child{color:#888780}
 .modal-row span:last-child{font-weight:500;color:#1a1a18}
-.modal-search-btns{display:flex;gap:8px;margin-top:16px}
+.modal-search-btns{display:flex;gap:8px;margin-top:14px}
 .modal-btn{flex:1;padding:8px;border-radius:8px;border:0.5px solid #b4b2a9;background:#f5f5f3;font-size:12px;color:#185FA5;cursor:pointer;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;transition:background 0.15s}
 .modal-btn:hover{background:#e6f1fb;border-color:#9BB8D8}
-.src-tag{font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
+.modal-btn.ml-btn{background:#FFE600;border-color:#e6d600;color:#1a1a18;font-weight:600}
+.modal-btn.ml-btn:hover{background:#f5d800}
 @media(max-width:700px){.app{flex-direction:column}.sidebar{width:100%;border-right:none;border-bottom:0.5px solid #e0ddd6}.content{flex-direction:column}.lp{width:100%}}
 </style>
 </head>
@@ -106,10 +117,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="logo-s">Gran Buenos Aires</div>
     </div>
     <div class="nav">
-      <a class="ni active" href="#">
+      <button class="ni active">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor"/></svg>
         Tasador
-      </a>
+      </button>
       <a class="ni" href="https://zonaprop.com.ar" target="_blank">
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
         Zonaprop
@@ -123,16 +134,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         MercadoLibre
       </a>
     </div>
+    <div id="ml-auth-section" style="margin-top:auto;padding-bottom:12px">
+      <button class="ml-connect" id="btn-ml-login" onclick="loginML()">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Conectar MercadoLibre
+      </button>
+    </div>
   </div>
 
   <div class="main">
     <div class="topbar">
       <div class="topbar-t">Tasación de propiedad</div>
-      <span class="badge" id="badge-prov">Groq · Llama 3.3</span>
+      <span class="badge" id="badge-prov">IA · Groq Llama 3.3</span>
     </div>
     <div class="content">
       <div class="lp">
-
         <div class="apisec">
           <label>Proveedor de IA</label>
           <select id="proveedor" onchange="onProv()">
@@ -180,10 +196,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
         </div>
 
         <div class="card">
-          <div class="ct">Fuentes de referencia</div>
+          <div class="ct">Fuentes</div>
           <div class="src-row">
-            <span class="src-tag">Zonaprop</span><span class="src-tag">MercadoLibre</span>
-            <span class="src-tag">Properati</span><span class="src-tag">RE/MAX</span><span class="src-tag">INDEC</span>
+            <span class="src-tag real">● MercadoLibre</span>
+            <span class="src-tag">IA análisis</span>
+          </div>
+          <div style="font-size:11px;color:#888780;margin-top:8px;line-height:1.5" id="src-status">
+            Conectá MercadoLibre para comparables reales.
           </div>
         </div>
       </div>
@@ -191,45 +210,86 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
       <div class="rp" id="rp">
         <div class="ph">
           <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="16" width="28" height="16" rx="2" stroke="#b4b2a9" stroke-width="1.5"/><path d="M12 16V10a6 6 0 0 1 12 0v6" stroke="#b4b2a9" stroke-width="1.5"/><circle cx="18" cy="24" r="2" fill="#b4b2a9"/></svg>
-          <div class="ph-t">Completá los datos y calculá</div>
-          <div class="ph-s">Elegí tu proveedor de IA, ingresá la clave y la IA analiza el mercado del GBA con comparables reales.</div>
+          <div class="ph-t">Conectá MercadoLibre y calculá</div>
+          <div class="ph-s">Hacé click en "Conectar MercadoLibre", luego completá los datos y la app trae comparables reales del mercado.</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal comparable -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+<!-- Modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOverlay(event)">
   <div class="modal">
     <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">✕</button>
-    <div class="modal-dir" id="m-dir"></div>
-    <div class="modal-det" id="m-det"></div>
-    <div class="modal-price" id="m-price"></div>
-    <div class="modal-m2" id="m-m2"></div>
-    <div class="modal-row"><span>Precio/m²</span><span id="m-pm2"></span></div>
-    <div class="modal-row"><span>Tipo</span><span id="m-tipo"></span></div>
-    <div class="modal-row"><span>Zona</span><span id="m-zona"></span></div>
-    <div class="modal-search-btns">
-      <a class="modal-btn" id="m-link-zona" href="#" target="_blank">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Buscar en Zonaprop
-      </a>
-      <a class="modal-btn" id="m-link-ml" href="#" target="_blank">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        MercadoLibre
-      </a>
+    <div id="m-img-wrap"></div>
+    <div class="modal-body">
+      <div class="modal-dir" id="m-dir"></div>
+      <div class="modal-det" id="m-det"></div>
+      <div class="modal-price" id="m-price"></div>
+      <div class="modal-m2" id="m-m2"></div>
+      <div class="modal-row"><span>Precio/m²</span><span id="m-pm2"></span></div>
+      <div class="modal-row"><span>Ambientes</span><span id="m-amb"></span></div>
+      <div class="modal-row"><span>Superficie</span><span id="m-sup"></span></div>
+      <div class="modal-row"><span>Publicado hace</span><span id="m-dias"></span></div>
+      <div class="modal-search-btns">
+        <a class="modal-btn ml-btn" id="m-link-ml" href="#" target="_blank">Ver en MercadoLibre ↗</a>
+        <a class="modal-btn" id="m-link-zona" href="#" target="_blank">Buscar en Zonaprop</a>
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-const CFG = {
-  groq:      { nombre:"Groq",           ph:"gsk_...",      pre:"gsk_",    badge:"Groq · Llama 3.3",       gratis:true,  url:"https://console.groq.com/keys",           hint:"Plan gratuito disponible en console.groq.com" },
-  anthropic: { nombre:"Anthropic",      ph:"sk-ant-...",   pre:"sk-ant-", badge:"Anthropic · Claude",      gratis:false, url:"https://console.anthropic.com/keys",      hint:"~$0.003 por tasación" },
-  openai:    { nombre:"OpenAI",         ph:"sk-...",       pre:"sk-",     badge:"OpenAI · GPT-4o mini",    gratis:false, url:"https://platform.openai.com/api-keys",    hint:"~$0.001 por tasación" },
-  gemini:    { nombre:"Google Gemini",  ph:"AIza...",      pre:"AIza",    badge:"Google · Gemini 2.0",     gratis:false, url:"https://aistudio.google.com/apikey",      hint:"Requiere billing (free tier no disponible en AR)" }
-};
+const ML_CLIENT_ID = "1187774012169537";
+const ML_REDIRECT  = "https://realvixapp.github.io/propiedades/";
+let mlToken = null;
+
+function loginML() {
+  const url = "https://auth.mercadolibre.com.ar/authorization" +
+    "?response_type=token" +
+    "&client_id=" + ML_CLIENT_ID +
+    "&redirect_uri=" + encodeURIComponent(ML_REDIRECT);
+  window.location.href = url;
+}
+
+function checkMLToken() {
+  const hash = window.location.hash;
+  if (hash.includes("access_token")) {
+    const params = new URLSearchParams(hash.replace(/^#/,""));
+    mlToken = params.get("access_token");
+    if (mlToken) {
+      localStorage.setItem("ml_token", mlToken);
+      window.history.replaceState(null, "", window.location.pathname);
+      setMLConnected();
+      return;
+    }
+  }
+  const saved = localStorage.getItem("ml_token");
+  if (saved) { mlToken = saved; setMLConnected(); }
+}
+
+function setMLConnected() {
+  const sec = document.getElementById("ml-auth-section");
+  sec.innerHTML =
+    '<div class="ml-connected">' +
+    '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#3B6D11"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+    'ML conectado' +
+    '<button onclick="disconnectML()" style="margin-left:auto;background:none;border:none;font-size:10px;color:#888780;cursor:pointer">Salir</button>' +
+    '</div>';
+  document.getElementById("src-status").textContent = "✓ Comparables reales de MercadoLibre activos.";
+  document.getElementById("badge-prov").textContent = "ML + IA";
+  document.getElementById("badge-prov").className = "badge ml";
+  document.getElementById("rp").innerHTML =
+    '<div class="ph"><div class="ph-t">¡MercadoLibre conectado!</div>' +
+    '<div class="ph-s">Completá los datos y hacé click en Calcular tasación.</div></div>';
+}
+
+function disconnectML() {
+  mlToken = null;
+  localStorage.removeItem("ml_token");
+  location.reload();
+}
 
 const barrios = {
   "Morón":["Morón Centro","Castelar","El Palomar","Haedo","Castelar Norte","Villa del Parque Morón"],
@@ -254,13 +314,19 @@ function updateBarrios() {
 }
 updateBarrios();
 
+const CFG = {
+  groq:      { nombre:"Groq",          ph:"gsk_...",      pre:"gsk_",    gratis:true,  url:"https://console.groq.com/keys",        hint:"Plan gratuito disponible en console.groq.com" },
+  anthropic: { nombre:"Anthropic",     ph:"sk-ant-...",   pre:"sk-ant-", gratis:false, url:"https://console.anthropic.com/keys",   hint:"~$0.003 por tasación" },
+  openai:    { nombre:"OpenAI",        ph:"sk-...",       pre:"sk-",     gratis:false, url:"https://platform.openai.com/api-keys", hint:"~$0.001 por tasación" },
+  gemini:    { nombre:"Google Gemini", ph:"AIza...",      pre:"AIza",    gratis:false, url:"https://aistudio.google.com/apikey",   hint:"Requiere billing" }
+};
+
 function onProv() {
   const prov = document.getElementById("proveedor").value;
   const c = CFG[prov];
   document.getElementById("apikey").value = "";
   document.getElementById("apikey").placeholder = c.ph;
   document.getElementById("lbl-key").textContent = "Clave API — " + c.nombre;
-  document.getElementById("badge-prov").textContent = c.badge;
   document.getElementById("key-status").textContent = "";
   document.getElementById("key-hint").innerHTML =
     `<span class="chip${c.gratis?' free':''}">${c.gratis?"✓ Gratis":"De pago"}</span> ` +
@@ -280,61 +346,64 @@ function checkKey() {
 
 function fmt(n) { return Number(Math.round(n)).toLocaleString("es-AR"); }
 
+function diasDesde(fechaStr) {
+  if (!fechaStr) return null;
+  return Math.floor((new Date() - new Date(fechaStr)) / (1000*60*60*24));
+}
+
+// Categorías ML
+const ML_CATS = {
+  "Departamento":"MLA1473",
+  "Casa":"MLA1459",
+  "PH":"MLA1476",
+  "Local comercial":"MLA1500"
+};
+
+async function buscarComparablesML(tipo, barrio, partido, ambientes) {
+  if (!mlToken) return null;
+  const cat = ML_CATS[tipo] || "MLA1459";
+  const q = encodeURIComponent(barrio + " " + partido);
+  const ambNum = ambientes === "4+" ? 4 : parseInt(ambientes);
+
+  // Intentar con filtro de ambientes primero
+  const urls = [
+    `https://api.mercadolibre.com/sites/MLA/search?category=${cat}&q=${q}&ROOMS=${ambNum}&limit=8&access_token=${mlToken}`,
+    `https://api.mercadolibre.com/sites/MLA/search?category=${cat}&q=${q}&limit=8&access_token=${mlToken}`
+  ];
+
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      if (res.status === 401) { disconnectML(); return null; }
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.results && data.results.length > 0) return data.results;
+    } catch(e) { continue; }
+  }
+  return [];
+}
+
 async function llamarAPI(prov, key, prompt) {
   let res, data, raw;
   if (prov === "groq" || prov === "openai") {
-    const url = prov === "groq"
-      ? "https://api.groq.com/openai/v1/chat/completions"
-      : "https://api.openai.com/v1/chat/completions";
+    const url   = prov === "groq" ? "https://api.groq.com/openai/v1/chat/completions" : "https://api.openai.com/v1/chat/completions";
     const model = prov === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini";
-    res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
-      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], temperature: 0.3, max_tokens: 1000 })
-    });
+    res  = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+key}, body:JSON.stringify({model, messages:[{role:"user",content:prompt}], temperature:0.3, max_tokens:900}) });
     data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw = data.choices?.[0]?.message?.content || "";
+    raw  = data.choices?.[0]?.message?.content || "";
   } else if (prov === "anthropic") {
-    res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
-    });
+    res  = await fetch("https://api.anthropic.com/v1/messages", { method:"POST", headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"}, body:JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:900, messages:[{role:"user",content:prompt}]}) });
     data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw = (data.content || []).map(i => i.text || "").join("");
+    raw  = (data.content||[]).map(i=>i.text||"").join("");
   } else {
-    res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + key, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 1000 } })
-    });
+    res  = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+key, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.3, maxOutputTokens:900}}) });
     data = await res.json();
     if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    raw  = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
   }
-  return raw.replace(/```json|```/g, "").trim();
-}
-
-function openModal(comp, barrio, tipo) {
-  document.getElementById("m-dir").textContent = comp.direccion;
-  document.getElementById("m-det").textContent = comp.detalle;
-  document.getElementById("m-price").textContent = "USD " + fmt(comp.precio_usd);
-  document.getElementById("m-m2").textContent = "USD " + fmt(comp.precio_m2) + "/m²";
-  document.getElementById("m-pm2").textContent = "USD " + fmt(comp.precio_m2) + "/m²";
-  document.getElementById("m-tipo").textContent = tipo || "Departamento";
-  document.getElementById("m-zona").textContent = barrio;
-  const q = encodeURIComponent(comp.direccion + " " + barrio);
-  const barrioSlug = barrio.toLowerCase().replace(/\s+/g,"-").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-  document.getElementById("m-link-zona").href = "https://www.zonaprop.com.ar/inmuebles-venta-" + barrioSlug + ".html";
-  document.getElementById("m-link-ml").href = "https://inmuebles.mercadolibre.com.ar/venta/_DisplayType_G#D[A:" + q + "]";
-  document.getElementById("modal-overlay").classList.add("open");
-}
-
-function closeModal(e) {
-  if (e.target === document.getElementById("modal-overlay"))
-    document.getElementById("modal-overlay").classList.remove("open");
+  return raw.replace(/```json|```/g,"").trim();
 }
 
 async function tasar() {
@@ -342,14 +411,15 @@ async function tasar() {
   const key  = document.getElementById("apikey").value.trim();
   const c    = CFG[prov];
   if (!key || !key.startsWith(c.pre)) { alert("Ingresá tu clave de " + c.nombre + ".\nFormato: " + c.ph); return; }
+  if (!mlToken) { alert("Primero conectá tu cuenta de MercadoLibre."); return; }
 
   const btn = document.getElementById("btn-tasar");
-  btn.disabled = true; btn.textContent = "Analizando...";
+  btn.disabled = true; btn.textContent = "Buscando comparables reales...";
 
   const tipo    = document.getElementById("tipo").value;
   const partido = document.getElementById("partido").value;
   const barrio  = document.getElementById("barrio").value;
-  const sup     = document.getElementById("sup_total").value;
+  const sup     = parseFloat(document.getElementById("sup_total").value) || 65;
   const cub     = document.getElementById("sup_cub").value;
   const amb     = document.getElementById("amb").value;
   const ant     = document.getElementById("ant").value;
@@ -358,32 +428,68 @@ async function tasar() {
   const extras  = document.getElementById("extras").value;
 
   document.getElementById("rp").innerHTML =
-    '<div class="card"><div class="ct">Analizando mercado</div>' +
+    '<div class="card"><div class="ct">Buscando en MercadoLibre</div>' +
     '<div style="padding:20px 0;display:flex;align-items:center;gap:10px;color:#888780;font-size:13px">' +
-    '<div class="ld"><span></span><span></span><span></span></div> Consultando ' + c.nombre + '...</div></div>';
+    '<div class="ld"><span></span><span></span><span></span></div> Buscando propiedades reales en ML...</div></div>';
 
+  // 1. Comparables reales de ML
+  const mlResults = await buscarComparablesML(tipo, barrio, partido, amb);
+  let comparablesData = [];
+  let comparablesTexto = "";
+
+  if (mlResults && mlResults.length > 0) {
+    comparablesData = mlResults.slice(0, 6).map(item => {
+      const attrs   = item.attributes || [];
+      const getAttr = id => attrs.find(a => a.id === id)?.value_name || null;
+      const supItem = getAttr("TOTAL_AREA_MT") || getAttr("COVERED_AREA_MT") || null;
+      const ambItem = getAttr("ROOMS") || null;
+      const dias    = diasDesde(item.date_created);
+      const pm2     = supItem ? Math.round(item.price / parseFloat(supItem)) : null;
+      return {
+        id:        item.id,
+        direccion: item.location?.address_line || item.title,
+        detalle:   `${supItem ? supItem+"m²" : ""}${ambItem ? " "+ambItem+"amb" : ""}`.trim() || item.title,
+        precio_usd: item.price,
+        precio_m2:  pm2,
+        sup:        supItem,
+        ambientes:  ambItem,
+        dias:       dias,
+        thumbnail:  item.thumbnail,
+        permalink:  item.permalink,
+        fuente:     "MercadoLibre"
+      };
+    });
+    comparablesTexto = comparablesData.map((c,i) =>
+      `${i+1}. ${c.direccion} | ${c.detalle} | USD ${fmt(c.precio_usd)}${c.precio_m2 ? " | "+fmt(c.precio_m2)+"/m²":""} | publicado hace ${c.dias} días`
+    ).join("\n");
+  }
+
+  document.getElementById("rp").innerHTML =
+    '<div class="card"><div class="ct">Analizando con IA</div>' +
+    '<div style="padding:20px 0;display:flex;align-items:center;gap:10px;color:#888780;font-size:13px">' +
+    '<div class="ld"><span></span><span></span><span></span></div> ' +
+    (mlResults?.length ? `${mlResults.length} comparables reales. Calculando tasación...` : "Analizando mercado con IA...") +
+    '</div></div>';
+
+  // 2. Prompt a la IA con datos reales
   const prompt =
     "Sos un tasador inmobiliario experto en el mercado del Gran Buenos Aires (GBA), Argentina.\n" +
     "Respondé SOLO con JSON válido, sin texto adicional, sin backticks.\n\n" +
-    "Propiedad:\n" +
-    "- Tipo: " + tipo + "\n- Partido: " + partido + "\n- Barrio: " + barrio +
-    "\n- Superficie total: " + sup + " m²\n- Superficie cubierta: " + cub + " m²" +
-    "\n- Ambientes: " + amb + "\n- Antigüedad: " + ant +
-    "\n- Piso: " + piso + "\n- Estado: " + estado +
-    "\n- Extras: " + (extras || "ninguno") + "\n\n" +
-    'Devolvé este JSON con valores reales del mercado GBA 2025-2026 en USD:\n' +
-    '{"valor_publicacion":82500,"valor_cierre":78400,"precio_m2":1269,"rango_min":76000,"rango_max":89000,' +
-    '"ajuste_cierre_pct":-4.9,"mercado_estado":"Activo","oferta_activa":47,"tiempo_mercado_dias":68,' +
-    '"comparables":[{"direccion":"Av. Rivadavia 3200","detalle":"63m2 2amb piso2","precio_usd":80000,"precio_m2":1270},' +
-    '{"direccion":"Brown 540","detalle":"68m2 2amb piso4","precio_usd":87000,"precio_m2":1279},' +
-    '{"direccion":"Colon 890","detalle":"60m2 2amb piso1","precio_usd":74000,"precio_m2":1233}],' +
-    '"zonas_m2":[{"zona":"' + barrio + '","precio":1269,"es_sujeto":true},' +
-    '{"zona":"barrio_vecino_1","precio":1180,"es_sujeto":false},' +
-    '{"zona":"barrio_vecino_2","precio":1070,"es_sujeto":false},' +
-    '{"zona":"barrio_vecino_3","precio":990,"es_sujeto":false}],' +
-    '"factores_positivos":["Factor 1","Factor 2"],"factores_negativos":["Factor 1"],' +
-    '"analisis":"2-3 oraciones fundamentando la tasacion."}\n\n' +
-    "Reglas: precios USD reales GBA; zonas_m2 con barrios reales de " + partido + "; calles reales de " + barrio + "; ajuste_cierre_pct entre -3 y -8; solo JSON puro.";
+    "Propiedad a tasar:\n" +
+    `- Tipo: ${tipo}\n- Partido: ${partido}\n- Barrio: ${barrio}\n` +
+    `- Superficie total: ${sup} m²\n- Superficie cubierta: ${cub} m²\n` +
+    `- Ambientes: ${amb}\n- Antigüedad: ${ant}\n- Piso: ${piso}\n- Estado: ${estado}\n` +
+    `- Extras: ${extras || "ninguno"}\n\n` +
+    (comparablesTexto
+      ? `COMPARABLES REALES de MercadoLibre (usalos para calcular):\n${comparablesTexto}\n\n`
+      : "Sin comparables de ML. Usá conocimiento del mercado GBA 2025-2026.\n\n") +
+    `Devolvé exactamente este JSON con valores reales para ${tipo} ${amb}amb ${sup}m² en ${barrio}:\n` +
+    `{"valor_publicacion":0,"valor_cierre":0,"precio_m2":0,"rango_min":0,"rango_max":0,` +
+    `"ajuste_cierre_pct":-5.0,"mercado_estado":"Activo","oferta_activa":0,"tiempo_mercado_dias":0,` +
+    `"zonas_m2":[{"zona":"${barrio}","precio":0,"es_sujeto":true},{"zona":"barrio_vecino_1","precio":0,"es_sujeto":false},{"zona":"barrio_vecino_2","precio":0,"es_sujeto":false},{"zona":"barrio_vecino_3","precio":0,"es_sujeto":false}],` +
+    `"factores_positivos":["factor"],"factores_negativos":["factor"],` +
+    `"analisis":"Fundamentación basada en los comparables reales encontrados."}\n\n` +
+    `IMPORTANTE: Los valores deben corresponder a ${tipo} (no mezclar con otros tipos). Solo JSON puro.`;
 
   try {
     const clean = await llamarAPI(prov, key, prompt);
@@ -391,18 +497,17 @@ async function tasar() {
     try { d = JSON.parse(clean); } catch(e) {
       document.getElementById("rp").innerHTML =
         '<div class="card"><div class="err">Error al parsear respuesta. Intentá de nuevo.<br><small style="opacity:0.7">' + clean.slice(0,300) + '</small></div></div>';
-      btn.disabled = false; btn.textContent = "Calcular tasación ↗"; return;
+      btn.disabled = false; btn.textContent = "Recalcular ↗"; return;
     }
-    renderResult(d, barrio, sup, tipo);
+    renderResult(d, barrio, sup, tipo, comparablesData);
   } catch(e) {
     document.getElementById("rp").innerHTML =
-      '<div class="card"><div class="err">Error con ' + c.nombre + ': ' + e.message +
-      '<br><small style="opacity:0.7">Verificá tu clave y que tengas saldo/cuota disponible.</small></div></div>';
+      '<div class="card"><div class="err">Error con ' + c.nombre + ': ' + e.message + '</div></div>';
   }
   btn.disabled = false; btn.textContent = "Recalcular ↗";
 }
 
-function renderResult(d, barrio, sup, tipo) {
+function renderResult(d, barrio, sup, tipo, mlComps) {
   const maxZ = Math.max(...(d.zonas_m2||[]).map(z => z.precio));
   const bars = (d.zonas_m2||[]).map(z => {
     const pct = Math.round((z.precio/maxZ)*85+10);
@@ -410,15 +515,29 @@ function renderResult(d, barrio, sup, tipo) {
       (z.es_sujeto?"hl":"nm") + '" style="width:' + pct + '%"><span>USD ' + fmt(z.precio) + (z.es_sujeto?" ★":"") + '</span></div></div></div>';
   }).join("");
 
-  const comps = (d.comparables||[]).map((c,i) => {
-    const dataComp = encodeURIComponent(JSON.stringify(c));
-    return '<div class="ci" style="cursor:pointer" onclick=\'openModal(' + JSON.stringify(c) + ',' + JSON.stringify(barrio) + ',' + JSON.stringify(tipo) + ')\'>' +
-      '<div style="flex:1;min-width:0"><div class="ca">' + c.direccion + '</div><div class="cd">' + c.detalle + '</div></div>' +
-      '<div style="text-align:right;flex-shrink:0"><div class="cp">USD ' + fmt(c.precio_usd) + '</div><div class="cm">' + fmt(c.precio_m2) + '/m²</div></div>' +
-      '<div style="flex-shrink:0;color:#185FA5">' +
-      '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
-      '</div></div>';
-  }).join("");
+  let compsHtml = "";
+  if (mlComps && mlComps.length > 0) {
+    compsHtml = mlComps.map(comp => {
+      const diasClass = comp.dias < 30 ? "fresh" : comp.dias > 90 ? "old" : "";
+      const diasLabel = comp.dias === 0 ? "hoy" : (comp.dias + "d");
+      return `<div class="ci" onclick='openModal(${JSON.stringify(comp).replace(/'/g,"&#39;")})'>
+        <div style="flex:1;min-width:0">
+          <div class="ca">${comp.direccion}</div>
+          <div class="cd">${comp.detalle}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="cp">USD ${fmt(comp.precio_usd)}</div>
+          <div class="cm">${comp.precio_m2 ? fmt(comp.precio_m2)+"/m²" : ""}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+          <span class="ci-days ${diasClass}">${diasLabel}</span>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="color:#185FA5"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+      </div>`;
+    }).join("");
+  } else {
+    compsHtml = '<div style="font-size:12px;color:#888780;padding:8px 0">No se encontraron comparables en MercadoLibre para estos parámetros.</div>';
+  }
 
   const pos = (d.factores_positivos||[]).map(f =>
     '<div style="font-size:12px;color:#1a1a18;padding:3px 0;display:flex;gap:6px"><span style="color:#3B6D11;font-weight:500">+</span>' + f + '</div>'
@@ -427,8 +546,11 @@ function renderResult(d, barrio, sup, tipo) {
     '<div style="font-size:12px;color:#1a1a18;padding:3px 0;display:flex;gap:6px"><span style="color:#A32D2D;font-weight:500">-</span>' + f + '</div>'
   ).join("");
 
-  const aj = (d.ajuste_cierre_pct >= 0 ? "+" : "") + d.ajuste_cierre_pct;
-  const m2c = Math.round(d.valor_cierre / (sup||1));
+  const aj    = (d.ajuste_cierre_pct >= 0 ? "+" : "") + d.ajuste_cierre_pct;
+  const m2c   = Math.round(d.valor_cierre / (sup||1));
+  const mlTag = mlComps?.length
+    ? `<span style="font-size:10px;background:#FFE600;color:#1a1a18;padding:2px 7px;border-radius:10px;font-weight:600;margin-left:6px">● ${mlComps.length} reales</span>`
+    : `<span style="font-size:10px;background:#FCEBEB;color:#A32D2D;padding:2px 7px;border-radius:10px;margin-left:6px">Sin resultados ML</span>`;
 
   document.getElementById("rp").innerHTML =
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
@@ -440,15 +562,45 @@ function renderResult(d, barrio, sup, tipo) {
     '<div class="card"><div class="ct">Precio m² por zona — comparación</div><div class="bc">' + bars + '</div></div>' +
 
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
-    '<div class="card"><div class="ct">Comparables activos</div><div class="cl">' + comps + '</div></div>' +
+    '<div class="card"><div class="ct" style="display:flex;align-items:center">Comparables activos' + mlTag + '</div><div class="cl">' + compsHtml + '</div></div>' +
     '<div class="card"><div class="ct">Métricas de mercado</div>' +
-    '<div class="mg"><div class="met"><div class="ml">Oferta activa</div><div class="mv">' + d.oferta_activa + '</div><div class="ms">propiedades similares</div></div>' +
-    '<div class="met"><div class="ml">Tiempo mercado</div><div class="mv">' + d.tiempo_mercado_dias + 'd</div><div class="ms">promedio zona</div></div></div>' +
+    '<div class="mg">' +
+    '<div class="met"><div style="font-size:11px;color:#888780;margin-bottom:2px">Oferta activa</div><div class="mv">' + d.oferta_activa + '</div><div class="ms">propiedades similares</div></div>' +
+    '<div class="met"><div style="font-size:11px;color:#888780;margin-bottom:2px">Tiempo mercado</div><div class="mv">' + d.tiempo_mercado_dias + 'd</div><div class="ms">promedio zona</div></div></div>' +
     '<div style="margin-top:10px">' + pos + neg + '</div></div></div>' +
 
     '<div class="card"><div class="ct">Análisis del mercado</div>' +
     '<div style="font-size:13px;color:#1a1a18;line-height:1.7">' + d.analisis + '</div></div>';
 }
+
+function openModal(comp) {
+  const imgWrap = document.getElementById("m-img-wrap");
+  if (comp.thumbnail) {
+    const bigImg = comp.thumbnail.replace("-I.jpg","-O.jpg").replace("http:","https:");
+    imgWrap.innerHTML = `<img class="modal-img" src="${bigImg}" onerror="this.parentNode.innerHTML='<div class=modal-img-ph>Sin foto</div>'" alt="foto">`;
+  } else {
+    imgWrap.innerHTML = '<div class="modal-img-ph">Sin foto disponible</div>';
+  }
+  document.getElementById("m-dir").textContent   = comp.direccion || "";
+  document.getElementById("m-det").textContent   = comp.detalle   || "";
+  document.getElementById("m-price").textContent = "USD " + fmt(comp.precio_usd);
+  document.getElementById("m-m2").textContent    = comp.precio_m2 ? "USD " + fmt(comp.precio_m2) + "/m²" : "";
+  document.getElementById("m-pm2").textContent   = comp.precio_m2 ? "USD " + fmt(comp.precio_m2) + "/m²" : "—";
+  document.getElementById("m-amb").textContent   = comp.ambientes || "—";
+  document.getElementById("m-sup").textContent   = comp.sup ? comp.sup + " m²" : "—";
+  document.getElementById("m-dias").textContent  = comp.dias !== null && comp.dias !== undefined ? comp.dias + " días" : "—";
+  document.getElementById("m-link-ml").href      = comp.permalink || "#";
+  const slug = (comp.direccion||"").toLowerCase().replace(/\s+/g,"-").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  document.getElementById("m-link-zona").href    = "https://www.zonaprop.com.ar/inmuebles-venta-" + slug + ".html";
+  document.getElementById("modal-overlay").classList.add("open");
+}
+
+function closeModalOverlay(e) {
+  if (e.target === document.getElementById("modal-overlay"))
+    document.getElementById("modal-overlay").classList.remove("open");
+}
+
+checkMLToken();
 </script>
 </body>
 </html>
