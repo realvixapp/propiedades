@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Propiedades Vendidas — REMAX Argentina</title>
+  <title>Propiedades Vendidas — prueba ID 4 — REMAX Argentina</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -15,7 +15,7 @@
     }
 
     header {
-      background: #007a00;
+      background: #cc0000;
       color: white;
       padding: 1.25rem 2rem;
       display: flex;
@@ -56,12 +56,12 @@
       outline: none;
       transition: border-color 0.15s;
     }
-    input:focus, select:focus { border-color: #007a00; }
+    input:focus, select:focus { border-color: #cc0000; }
 
     .btn-buscar {
       width: 100%;
       padding: 11px;
-      background: #007a00;
+      background: #cc0000;
       color: white;
       border: none;
       border-radius: 8px;
@@ -71,8 +71,8 @@
       margin-top: 4px;
       transition: background 0.15s;
     }
-    .btn-buscar:hover { background: #006000; }
-    .btn-buscar:active { background: #005000; transform: scale(0.99); }
+    .btn-buscar:hover { background: #aa0000; }
+    .btn-buscar:active { background: #990000; transform: scale(0.99); }
 
     .results-meta {
       font-size: 13px;
@@ -105,13 +105,13 @@
 
     .badge-vendida {
       display: inline-block;
-      background: #f0fff0;
-      color: #007a00;
+      background: #f0f8ff;
+      color: #cc0000;
       font-size: 11px;
       font-weight: 700;
       padding: 3px 10px;
       border-radius: 20px;
-      border: 1px solid #ccffcc;
+      border: 1px solid #cce0ff;
       margin-bottom: 8px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -173,7 +173,7 @@
     .card-link {
       font-size: 12px;
       font-weight: 600;
-      color: #007a00;
+      color: #cc0000;
       text-decoration: none;
     }
     .card-link:hover { text-decoration: underline; }
@@ -210,7 +210,7 @@
     .spinner {
       width: 28px; height: 28px;
       border: 3px solid #f0f0f0;
-      border-top-color: #007a00;
+      border-top-color: #cc0000;
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
       margin: 0 auto 12px;
@@ -227,8 +227,8 @@
 
 <header>
   <div>
-    <h1>Propiedades Vendidas</h1>
-    <span>REMAX Argentina — propiedades vendidas</span>
+    <h1>Propiedades Vendidas — prueba ID 4</h1>
+    <span>REMAX Argentina — datos en tiempo real</span>
   </div>
 </header>
 
@@ -328,7 +328,7 @@
     let url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
             + `?page=${page}&pageSize=21&sort=${orden}`
             + `&in=operationId:${op}`
-            + `&in=listingStatusId:3`
+            + `&in=listingStatusId:4`
             + `&in=eStageId:0,1,2,3,4`;
 
     if (tipo)      url += `&in=listingTypeId:${tipo}`;
