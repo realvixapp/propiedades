@@ -145,7 +145,7 @@
 <body>
 
 <header>
-  <h1>Tasador Inteligente</h1>
+  <h1>Tasador Inteligente2</h1>
   <span>Estimación de valor de mercado en tiempo real</span>
 </header>
 
@@ -322,22 +322,24 @@
       const json = await res.json();
       console.log('📦 Respuesta:', json);
       
-      // La respuesta es un array directo o viene en .data
-      const items = Array.isArray(json) ? json : (json.data || []);
+      // La respuesta viene en data.geoSearch
+      const items = (json.data && json.data.geoSearch) ? json.data.geoSearch : [];
       
       if (!items.length) {
         acList.innerHTML = '<div class="ac-loading">❌ No se encontraron ubicaciones. Probá con otro nombre.</div>';
         return;
       }
       
+      // Función para limpiar los tags <b> que vienen en el label
+      function cleanLabel(str) {
+        return (str || '').replace(/<[^>]+>/g, '');
+      }
+      
       acList.innerHTML = items.slice(0, 15).map(it => {
-        // El endpoint devuelve: { id, label, complementaryLabel, level, ... }
-        const label = it.label || it.name || it.value || '';
-        const sublabel = it.complementaryLabel || it.province || it.stateName || '';
+        const label = cleanLabel(it.label);
         return `
-          <div class="ac-item" data-geo='${JSON.stringify(it)}'>
+          <div class="ac-item" data-geo='${JSON.stringify({...it, label})}'>
             <strong>${escHtml(label)}</strong>
-            ${sublabel ? `<small>${escHtml(sublabel)}</small>` : ''}
           </div>
         `;
       }).join('');
@@ -346,7 +348,7 @@
         el.addEventListener('click', () => {
           const geoData = JSON.parse(el.getAttribute('data-geo'));
           zonaSeleccionada = geoData;
-          const label = geoData.label || geoData.name || geoData.value || '';
+          const label = geoData.label || '';
           zonaInput.value = label;
           acList.classList.remove('open');
           
