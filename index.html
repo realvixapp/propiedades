@@ -43,6 +43,7 @@
     .ac-item strong { font-size: 13px; color: #1a1a1a; }
     .ac-item small { font-size: 11px; color: #999; }
     .ac-loading { padding: 10px 12px; font-size: 13px; color: #aaa; }
+    .ac-error { padding: 10px 12px; font-size: 13px; color: #cc0000; }
 
     .btn {
       width: 100%; padding: 12px; background: #1a1a2e; color: white;
@@ -122,6 +123,18 @@
       margin-top: 8px;
       font-weight: 500;
     }
+    
+    .zone-tag .remove {
+      margin-left: 8px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    
+    .input-hint {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
 
     @media (max-width: 600px) {
       .metrics { grid-template-columns: 1fr 1fr; }
@@ -145,9 +158,10 @@
       <div style="grid-column: span 2;">
         <label>Zona / Localidad</label>
         <div class="autocomplete-wrap">
-          <input type="text" id="zonaInput" placeholder="Escribí la zona... ej: Castelar" autocomplete="off" />
+          <input type="text" id="zonaInput" placeholder="Ej: Castelar, Palermo, Belgrano..." autocomplete="off" />
           <div class="ac-list" id="acList"></div>
         </div>
+        <div class="input-hint">💡 Escribí al menos 3 letras y seleccioná una opción del listado</div>
         <div id="selectedZoneTag"></div>
       </div>
       <div>
@@ -273,30 +287,48 @@
     });
   });
 
-  // ── AUTOCOMPLETADO ────────────────────────────────────────────
+  // ── AUTOCOMPLETADO MEJORADO ──────────────────────────────────
   zonaInput.addEventListener('input', () => {
     clearTimeout(timeoutAC);
     const val = zonaInput.value.trim();
-    if (val.length < 2) {
+    
+    // Mínimo 3 caracteres
+    if (val.length < 3) {
       acList.innerHTML = '';
       acList.classList.remove('open');
+      if (val.length > 0 && val.length < 3) {
+        acList.innerHTML = '<div class="ac-loading">Escribí al menos 3 letras...</div>';
+        acList.classList.add('open');
+      }
       return;
     }
-    acList.innerHTML = '<div class="ac-loading">Buscando...</div>';
+    
+    acList.innerHTML = '<div class="ac-loading">🔍 Buscando ubicaciones...</div>';
     acList.classList.add('open');
-    timeoutAC = setTimeout(() => fetchAutoComplete(val), 300);
+    timeoutAC = setTimeout(() => fetchAutoComplete(val), 400);
   });
 
   async function fetchAutoComplete(q) {
     try {
-      const url = `https://api-ar.redremax.com/remaxweb-ar/api/locations/findAll?q=${encodeURIComponent(q)}&pageSize=10`;
+      const url = `https://api-ar.redremax.com/remaxweb-ar/api/locations/findAll?q=${encodeURIComponent(q)}&pageSize=15`;
+      console.log('🔍 Buscando:', url);
+      
       const res = await fetch(url);
+      
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      
       const json = await res.json();
+      console.log('📦 Respuesta:', json);
+      
       const items = json.data || [];
+      
       if (!items.length) {
-        acList.innerHTML = '<div class="ac-loading">Sin resultados</div>';
+        acList.innerHTML = '<div class="ac-loading">❌ No se encontraron ubicaciones. Probá con otro nombre.</div>';
         return;
       }
+      
       acList.innerHTML = items.map(it => `
         <div class="ac-item" data-geo='${JSON.stringify(it)}'>
           <strong>${escHtml(it.label)}</strong>
@@ -311,16 +343,32 @@
           zonaInput.value = geoData.label;
           acList.classList.remove('open');
           
+          console.log('✅ Zona seleccionada:', geoData);
+          
           // Mostrar tag de zona seleccionada
-          zonaTagContainer.innerHTML = `<span class="zone-tag">📍 ${escHtml(geoData.label)}</span>`;
+          zonaTagContainer.innerHTML = `
+            <span class="zone-tag">
+              📍 ${escHtml(geoData.label)}
+              <span class="remove" onclick="limpiarZona()">✕</span>
+            </span>
+          `;
         });
       });
     } catch(e) {
-      acList.innerHTML = '<div class="ac-loading">Error de conexión</div>';
+      console.error('❌ Error en autocompletado:', e);
+      acList.innerHTML = `<div class="ac-error">⚠️ Error: ${e.message}</div>`;
     }
   }
+  
+  // Función para limpiar zona seleccionada
+  window.limpiarZona = function() {
+    zonaSeleccionada = null;
+    zonaInput.value = '';
+    zonaTagContainer.innerHTML = '';
+    console.log('🗑️ Zona limpiada');
+  }
 
-  zonaInput.addEventListener('blur', () => setTimeout(() => acList.classList.remove('open'), 150));
+  zonaInput.addEventListener('blur', () => setTimeout(() => acList.classList.remove('open'), 200));
 
   // ── CONSTRUIR URL ─────────────────────────────────────────────
   function buildURL(page = 0) {
@@ -346,12 +394,12 @@
     if (pmax) url += `&lte=price:${pmax}`;
 
     // ✅ FILTRO DE ZONA CORREGIDO
-    if (zonaSeleccionada) {
-      // Usar el ID de la ubicación para filtrado preciso
-      const locationId = zonaSeleccionada.id;
-      url += `&in=locationId:${locationId}`;
+    if (zonaSeleccionada && zonaSeleccionada.id) {
+      url += `&in=locationId:${zonaSeleccionada.id}`;
+      console.log('🎯 Filtrando por locationId:', zonaSeleccionada.id);
     }
 
+    console.log('🔗 URL construida:', url);
     return url;
   }
 
@@ -390,7 +438,8 @@
     currentPage = page;
     
     if (!zonaSeleccionada) {
-      alert('Por favor, seleccioná una zona del listado que aparece al escribir');
+      alert('⚠️ Por favor, seleccioná una zona del listado desplegable');
+      zonaInput.focus();
       return;
     }
 
@@ -400,21 +449,29 @@
     window.scrollTo({ top: 300, behavior: 'smooth' });
 
     try {
-      const res  = await fetch(buildURL(page));
+      const url = buildURL(page);
+      const res  = await fetch(url);
+      
+      if (!res.ok) {
+        throw new Error(`Error HTTP ${res.status}`);
+      }
+      
       const json = await res.json();
       const props = json.data?.data || [];
       const total = json.data?.totalItems || 0;
       totalPagesGlobal = Math.min(json.data?.totalPages || 1, 50);
       propiedadesCargadas = props;
 
+      console.log('📊 Resultados:', { total, propiedades: props.length, paginas: totalPagesGlobal });
+
       if (!props.length) {
-        document.getElementById('listadoOutput').innerHTML = `<div class="state-box">No se encontraron propiedades con esos filtros en <strong>${escHtml(zonaSeleccionada.label)}</strong>.<br>Probá ampliar la búsqueda o cambiar los filtros.</div>`;
+        document.getElementById('listadoOutput').innerHTML = `<div class="state-box">❌ No se encontraron propiedades con esos filtros en <strong>${escHtml(zonaSeleccionada.label)}</strong>.<br><br>Probá:<br>• Ampliar la zona de búsqueda<br>• Cambiar los filtros<br>• Buscar "Solo venta" o "Solo alquiler"</div>`;
         return;
       }
 
       const maxP = totalPagesGlobal;
       document.getElementById('listadoOutput').innerHTML = `
-        <div class="results-meta"><strong>${Number(total).toLocaleString('es-AR')}</strong> propiedades encontradas en <strong>${escHtml(zonaSeleccionada.label)}</strong> — página ${page+1} de ${maxP}</div>
+        <div class="results-meta">✅ <strong>${Number(total).toLocaleString('es-AR')}</strong> propiedades encontradas en <strong>${escHtml(zonaSeleccionada.label)}</strong> — página ${page+1} de ${maxP}</div>
         <div class="cards-grid">${renderCards(props)}</div>
         <div class="pagination">
           <button class="btn-page" ${page===0?'disabled':''} onclick="buscar(${page-1})">← Anterior</button>
@@ -423,17 +480,21 @@
         </div>`;
 
     } catch(e) {
-      document.getElementById('listadoOutput').innerHTML = `<div class="state-box">Error al obtener datos. Verificá tu conexión.</div>`;
+      console.error('❌ Error en búsqueda:', e);
+      document.getElementById('listadoOutput').innerHTML = `<div class="state-box">⚠️ Error al obtener datos: ${e.message}<br>Verificá tu conexión a internet.</div>`;
     }
   }
 
   // ── TASACIÓN ─────────────────────────────────────────────────
   async function tasar() {
     const metros = parseFloat(document.getElementById('metrosTasar').value);
-    if (!metros || metros <= 0) { alert('Ingresá los metros cuadrados a tasar'); return; }
+    if (!metros || metros <= 0) { 
+      alert('⚠️ Ingresá los metros cuadrados a tasar'); 
+      return; 
+    }
     
     if (!zonaSeleccionada) {
-      alert('Por favor, seleccioná una zona primero');
+      alert('⚠️ Por favor, seleccioná una zona primero');
       return;
     }
 
@@ -444,7 +505,6 @@
     const moneda = document.getElementById('moneda').value || '1';
 
     try {
-      // traer hasta 100 propiedades para mejor muestra
       let url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
               + `?page=0&pageSize=100&sort=-createdAt`
               + `&in=operationId:1`
@@ -454,10 +514,11 @@
       
       if (tipo) url += `&in=listingTypeId:${tipo}`;
       
-      // ✅ FILTRO DE ZONA CORREGIDO PARA TASACIÓN
-      if (zonaSeleccionada) {
+      if (zonaSeleccionada && zonaSeleccionada.id) {
         url += `&in=locationId:${zonaSeleccionada.id}`;
       }
+
+      console.log('💰 URL tasación:', url);
 
       const res  = await fetch(url);
       const json = await res.json();
@@ -465,8 +526,10 @@
         p.priceExposure && p.price > 0 && p.dimensionTotalBuilt > 0
       );
 
+      console.log('💰 Propiedades para tasación:', props.length);
+
       if (props.length < 3) {
-        out.innerHTML = `<div class="state-box">No hay suficientes propiedades con datos de m² en <strong>${escHtml(zonaSeleccionada.label)}</strong> para calcular una tasación.<br>Probá con una zona más amplia o sin filtrar por tipo.</div>`;
+        out.innerHTML = `<div class="state-box">❌ No hay suficientes propiedades con datos de m² en <strong>${escHtml(zonaSeleccionada.label)}</strong> para calcular una tasación confiable.<br><br>Se necesitan al menos 3 propiedades. Encontradas: ${props.length}<br><br>Probá:<br>• Ampliar la zona<br>• No filtrar por tipo de propiedad</div>`;
         return;
       }
 
@@ -523,7 +586,8 @@
       `;
 
     } catch(e) {
-      out.innerHTML = `<div class="state-box">Error al calcular tasación.</div>`;
+      console.error('❌ Error en tasación:', e);
+      out.innerHTML = `<div class="state-box">⚠️ Error al calcular tasación: ${e.message}</div>`;
     }
   }
 
@@ -534,6 +598,10 @@
     if (!s) return '';
     return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+  
+  // Log inicial
+  console.log('🚀 Tasador Inteligente cargado');
+  console.log('💡 Abrí la consola del navegador (F12) para ver logs de depuración');
 </script>
 </body>
 </html>
