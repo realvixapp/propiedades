@@ -1,622 +1,401 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tasador Inteligente</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f3; color: #1a1a1a; min-height: 100vh; }
-
-    header { background: #1a1a2e; color: white; padding: 1.25rem 2rem; }
-    header h1 { font-size: 20px; font-weight: 600; }
-    header span { font-size: 13px; opacity: 0.7; }
-
-    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
-
-    .card { background: white; border-radius: 12px; border: 1px solid #e5e5e5; padding: 1.5rem; margin-bottom: 1.5rem; }
-    .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 1.25rem; color: #333; }
-
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
-    label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500; }
-
-    input, select {
-      width: 100%; padding: 10px 12px; border: 1px solid #ddd;
-      border-radius: 8px; font-size: 14px; background: white; color: #1a1a1a;
-      outline: none; transition: border-color 0.15s;
-    }
-    input:focus, select:focus { border-color: #1a1a2e; }
-
-    .autocomplete-wrap { position: relative; }
-    .ac-list {
-      position: absolute; top: 100%; left: 0; right: 0; background: white;
-      border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px;
-      max-height: 240px; overflow-y: auto; z-index: 200; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    }
-    .ac-list.open { display: block; }
-    .ac-item {
-      padding: 9px 12px; font-size: 13px; cursor: pointer;
-      border-bottom: 1px solid #f5f5f5; display: flex; flex-direction: column; gap: 1px;
-    }
-    .ac-item:last-child { border-bottom: none; }
-    .ac-item:hover, .ac-item.active { background: #f0f0f8; }
-    .ac-item strong { font-size: 13px; color: #1a1a1a; }
-    .ac-item small { font-size: 11px; color: #999; }
-    .ac-loading { padding: 10px 12px; font-size: 13px; color: #aaa; }
-    .ac-error { padding: 10px 12px; font-size: 13px; color: #cc0000; }
-
-    .btn {
-      width: 100%; padding: 12px; background: #1a1a2e; color: white;
-      border: none; border-radius: 8px; font-size: 15px; font-weight: 600;
-      cursor: pointer; transition: background 0.15s;
-    }
-    .btn:hover { background: #2a2a4e; }
-    .btn:active { transform: scale(0.99); }
-
-    .tabs { display: flex; gap: 0; border-bottom: 1px solid #e5e5e5; margin-bottom: 1.5rem; }
-    .tab {
-      padding: 10px 20px; font-size: 14px; font-weight: 500; cursor: pointer;
-      border-bottom: 2px solid transparent; color: #888; transition: all 0.15s;
-    }
-    .tab.active { color: #1a1a2e; border-bottom-color: #1a1a2e; }
-
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-
-    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
-    .metric { background: #f8f8f6; border-radius: 10px; padding: 1rem; text-align: center; }
-    .metric .val { font-size: 20px; font-weight: 700; color: #1a1a2e; line-height: 1.2; }
-    .metric .lbl { font-size: 11px; color: #888; margin-top: 5px; }
-    .metric.highlight { background: #1a1a2e; }
-    .metric.highlight .val { color: white; }
-    .metric.highlight .lbl { color: #aaa; }
-
-    .section-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #333; }
-
-    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
-    .prop-card {
-      background: white; border-radius: 10px; border: 1px solid #e5e5e5;
-      overflow: hidden; transition: box-shadow 0.15s, transform 0.15s;
-    }
-    .prop-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.07); transform: translateY(-1px); }
-    .prop-card-body { padding: 1rem; }
-    .badge {
-      display: inline-block; font-size: 10px; font-weight: 700;
-      padding: 2px 9px; border-radius: 20px; margin-bottom: 7px;
-      text-transform: uppercase; letter-spacing: 0.4px;
-    }
-    .badge-r { background: #fff0f0; color: #cc0000; border: 1px solid #ffcccc; }
-    .badge-n { background: #fff8e0; color: #996600; border: 1px solid #ffe599; }
-    .prop-title { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.4; margin-bottom: 5px; }
-    .prop-addr { font-size: 12px; color: #888; margin-bottom: 8px; }
-    .prop-price { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
-    .prop-exp { font-size: 12px; color: #aaa; margin-bottom: 7px; }
-    .prop-feats { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-    .feat { font-size: 11px; background: #f5f5f3; color: #555; padding: 3px 8px; border-radius: 20px; border: 1px solid #e5e5e5; }
-    .prop-footer { border-top: 1px solid #f0f0f0; padding: 8px 1rem; display: flex; justify-content: space-between; align-items: center; }
-    .prop-agent { font-size: 11px; color: #ccc; }
-    .prop-link { font-size: 12px; font-weight: 600; color: #1a1a2e; text-decoration: none; }
-    .prop-link:hover { text-decoration: underline; }
-
-    .pagination { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 1.5rem; padding-bottom: 1rem; }
-    .btn-page { padding: 7px 16px; border: 1px solid #ddd; background: white; border-radius: 8px; font-size: 13px; cursor: pointer; }
-    .btn-page:hover { background: #f5f5f3; }
-    .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
-    .page-info { font-size: 13px; color: #666; }
-
-    .results-meta { font-size: 13px; color: #666; margin-bottom: 1rem; }
-    .results-meta strong { color: #1a1a1a; }
-
-    .state-box { text-align: center; padding: 2.5rem 1rem; color: #aaa; font-size: 14px; }
-    .spinner { width: 26px; height: 26px; border: 3px solid #eee; border-top-color: #1a1a2e; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .disclaimer { font-size: 11px; color: #ccc; margin-top: 1rem; text-align: center; }
-    
-    .zone-tag {
-      display: inline-block;
-      background: #e8f4ff;
-      color: #0066cc;
-      padding: 5px 12px;
-      border-radius: 15px;
-      font-size: 12px;
-      margin-top: 8px;
-      font-weight: 500;
-    }
-    
-    .zone-tag .remove {
-      margin-left: 8px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    
-    .input-hint {
-      font-size: 11px;
-      color: #999;
-      margin-top: 4px;
-    }
-
-    @media (max-width: 600px) {
-      .metrics { grid-template-columns: 1fr 1fr; }
-      .cards-grid { grid-template-columns: 1fr; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TasadorBA — Gran Buenos Aires</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px}
+.app{display:flex;width:100%;max-width:1100px;min-height:620px;border:0.5px solid #e0ddd6;border-radius:12px;overflow:hidden;background:#f5f5f3;box-shadow:0 2px 24px rgba(0,0,0,0.07)}
+.sidebar{width:210px;background:#fff;border-right:0.5px solid #e0ddd6;display:flex;flex-direction:column;flex-shrink:0}
+.logo{padding:16px;border-bottom:0.5px solid #e0ddd6}
+.logo-t{font-size:15px;font-weight:500;color:#1a1a18}
+.logo-s{font-size:11px;color:#888780;margin-top:2px}
+.nav{padding:10px 8px}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:13px;color:#888780;margin-bottom:2px;transition:background 0.15s;text-decoration:none}
+.ni.active{background:#e6f1fb;color:#185FA5;font-weight:500}
+.ni:hover:not(.active){background:#f5f5f3}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{padding:12px 20px;background:#fff;border-bottom:0.5px solid #e0ddd6;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-t{font-size:14px;font-weight:500;color:#1a1a18}
+.badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#eaf3de;color:#3B6D11}
+.content{flex:1;overflow-y:auto;padding:18px;display:flex;gap:14px}
+.lp{width:275px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+.rp{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:14px 16px}
+.ct{font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px}
+.field{margin-bottom:9px}
+.field label{font-size:12px;color:#888780;display:block;margin-bottom:3px}
+.field input,.field select{width:100%;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;font-family:inherit;outline:none;transition:border-color 0.15s}
+.field input:focus,.field select:focus{border-color:#185FA5}
+.fr{display:flex;gap:7px}
+.fr .field{flex:1}
+.btn{width:100%;padding:9px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:opacity 0.15s}
+.btn:hover{opacity:0.88}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.apisec{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:7px}
+.apisec label{font-size:12px;color:#888780}
+.apisec select,.apisec input{width:100%;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;font-family:inherit;outline:none}
+.chip{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
+.chip.free{border-color:#3B6D11;color:#3B6D11;background:#eaf3de}
+.ok{font-size:11px;color:#3B6D11}
+.warn{font-size:11px;color:#BA7517}
+.hint{font-size:11px;color:#888780;line-height:1.5}
+.rb{text-align:center;padding:18px 14px}
+.rl{font-size:12px;color:#888780;margin-bottom:5px}
+.rv{font-size:30px;font-weight:500;color:#1a1a18}
+.rr{font-size:12px;color:#888780;margin-top:4px}
+.rs{font-size:13px;color:#888780;margin-top:7px}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.met{background:#f5f5f3;border-radius:8px;padding:9px 11px}
+.ml{font-size:11px;color:#888780;margin-bottom:2px}
+.mv{font-size:15px;font-weight:500;color:#1a1a18}
+.ms{font-size:11px;color:#888780;margin-top:1px}
+.cl{display:flex;flex-direction:column;gap:5px}
+.ci{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;background:#f5f5f3;border-radius:8px;gap:8px}
+.ci-link{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#185FA5;background:#e6f1fb;border:0.5px solid #9BB8D8;border-radius:6px;padding:3px 7px;text-decoration:none;white-space:nowrap;flex-shrink:0;cursor:pointer;transition:background 0.15s}
+.ci-link:hover{background:#cce0f5}
+.ca{font-size:12px;color:#1a1a18}
+.cd{font-size:11px;color:#888780;margin-top:1px}
+.cp{font-size:13px;font-weight:500;color:#1a1a18;text-align:right}
+.cm{font-size:11px;color:#888780}
+.bc{display:flex;flex-direction:column;gap:7px}
+.br-row{display:flex;align-items:center;gap:7px}
+.bl{font-size:11px;color:#888780;width:110px;text-align:right;flex-shrink:0}
+.bt{flex:1;height:17px;background:#f5f5f3;border-radius:3px;overflow:hidden}
+.bf{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:5px}
+.bf span{font-size:10px;font-weight:500;color:#fff;white-space:nowrap}
+.bf.hl{background:#185FA5}
+.bf.nm{background:#9FB8D8}
+.tag-g{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;background:#eaf3de;color:#3B6D11}
+.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:10px;background:#f5f5f3;border-radius:12px;text-align:center;border:0.5px dashed #b4b2a9}
+.ph-t{font-size:13px;font-weight:500;color:#1a1a18}
+.ph-s{font-size:12px;color:#888780;max-width:260px;line-height:1.6}
+.err{font-size:12px;color:#A32D2D;background:#FCEBEB;padding:9px 11px;border-radius:8px;line-height:1.5}
+.ld{display:inline-flex;gap:4px;align-items:center}
+.ld span{width:6px;height:6px;border-radius:50%;background:#888780;animation:b 1.2s infinite}
+.ld span:nth-child(2){animation-delay:0.2s}
+.ld span:nth-child(3){animation-delay:0.4s}
+@keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+.src-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.src-tag{font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
+@media(max-width:700px){.app{flex-direction:column}.sidebar{width:100%;border-right:none;border-bottom:0.5px solid #e0ddd6}.content{flex-direction:column}.lp{width:100%}}
+</style>
 </head>
 <body>
-
-<header>
-  <h1>Tasador Inteligente2</h1>
-  <span>Estimación de valor de mercado en tiempo real</span>
-</header>
-
-<div class="container">
-
-  <!-- FILTROS -->
-  <div class="card">
-    <h2>Búsqueda y filtros</h2>
-    <div class="form-grid">
-      <div style="grid-column: span 2;">
-        <label>Zona / Localidad</label>
-        <div class="autocomplete-wrap">
-          <input type="text" id="zonaInput" placeholder="Ej: Castelar, Palermo, Belgrano..." autocomplete="off" />
-          <div class="ac-list" id="acList"></div>
-        </div>
-        <div class="input-hint">💡 Escribí al menos 3 letras y seleccioná una opción del listado</div>
-        <div id="selectedZoneTag"></div>
-      </div>
-      <div>
-        <label>Operación</label>
-        <select id="operacion">
-          <option value="1,2">Venta y alquiler</option>
-          <option value="1">Solo venta</option>
-          <option value="2">Solo alquiler</option>
-        </select>
-      </div>
-      <div>
-        <label>Tipo de propiedad</label>
-        <select id="tipo">
-          <option value="">Todos</option>
-          <option value="2">Departamento</option>
-          <option value="9">Casa</option>
-          <option value="12">PH</option>
-          <option value="18">Terreno / lote</option>
-          <option value="17">Local</option>
-          <option value="16">Oficina</option>
-          <option value="23">Quinta</option>
-        </select>
-      </div>
-      <div>
-        <label>Moneda</label>
-        <select id="moneda">
-          <option value="">Cualquiera</option>
-          <option value="1">USD</option>
-          <option value="2">ARS</option>
-        </select>
-      </div>
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-t">TasadorBA</div>
+      <div class="logo-s">Gran Buenos Aires</div>
     </div>
-
-    <div class="form-grid">
-      <div>
-        <label>Ambientes</label>
-        <select id="ambientes">
-          <option value="">Cualquiera</option>
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5+</option>
-        </select>
-      </div>
-      <div>
-        <label>Precio mínimo</label>
-        <input type="text" id="precioMin" placeholder="Sin límite" />
-      </div>
-      <div>
-        <label>Precio máximo</label>
-        <input type="text" id="precioMax" placeholder="Sin límite" />
-      </div>
-      <div>
-        <label>Ordenar por</label>
-        <select id="orden">
-          <option value="-createdAt">Más recientes</option>
-          <option value="price">Menor precio</option>
-          <option value="-price">Mayor precio</option>
-        </select>
-      </div>
-      <div>
-        <label>Ver propiedades</label>
-        <select id="verProps">
-          <option value="2">Reservadas</option>
-          <option value="1">En negociación</option>
-        </select>
-      </div>
+    <div class="nav">
+      <a class="ni active" href="#">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor"/></svg>
+        Tasador
+      </a>
+      <a class="ni" href="https://zonaprop.com.ar" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Zonaprop
+      </a>
+      <a class="ni" href="https://properati.com.ar" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2C5.24 2 3 4.24 3 7c0 3.5 5 9 5 9s5-5.5 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="7" r="1.5" fill="currentColor"/></svg>
+        Properati
+      </a>
+      <a class="ni" href="https://inmuebles.mercadolibre.com.ar" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="10" width="2" height="4" rx="1" fill="currentColor"/><rect x="6" y="6" width="2" height="8" rx="1" fill="currentColor"/><rect x="10" y="3" width="2" height="11" rx="1" fill="currentColor"/></svg>
+        MercadoLibre
+      </a>
     </div>
-
-    <button id="btnBuscar" class="btn">Buscar propiedades</button>
   </div>
 
-  <!-- SALIDA -->
-  <div class="card" id="outputCard" style="display:none;">
-
-    <!-- TABS -->
-    <div class="tabs">
-      <div class="tab active" data-tab="listado">Listado</div>
-      <div class="tab" data-tab="tasacion">Tasación</div>
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-t">Tasación de propiedad</div>
+      <span class="badge" id="badge-prov">Groq · Llama 3.3</span>
     </div>
+    <div class="content">
+      <div class="lp">
 
-    <!-- LISTADO -->
-    <div class="tab-content active" id="listadoContent">
-      <div id="listadoOutput"></div>
-    </div>
+        <div class="apisec">
+          <label>Proveedor de IA</label>
+          <select id="proveedor" onchange="onProv()">
+            <option value="groq">Groq — Llama 3.3 70b (gratis)</option>
+            <option value="anthropic">Anthropic — Claude Sonnet</option>
+            <option value="openai">OpenAI — GPT-4o mini</option>
+            <option value="gemini">Google — Gemini 2.0 Flash</option>
+          </select>
+          <label id="lbl-key">Clave API</label>
+          <input type="password" id="apikey" placeholder="gsk_..." oninput="checkKey()"/>
+          <div id="key-status"></div>
+          <div id="key-hint"></div>
+        </div>
 
-    <!-- TASACIÓN -->
-    <div class="tab-content" id="tasacionContent">
-      <div style="margin-bottom: 1.5rem;">
-        <label>Metros cuadrados a tasar</label>
-        <div style="display:flex; gap:10px; margin-top:8px;">
-          <input type="number" id="metrosTasar" placeholder="Ej: 75" style="flex:1;" />
-          <button id="btnTasar" class="btn" style="flex:0 0 auto; width:auto; padding:0 2rem;">Calcular tasación</button>
+        <div class="card">
+          <div class="ct">Datos de la propiedad</div>
+          <div class="field"><label>Tipo</label>
+            <select id="tipo"><option>Departamento</option><option>Casa</option><option>PH</option><option>Local comercial</option></select>
+          </div>
+          <div class="field"><label>Partido / Zona</label>
+            <select id="partido" onchange="updateBarrios()">
+              <option>Morón</option><option>La Matanza</option><option>San Isidro</option>
+              <option>Tigre</option><option>Quilmes</option><option>Lanús</option>
+              <option>Lomas de Zamora</option><option>Vicente López</option><option>Avellaneda</option>
+              <option>San Martín</option><option>Tres de Febrero</option><option>Merlo</option>
+            </select>
+          </div>
+          <div class="field"><label>Barrio</label><select id="barrio"></select></div>
+          <div class="fr">
+            <div class="field"><label>Sup. total (m²)</label><input type="number" id="sup_total" value="65" min="10"/></div>
+            <div class="field"><label>Sup. cubierta</label><input type="number" id="sup_cub" value="58" min="10"/></div>
+          </div>
+          <div class="fr">
+            <div class="field"><label>Ambientes</label><select id="amb"><option>1</option><option selected>2</option><option>3</option><option>4+</option></select></div>
+            <div class="field"><label>Antigüedad</label><select id="ant"><option>A estrenar</option><option>1-5 años</option><option>5-15 años</option><option selected>15-25 años</option><option>+25 años</option></select></div>
+          </div>
+          <div class="fr">
+            <div class="field"><label>Piso</label><input type="number" id="piso" value="3" min="0"/></div>
+            <div class="field"><label>Estado</label><select id="estado"><option>Excelente</option><option selected>Bueno</option><option>Regular</option><option>A reciclar</option></select></div>
+          </div>
+          <div class="field"><label>Extras (opcional)</label>
+            <input type="text" id="extras" placeholder="cochera, amenities, piscina..."/>
+          </div>
+          <button class="btn" id="btn-tasar" onclick="tasar()">Calcular tasación ↗</button>
+        </div>
+
+        <div class="card">
+          <div class="ct">Fuentes de referencia</div>
+          <div class="src-row">
+            <span class="src-tag">Zonaprop</span><span class="src-tag">MercadoLibre</span>
+            <span class="src-tag">Properati</span><span class="src-tag">RE/MAX</span><span class="src-tag">INDEC</span>
+          </div>
         </div>
       </div>
-      <div id="tasacionOutput"></div>
+
+      <div class="rp" id="rp">
+        <div class="ph">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="16" width="28" height="16" rx="2" stroke="#b4b2a9" stroke-width="1.5"/><path d="M12 16V10a6 6 0 0 1 12 0v6" stroke="#b4b2a9" stroke-width="1.5"/><circle cx="18" cy="24" r="2" fill="#b4b2a9"/></svg>
+          <div class="ph-t">Completá los datos y calculá</div>
+          <div class="ph-s">Elegí tu proveedor de IA, ingresá la clave y la IA analiza el mercado del GBA con comparables reales.</div>
+        </div>
+      </div>
     </div>
-
   </div>
-
 </div>
 
 <script>
-  // ── ESTADO ────────────────────────────────────────────────────
-  let zonaSeleccionada = null; // objeto completo: { label, value, geoData }
-  let currentPage = 0;
-  let totalPagesGlobal = 1;
-  let propiedadesCargadas = [];
-  let timeoutAC;
+const CFG = {
+  groq:      { nombre:"Groq",           ph:"gsk_...",      pre:"gsk_",    badge:"Groq · Llama 3.3",       gratis:true,  url:"https://console.groq.com/keys",           hint:"Plan gratuito disponible en console.groq.com" },
+  anthropic: { nombre:"Anthropic",      ph:"sk-ant-...",   pre:"sk-ant-", badge:"Anthropic · Claude",      gratis:false, url:"https://console.anthropic.com/keys",      hint:"~$0.003 por tasación" },
+  openai:    { nombre:"OpenAI",         ph:"sk-...",       pre:"sk-",     badge:"OpenAI · GPT-4o mini",    gratis:false, url:"https://platform.openai.com/api-keys",    hint:"~$0.001 por tasación" },
+  gemini:    { nombre:"Google Gemini",  ph:"AIza...",      pre:"AIza",    badge:"Google · Gemini 2.0",     gratis:false, url:"https://aistudio.google.com/apikey",      hint:"Requiere billing (free tier no disponible en AR)" }
+};
 
-  const zonaInput = document.getElementById('zonaInput');
-  const acList = document.getElementById('acList');
-  const zonaTagContainer = document.getElementById('selectedZoneTag');
+const barrios = {
+  "Morón":["Morón Centro","Castelar","El Palomar","Haedo","Castelar Norte","Villa del Parque Morón"],
+  "La Matanza":["Ramos Mejía","San Justo","Isidro Casanova","Tapiales","Ciudad Evita","Gregorio de Laferrere"],
+  "San Isidro":["San Isidro Centro","Martínez","Acassuso","Beccar","Boulogne","Villa Adelina"],
+  "Tigre":["Tigre Centro","Don Torcuato","General Pacheco","Rincón de Milberg","Ricardo Rojas","El Talar"],
+  "Quilmes":["Quilmes Centro","Bernal","Berazategui","San Francisco Solano","Wilde","Don Bosco"],
+  "Lanús":["Lanús Este","Lanús Oeste","Remedios de Escalada","Monte Chingolo","Gerli"],
+  "Lomas de Zamora":["Lomas Centro","Banfield","Temperley","Turdera","Adrogué","Burzaco"],
+  "Vicente López":["Vicente López Centro","Olivos","Florida","Munro","La Lucila","Carapachay"],
+  "Avellaneda":["Avellaneda Centro","Sarandí","Piñeiro","Villa Domínico","Dock Sud"],
+  "San Martín":["San Martín Centro","Villa Ballester","Palermo Chico","José León Suárez","Villa Lynch"],
+  "Tres de Febrero":["Ciudadela","Caseros","El Palomar Norte","Pablo Nogués","El Libertador"],
+  "Merlo":["Merlo Centro","Pontevedra","San Antonio de Padua","Mariano Acosta","Libertad"]
+};
 
-  // ── TABS ──────────────────────────────────────────────────────
-  document.querySelectorAll('.tab').forEach(t => {
-    t.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
-      t.classList.add('active');
-      document.getElementById(t.dataset.tab + 'Content').classList.add('active');
+function updateBarrios() {
+  const p = document.getElementById("partido").value;
+  const b = document.getElementById("barrio");
+  b.innerHTML = "";
+  (barrios[p]||[]).forEach(n => { const o = document.createElement("option"); o.textContent = n; b.appendChild(o); });
+}
+updateBarrios();
+
+function onProv() {
+  const prov = document.getElementById("proveedor").value;
+  const c = CFG[prov];
+  document.getElementById("apikey").value = "";
+  document.getElementById("apikey").placeholder = c.ph;
+  document.getElementById("lbl-key").textContent = "Clave API — " + c.nombre;
+  document.getElementById("badge-prov").textContent = c.badge;
+  document.getElementById("key-status").textContent = "";
+  document.getElementById("key-hint").innerHTML =
+    `<span class="chip${c.gratis?' free':''}">${c.gratis?"✓ Gratis":"De pago"}</span> ` +
+    `<span class="hint">${c.hint} · <a href="${c.url}" target="_blank" style="color:#185FA5">Obtener clave</a></span>`;
+}
+onProv();
+
+function checkKey() {
+  const prov = document.getElementById("proveedor").value;
+  const c = CFG[prov];
+  const k = document.getElementById("apikey").value.trim();
+  const el = document.getElementById("key-status");
+  if (k.length > 10 && k.startsWith(c.pre)) { el.className = "ok"; el.textContent = "✓ Clave válida"; }
+  else if (k.length > 0) { el.className = "warn"; el.textContent = "Formato esperado: " + c.ph; }
+  else { el.className = ""; el.textContent = ""; }
+}
+
+function fmt(n) { return Number(Math.round(n)).toLocaleString("es-AR"); }
+
+async function llamarAPI(prov, key, prompt) {
+  let res, data, raw;
+  if (prov === "groq" || prov === "openai") {
+    const url = prov === "groq"
+      ? "https://api.groq.com/openai/v1/chat/completions"
+      : "https://api.openai.com/v1/chat/completions";
+    const model = prov === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini";
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], temperature: 0.3, max_tokens: 1000 })
     });
-  });
-
-  // ── AUTOCOMPLETADO MEJORADO ──────────────────────────────────
-  zonaInput.addEventListener('input', () => {
-    clearTimeout(timeoutAC);
-    const val = zonaInput.value.trim();
-    
-    // Mínimo 3 caracteres
-    if (val.length < 3) {
-      acList.innerHTML = '';
-      acList.classList.remove('open');
-      if (val.length > 0 && val.length < 3) {
-        acList.innerHTML = '<div class="ac-loading">Escribí al menos 3 letras...</div>';
-        acList.classList.add('open');
-      }
-      return;
-    }
-    
-    acList.innerHTML = '<div class="ac-loading">🔍 Buscando ubicaciones...</div>';
-    acList.classList.add('open');
-    timeoutAC = setTimeout(() => fetchAutoComplete(val), 400);
-  });
-
-  async function fetchAutoComplete(q) {
-    try {
-      const url = `https://api-ar.redremax.com/remaxweb-ar/api/search/findAll/${encodeURIComponent(q)}?level=1`;
-      console.log('🔍 Buscando:', url);
-      
-      const res = await fetch(url);
-      
-      if (!res.ok) {
-        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
-      }
-      
-      const json = await res.json();
-      console.log('📦 Respuesta:', json);
-      
-      // La respuesta viene en data.geoSearch
-      const items = (json.data && json.data.geoSearch) ? json.data.geoSearch : [];
-      
-      if (!items.length) {
-        acList.innerHTML = '<div class="ac-loading">❌ No se encontraron ubicaciones. Probá con otro nombre.</div>';
-        return;
-      }
-      
-      // Función para limpiar los tags <b> que vienen en el label
-      function cleanLabel(str) {
-        return (str || '').replace(/<[^>]+>/g, '');
-      }
-      
-      acList.innerHTML = items.slice(0, 15).map(it => {
-        const label = cleanLabel(it.label);
-        return `
-          <div class="ac-item" data-geo='${JSON.stringify({...it, label})}'>
-            <strong>${escHtml(label)}</strong>
-          </div>
-        `;
-      }).join('');
-
-      acList.querySelectorAll('.ac-item').forEach(el => {
-        el.addEventListener('click', () => {
-          const geoData = JSON.parse(el.getAttribute('data-geo'));
-          zonaSeleccionada = geoData;
-          const label = geoData.label || '';
-          zonaInput.value = label;
-          acList.classList.remove('open');
-          
-          console.log('✅ Zona seleccionada:', geoData);
-          
-          // Mostrar tag de zona seleccionada
-          zonaTagContainer.innerHTML = `
-            <span class="zone-tag">
-              📍 ${escHtml(label)}
-              <span class="remove" onclick="limpiarZona()">✕</span>
-            </span>
-          `;
-        });
-      });
-    } catch(e) {
-      console.error('❌ Error en autocompletado:', e);
-      acList.innerHTML = `<div class="ac-error">⚠️ Error: ${e.message}</div>`;
-    }
+    data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
+    raw = data.choices?.[0]?.message?.content || "";
+  } else if (prov === "anthropic") {
+    res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
+    });
+    data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
+    raw = (data.content || []).map(i => i.text || "").join("");
+  } else {
+    res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + key, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 1000 } })
+    });
+    data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
+    raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
   }
-  
-  // Función para limpiar zona seleccionada
-  window.limpiarZona = function() {
-    zonaSeleccionada = null;
-    zonaInput.value = '';
-    zonaTagContainer.innerHTML = '';
-    console.log('🗑️ Zona limpiada');
-  }
+  return raw.replace(/```json|```/g, "").trim();
+}
 
-  zonaInput.addEventListener('blur', () => setTimeout(() => acList.classList.remove('open'), 200));
+async function tasar() {
+  const prov = document.getElementById("proveedor").value;
+  const key  = document.getElementById("apikey").value.trim();
+  const c    = CFG[prov];
+  if (!key || !key.startsWith(c.pre)) { alert("Ingresá tu clave de " + c.nombre + ".\nFormato: " + c.ph); return; }
 
-  // ── CONSTRUIR URL ─────────────────────────────────────────────
-  function buildURL(page = 0) {
-    const oper = document.getElementById('operacion').value;
-    const tipo = document.getElementById('tipo').value;
-    const mon  = document.getElementById('moneda').value;
-    const amb  = document.getElementById('ambientes').value;
-    const pmin = document.getElementById('precioMin').value.replace(/\D/g,'');
-    const pmax = document.getElementById('precioMax').value.replace(/\D/g,'');
-    const ord  = document.getElementById('orden').value;
-    const vp   = document.getElementById('verProps').value;
+  const btn = document.getElementById("btn-tasar");
+  btn.disabled = true; btn.textContent = "Analizando...";
 
-    let url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
-            + `?page=${page}&pageSize=50&sort=${ord}`
-            + `&in=operationId:${oper}`
-            + `&in=listingStatusId:${vp}`
-            + `&in=eStageId:0,1,2,3,4`;
-    
-    if (tipo) url += `&in=listingTypeId:${tipo}`;
-    if (mon)  url += `&in=currencyId:${mon}`;
-    if (amb)  url += `&eq=totalRooms:${amb === '5' ? '5' : amb}${amb === '5' ? '&gte=totalRooms:5' : ''}`;
-    if (pmin) url += `&gte=price:${pmin}`;
-    if (pmax) url += `&lte=price:${pmax}`;
+  const tipo    = document.getElementById("tipo").value;
+  const partido = document.getElementById("partido").value;
+  const barrio  = document.getElementById("barrio").value;
+  const sup     = document.getElementById("sup_total").value;
+  const cub     = document.getElementById("sup_cub").value;
+  const amb     = document.getElementById("amb").value;
+  const ant     = document.getElementById("ant").value;
+  const piso    = document.getElementById("piso").value;
+  const estado  = document.getElementById("estado").value;
+  const extras  = document.getElementById("extras").value;
 
-    // ✅ FILTRO DE ZONA — formato correcto: locations=in::::ID@Label
-    if (zonaSeleccionada) {
-      const zId    = zonaSeleccionada.id || zonaSeleccionada.locationId || '';
-      const zLabel = zonaSeleccionada.label || zonaSeleccionada.name || '';
-      if (zId) {
-        url += `&locations=in::::${zId}@${encodeURIComponent(zLabel)}`;
-        console.log('🎯 Filtrando por zona:', zId, zLabel);
-      }
+  document.getElementById("rp").innerHTML =
+    '<div class="card"><div class="ct">Analizando mercado</div>' +
+    '<div style="padding:20px 0;display:flex;align-items:center;gap:10px;color:#888780;font-size:13px">' +
+    '<div class="ld"><span></span><span></span><span></span></div> Consultando ' + c.nombre + '...</div></div>';
+
+  const prompt =
+    "Sos un tasador inmobiliario experto en el mercado del Gran Buenos Aires (GBA), Argentina.\n" +
+    "Respondé SOLO con JSON válido, sin texto adicional, sin backticks.\n\n" +
+    "Propiedad:\n" +
+    "- Tipo: " + tipo + "\n- Partido: " + partido + "\n- Barrio: " + barrio +
+    "\n- Superficie total: " + sup + " m²\n- Superficie cubierta: " + cub + " m²" +
+    "\n- Ambientes: " + amb + "\n- Antigüedad: " + ant +
+    "\n- Piso: " + piso + "\n- Estado: " + estado +
+    "\n- Extras: " + (extras || "ninguno") + "\n\n" +
+    'Devolvé este JSON con valores reales del mercado GBA 2025-2026 en USD:\n' +
+    '{"valor_publicacion":82500,"valor_cierre":78400,"precio_m2":1269,"rango_min":76000,"rango_max":89000,' +
+    '"ajuste_cierre_pct":-4.9,"mercado_estado":"Activo","oferta_activa":47,"tiempo_mercado_dias":68,' +
+    '"comparables":[{"direccion":"Av. Rivadavia 3200","detalle":"63m2 2amb piso2","precio_usd":80000,"precio_m2":1270},' +
+    '{"direccion":"Brown 540","detalle":"68m2 2amb piso4","precio_usd":87000,"precio_m2":1279},' +
+    '{"direccion":"Colon 890","detalle":"60m2 2amb piso1","precio_usd":74000,"precio_m2":1233}],' +
+    '"zonas_m2":[{"zona":"' + barrio + '","precio":1269,"es_sujeto":true},' +
+    '{"zona":"barrio_vecino_1","precio":1180,"es_sujeto":false},' +
+    '{"zona":"barrio_vecino_2","precio":1070,"es_sujeto":false},' +
+    '{"zona":"barrio_vecino_3","precio":990,"es_sujeto":false}],' +
+    '"factores_positivos":["Factor 1","Factor 2"],"factores_negativos":["Factor 1"],' +
+    '"analisis":"2-3 oraciones fundamentando la tasacion."}\n\n' +
+    "Reglas: precios USD reales GBA; zonas_m2 con barrios reales de " + partido + "; calles reales de " + barrio + "; ajuste_cierre_pct entre -3 y -8; solo JSON puro.";
+
+  try {
+    const clean = await llamarAPI(prov, key, prompt);
+    let d;
+    try { d = JSON.parse(clean); } catch(e) {
+      document.getElementById("rp").innerHTML =
+        '<div class="card"><div class="err">Error al parsear respuesta. Intentá de nuevo.<br><small style="opacity:0.7">' + clean.slice(0,300) + '</small></div></div>';
+      btn.disabled = false; btn.textContent = "Calcular tasación ↗"; return;
     }
-
-    console.log('🔗 URL construida:', url);
-    return url;
+    renderResult(d, barrio, sup);
+  } catch(e) {
+    document.getElementById("rp").innerHTML =
+      '<div class="card"><div class="err">Error con ' + c.nombre + ': ' + e.message +
+      '<br><small style="opacity:0.7">Verificá tu clave y que tengas saldo/cuota disponible.</small></div></div>';
   }
+  btn.disabled = false; btn.textContent = "Recalcular ↗";
+}
 
-  // ── RENDER CARDS ──────────────────────────────────────────────
-  function renderCards(props) {
-    return props.map(p => {
-      const esReservada = p.listingStatus?.id === 2;
-      const precio = p.priceExposure ? `${Number(p.price).toLocaleString('es-AR')} ${p.currency?.value || ''}` : 'Precio a consultar';
-      const exp = p.expensesPrice ? `+ ${Number(p.expensesPrice).toLocaleString('es-AR')} ARS expensas` : '';
-      const feats = [];
-      if (p.totalRooms)          feats.push(`${p.totalRooms} amb.`);
-      if (p.bedrooms)            feats.push(`${p.bedrooms} dorm.`);
-      if (p.bathrooms)           feats.push(`${p.bathrooms} baño${p.bathrooms > 1 ? 's' : ''}`);
-      if (p.dimensionTotalBuilt) feats.push(`${p.dimensionTotalBuilt} m²`);
-      if (p.dimensionLand > 0)   feats.push(`${p.dimensionLand} m² terreno`);
-      const slug = `https://www.remax.com.ar/listings/${p.slug}`;
-      return `
-      <div class="prop-card">
-        <div class="prop-card-body">
-          <span class="badge ${esReservada ? 'badge-r' : 'badge-n'}">${esReservada ? 'Reservada' : 'En negociación'}</span>
-          <div class="prop-title">${escHtml(p.title)}</div>
-          <div class="prop-addr">${escHtml(p.displayAddress)} — ${escHtml(p.geoLabel)}</div>
-          <div class="prop-price">${precio}</div>
-          ${exp ? `<div class="prop-exp">${exp}</div>` : ''}
-          ${feats.length ? `<div class="prop-feats">${feats.map(f=>`<span class="feat">${f}</span>`).join('')}</div>` : ''}
-        </div>
-        <div class="prop-footer">
-          <a class="prop-link" href="${slug}" target="_blank" rel="noopener">Ver publicación →</a>
-        </div>
-      </div>`;
-    }).join('');
-  }
+function renderResult(d, barrio, sup) {
+  const maxZ = Math.max(...(d.zonas_m2||[]).map(z => z.precio));
+  const bars = (d.zonas_m2||[]).map(z => {
+    const pct = Math.round((z.precio/maxZ)*85+10);
+    return '<div class="br-row"><div class="bl">' + z.zona + '</div><div class="bt"><div class="bf ' +
+      (z.es_sujeto?"hl":"nm") + '" style="width:' + pct + '%"><span>USD ' + fmt(z.precio) + (z.es_sujeto?" ★":"") + '</span></div></div></div>';
+  }).join("");
 
-  // ── BUSCAR ────────────────────────────────────────────────────
-  async function buscar(page = 0) {
-    currentPage = page;
-    
-    if (!zonaSeleccionada) {
-      alert('⚠️ Por favor, seleccioná una zona del listado desplegable');
-      zonaInput.focus();
-      return;
-    }
+  const comps = (d.comparables||[]).map(c => {
+    const q = encodeURIComponent(c.direccion + " " + barrio);
+    const zonaLink = "https://www.zonaprop.com.ar/inmuebles/" + encodeURIComponent(c.direccion.toLowerCase().replace(/\s+/g,"-")) + ".html";
+    const zonaSearch = "https://www.zonaprop.com.ar/inmuebles-venta-" + encodeURIComponent(barrio.toLowerCase().replace(/\s+/g,"-")) + ".html";
+    const mlSearch = "https://inmuebles.mercadolibre.com.ar/venta/_DisplayType_G#D[A:" + q + "]";
+    return '<div class="ci">' +
+      '<div style="flex:1;min-width:0"><div class="ca">' + c.direccion + '</div><div class="cd">' + c.detalle + '</div></div>' +
+      '<div style="text-align:right;flex-shrink:0"><div class="cp">USD ' + fmt(c.precio_usd) + '</div><div class="cm">' + fmt(c.precio_m2) + '/m²</div></div>' +
+      '<div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">' +
+      '<a class="ci-link" href="' + zonaSearch + '" target="_blank" title="Buscar en Zonaprop">' +
+      '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Zonaprop</a>' +
+      '<a class="ci-link" href="' + mlSearch + '" target="_blank" title="Buscar en MercadoLibre">' +
+      '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>ML</a>' +
+      '</div></div>';
+  }).join("");
 
-    document.getElementById('outputCard').style.display = 'block';
-    document.getElementById('listadoOutput').innerHTML = `<div class="state-box"><div class="spinner"></div>Buscando propiedades en ${escHtml(zonaSeleccionada.label)}...</div>`;
-    document.getElementById('tasacionOutput').innerHTML = '';
-    window.scrollTo({ top: 300, behavior: 'smooth' });
+  const pos = (d.factores_positivos||[]).map(f =>
+    '<div style="font-size:12px;color:#1a1a18;padding:3px 0;display:flex;gap:6px"><span style="color:#3B6D11;font-weight:500">+</span>' + f + '</div>'
+  ).join("");
+  const neg = (d.factores_negativos||[]).map(f =>
+    '<div style="font-size:12px;color:#1a1a18;padding:3px 0;display:flex;gap:6px"><span style="color:#A32D2D;font-weight:500">-</span>' + f + '</div>'
+  ).join("");
 
-    try {
-      const url = buildURL(page);
-      const res  = await fetch(url);
-      
-      if (!res.ok) {
-        throw new Error(`Error HTTP ${res.status}`);
-      }
-      
-      const json = await res.json();
-      const props = json.data?.data || [];
-      const total = json.data?.totalItems || 0;
-      totalPagesGlobal = Math.min(json.data?.totalPages || 1, 50);
-      propiedadesCargadas = props;
+  const aj = (d.ajuste_cierre_pct >= 0 ? "+" : "") + d.ajuste_cierre_pct;
+  const m2c = Math.round(d.valor_cierre / (sup||1));
 
-      console.log('📊 Resultados:', { total, propiedades: props.length, paginas: totalPagesGlobal });
+  document.getElementById("rp").innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div class="card rb"><div class="rl">Valor de publicación</div><div class="rv">USD ' + fmt(d.valor_publicacion) + '</div>' +
+    '<div class="rr">Rango: USD ' + fmt(d.rango_min) + ' – ' + fmt(d.rango_max) + '</div><div class="rs">USD ' + fmt(d.precio_m2) + '/m²</div></div>' +
+    '<div class="card rb"><div class="rl">Estimado de cierre real</div><div class="rv" style="color:#185FA5">USD ' + fmt(d.valor_cierre) + '</div>' +
+    '<div class="rr">Ajuste cierre: ' + aj + '%</div><div class="rs">USD ' + fmt(m2c) + '/m² · <span class="tag-g">' + d.mercado_estado + '</span></div></div></div>' +
 
-      if (!props.length) {
-        document.getElementById('listadoOutput').innerHTML = `<div class="state-box">❌ No se encontraron propiedades con esos filtros en <strong>${escHtml(zonaSeleccionada.label)}</strong>.<br><br>Probá:<br>• Ampliar la zona de búsqueda<br>• Cambiar los filtros<br>• Buscar "Solo venta" o "Solo alquiler"</div>`;
-        return;
-      }
+    '<div class="card"><div class="ct">Precio m² por zona — comparación</div><div class="bc">' + bars + '</div></div>' +
 
-      const maxP = totalPagesGlobal;
-      document.getElementById('listadoOutput').innerHTML = `
-        <div class="results-meta">✅ <strong>${Number(total).toLocaleString('es-AR')}</strong> propiedades encontradas en <strong>${escHtml(zonaSeleccionada.label)}</strong> — página ${page+1} de ${maxP}</div>
-        <div class="cards-grid">${renderCards(props)}</div>
-        <div class="pagination">
-          <button class="btn-page" ${page===0?'disabled':''} onclick="buscar(${page-1})">← Anterior</button>
-          <span class="page-info">Pág. ${page+1} / ${maxP}</span>
-          <button class="btn-page" ${page>=maxP-1?'disabled':''} onclick="buscar(${page+1})">Siguiente →</button>
-        </div>`;
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div class="card"><div class="ct">Comparables activos</div><div class="cl">' + comps + '</div></div>' +
+    '<div class="card"><div class="ct">Métricas de mercado</div>' +
+    '<div class="mg"><div class="met"><div class="ml">Oferta activa</div><div class="mv">' + d.oferta_activa + '</div><div class="ms">propiedades similares</div></div>' +
+    '<div class="met"><div class="ml">Tiempo mercado</div><div class="mv">' + d.tiempo_mercado_dias + 'd</div><div class="ms">promedio zona</div></div></div>' +
+    '<div style="margin-top:10px">' + pos + neg + '</div></div></div>' +
 
-    } catch(e) {
-      console.error('❌ Error en búsqueda:', e);
-      document.getElementById('listadoOutput').innerHTML = `<div class="state-box">⚠️ Error al obtener datos: ${e.message}<br>Verificá tu conexión a internet.</div>`;
-    }
-  }
-
-  // ── TASACIÓN ─────────────────────────────────────────────────
-  async function tasar() {
-    const metros = parseFloat(document.getElementById('metrosTasar').value);
-    if (!metros || metros <= 0) { 
-      alert('⚠️ Ingresá los metros cuadrados a tasar'); 
-      return; 
-    }
-    
-    if (!zonaSeleccionada) {
-      alert('⚠️ Por favor, seleccioná una zona primero');
-      return;
-    }
-
-    const out = document.getElementById('tasacionOutput');
-    out.innerHTML = `<div class="state-box"><div class="spinner"></div>Analizando el mercado en ${escHtml(zonaSeleccionada.label)}...</div>`;
-
-    const tipo   = document.getElementById('tipo').value;
-    const moneda = document.getElementById('moneda').value || '1';
-
-    try {
-      let url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
-              + `?page=0&pageSize=100&sort=-createdAt`
-              + `&in=operationId:1`
-              + `&in=listingStatusId:2`
-              + `&in=eStageId:0,1,2,3,4`
-              + `&in=currencyId:${moneda}`;
-      
-      if (tipo) url += `&in=listingTypeId:${tipo}`;
-      
-      if (zonaSeleccionada) {
-        const zId    = zonaSeleccionada.id || zonaSeleccionada.locationId || '';
-        const zLabel = zonaSeleccionada.label || zonaSeleccionada.name || '';
-        if (zId) url += `&locations=in::::${zId}@${encodeURIComponent(zLabel)}`;
-      }
-
-      console.log('💰 URL tasación:', url);
-
-      const res  = await fetch(url);
-      const json = await res.json();
-      const props = (json.data?.data || []).filter(p =>
-        p.priceExposure && p.price > 0 && p.dimensionTotalBuilt > 0
-      );
-
-      console.log('💰 Propiedades para tasación:', props.length);
-
-      if (props.length < 3) {
-        out.innerHTML = `<div class="state-box">❌ No hay suficientes propiedades con datos de m² en <strong>${escHtml(zonaSeleccionada.label)}</strong> para calcular una tasación confiable.<br><br>Se necesitan al menos 3 propiedades. Encontradas: ${props.length}<br><br>Probá:<br>• Ampliar la zona<br>• No filtrar por tipo de propiedad</div>`;
-        return;
-      }
-
-      const pm2 = props.map(p => p.price / p.dimensionTotalBuilt).sort((a,b) => a-b);
-      const corte = Math.floor(pm2.length * 0.1);
-      const limpios = pm2.slice(corte, pm2.length - corte);
-      const promedio = limpios.reduce((a,b) => a+b, 0) / limpios.length;
-      const minM2 = limpios[0];
-      const maxM2 = limpios[limpios.length-1];
-      const simbolo = moneda === '2' ? 'ARS' : 'USD';
-      const valorEstimado   = Math.round(promedio * metros);
-      const valorConservador = Math.round(valorEstimado * 0.90);
-
-      out.innerHTML = `
-        <div class="metrics">
-          <div class="metric">
-            <div class="val">${Math.round(promedio).toLocaleString('es-AR')} ${simbolo}</div>
-            <div class="lbl">Precio promedio por m² en ${escHtml(zonaSeleccionada.label)}</div>
-          </div>
-          <div class="metric">
-            <div class="val">${Math.round(minM2).toLocaleString('es-AR')} – ${Math.round(maxM2).toLocaleString('es-AR')}</div>
-            <div class="lbl">Rango del mercado / m²</div>
-          </div>
-          <div class="metric">
-            <div class="val">${valorEstimado.toLocaleString('es-AR')} ${simbolo}</div>
-            <div class="lbl">Valor estimado (${metros} m²)</div>
-          </div>
-          <div class="metric highlight">
-            <div class="val">${valorConservador.toLocaleString('es-AR')} ${simbolo}</div>
-            <div class="lbl">Tasación conservadora (−10%)</div>
-          </div>
-        </div>
-
-        <div class="section-title">Referencias usadas (${props.length} propiedades en ${escHtml(zonaSeleccionada.label)})</div>
-        <div class="cards-grid">
-          ${props.slice(0,6).map(p => {
-            const pm2v = Math.round(p.price / p.dimensionTotalBuilt);
-            return `
-            <div class="prop-card">
-              <div class="prop-card-body">
-                <span class="badge badge-r">Referencia</span>
-                <div class="prop-title">${escHtml(p.displayAddress)} — ${escHtml(p.geoLabel)}</div>
-                <div class="prop-price">${p.price.toLocaleString('es-AR')} ${simbolo}</div>
-                <div class="prop-feats">
-                  ${p.dimensionTotalBuilt ? `<span class="feat">${p.dimensionTotalBuilt} m²</span>` : ''}
-                  ${p.totalRooms ? `<span class="feat">${p.totalRooms} amb.</span>` : ''}
-                  <span class="feat">${pm2v.toLocaleString('es-AR')} ${simbolo}/m²</span>
-                </div>
-              </div>
-            </div>`;
-          }).join('')}
-        </div>
-        <p class="disclaimer">Estimación basada en ${props.length} operaciones cerradas en ${escHtml(zonaSeleccionada.label)}. Los valores son orientativos.</p>
-      `;
-
-    } catch(e) {
-      console.error('❌ Error en tasación:', e);
-      out.innerHTML = `<div class="state-box">⚠️ Error al calcular tasación: ${e.message}</div>`;
-    }
-  }
-
-  document.getElementById('btnBuscar').addEventListener('click', () => buscar(0));
-  document.getElementById('btnTasar').addEventListener('click', tasar);
-
-  function escHtml(s) {
-    if (!s) return '';
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  
-  // Log inicial
-  console.log('🚀 Tasador Inteligente cargado');
-  console.log('💡 Abrí la consola del navegador (F12) para ver logs de depuración');
+    '<div class="card"><div class="ct">Análisis del mercado</div>' +
+    '<div style="font-size:13px;color:#1a1a18;line-height:1.7">' + d.analisis + '</div></div>';
+}
 </script>
 </body>
 </html>
