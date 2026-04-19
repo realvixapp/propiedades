@@ -79,6 +79,21 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ld span:nth-child(3){animation-delay:0.4s}
 @keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
 .src-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:1000;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:14px;padding:22px 24px;width:340px;max-width:92vw;box-shadow:0 8px 40px rgba(0,0,0,0.18);position:relative}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:#888780;cursor:pointer;line-height:1}
+.modal-close:hover{color:#1a1a18}
+.modal-dir{font-size:16px;font-weight:500;color:#1a1a18;margin-bottom:3px}
+.modal-det{font-size:12px;color:#888780;margin-bottom:16px}
+.modal-price{font-size:28px;font-weight:500;color:#1a1a18;margin-bottom:2px}
+.modal-m2{font-size:13px;color:#888780;margin-bottom:16px}
+.modal-row{display:flex;justify-content:space-between;padding:8px 0;border-top:0.5px solid #e0ddd6;font-size:13px}
+.modal-row span:first-child{color:#888780}
+.modal-row span:last-child{font-weight:500;color:#1a1a18}
+.modal-search-btns{display:flex;gap:8px;margin-top:16px}
+.modal-btn{flex:1;padding:8px;border-radius:8px;border:0.5px solid #b4b2a9;background:#f5f5f3;font-size:12px;color:#185FA5;cursor:pointer;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;transition:background 0.15s}
+.modal-btn:hover{background:#e6f1fb;border-color:#9BB8D8}
 .src-tag{font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
 @media(max-width:700px){.app{flex-direction:column}.sidebar{width:100%;border-right:none;border-bottom:0.5px solid #e0ddd6}.content{flex-direction:column}.lp{width:100%}}
 </style>
@@ -184,7 +199,29 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
-<script>
+<!-- Modal comparable -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">✕</button>
+    <div class="modal-dir" id="m-dir"></div>
+    <div class="modal-det" id="m-det"></div>
+    <div class="modal-price" id="m-price"></div>
+    <div class="modal-m2" id="m-m2"></div>
+    <div class="modal-row"><span>Precio/m²</span><span id="m-pm2"></span></div>
+    <div class="modal-row"><span>Tipo</span><span id="m-tipo"></span></div>
+    <div class="modal-row"><span>Zona</span><span id="m-zona"></span></div>
+    <div class="modal-search-btns">
+      <a class="modal-btn" id="m-link-zona" href="#" target="_blank">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Buscar en Zonaprop
+      </a>
+      <a class="modal-btn" id="m-link-ml" href="#" target="_blank">
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        MercadoLibre
+      </a>
+    </div>
+  </div>
+</div>
 const CFG = {
   groq:      { nombre:"Groq",           ph:"gsk_...",      pre:"gsk_",    badge:"Groq · Llama 3.3",       gratis:true,  url:"https://console.groq.com/keys",           hint:"Plan gratuito disponible en console.groq.com" },
   anthropic: { nombre:"Anthropic",      ph:"sk-ant-...",   pre:"sk-ant-", badge:"Anthropic · Claude",      gratis:false, url:"https://console.anthropic.com/keys",      hint:"~$0.003 por tasación" },
@@ -278,6 +315,26 @@ async function llamarAPI(prov, key, prompt) {
   return raw.replace(/```json|```/g, "").trim();
 }
 
+function openModal(comp, barrio, tipo) {
+  document.getElementById("m-dir").textContent = comp.direccion;
+  document.getElementById("m-det").textContent = comp.detalle;
+  document.getElementById("m-price").textContent = "USD " + fmt(comp.precio_usd);
+  document.getElementById("m-m2").textContent = "USD " + fmt(comp.precio_m2) + "/m²";
+  document.getElementById("m-pm2").textContent = "USD " + fmt(comp.precio_m2) + "/m²";
+  document.getElementById("m-tipo").textContent = tipo || "Departamento";
+  document.getElementById("m-zona").textContent = barrio;
+  const q = encodeURIComponent(comp.direccion + " " + barrio);
+  const barrioSlug = barrio.toLowerCase().replace(/\s+/g,"-").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  document.getElementById("m-link-zona").href = "https://www.zonaprop.com.ar/inmuebles-venta-" + barrioSlug + ".html";
+  document.getElementById("m-link-ml").href = "https://inmuebles.mercadolibre.com.ar/venta/_DisplayType_G#D[A:" + q + "]";
+  document.getElementById("modal-overlay").classList.add("open");
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById("modal-overlay"))
+    document.getElementById("modal-overlay").classList.remove("open");
+}
+
 async function tasar() {
   const prov = document.getElementById("proveedor").value;
   const key  = document.getElementById("apikey").value.trim();
@@ -334,7 +391,7 @@ async function tasar() {
         '<div class="card"><div class="err">Error al parsear respuesta. Intentá de nuevo.<br><small style="opacity:0.7">' + clean.slice(0,300) + '</small></div></div>';
       btn.disabled = false; btn.textContent = "Calcular tasación ↗"; return;
     }
-    renderResult(d, barrio, sup);
+    renderResult(d, barrio, sup, tipo);
   } catch(e) {
     document.getElementById("rp").innerHTML =
       '<div class="card"><div class="err">Error con ' + c.nombre + ': ' + e.message +
@@ -343,7 +400,7 @@ async function tasar() {
   btn.disabled = false; btn.textContent = "Recalcular ↗";
 }
 
-function renderResult(d, barrio, sup) {
+function renderResult(d, barrio, sup, tipo) {
   const maxZ = Math.max(...(d.zonas_m2||[]).map(z => z.precio));
   const bars = (d.zonas_m2||[]).map(z => {
     const pct = Math.round((z.precio/maxZ)*85+10);
@@ -351,19 +408,13 @@ function renderResult(d, barrio, sup) {
       (z.es_sujeto?"hl":"nm") + '" style="width:' + pct + '%"><span>USD ' + fmt(z.precio) + (z.es_sujeto?" ★":"") + '</span></div></div></div>';
   }).join("");
 
-  const comps = (d.comparables||[]).map(c => {
-    const q = encodeURIComponent(c.direccion + " " + barrio);
-    const zonaLink = "https://www.zonaprop.com.ar/inmuebles/" + encodeURIComponent(c.direccion.toLowerCase().replace(/\s+/g,"-")) + ".html";
-    const zonaSearch = "https://www.zonaprop.com.ar/inmuebles-venta-" + encodeURIComponent(barrio.toLowerCase().replace(/\s+/g,"-")) + ".html";
-    const mlSearch = "https://inmuebles.mercadolibre.com.ar/venta/_DisplayType_G#D[A:" + q + "]";
-    return '<div class="ci">' +
+  const comps = (d.comparables||[]).map((c,i) => {
+    const dataComp = encodeURIComponent(JSON.stringify(c));
+    return '<div class="ci" style="cursor:pointer" onclick=\'openModal(' + JSON.stringify(c) + ',' + JSON.stringify(barrio) + ',' + JSON.stringify(tipo) + ')\'>' +
       '<div style="flex:1;min-width:0"><div class="ca">' + c.direccion + '</div><div class="cd">' + c.detalle + '</div></div>' +
       '<div style="text-align:right;flex-shrink:0"><div class="cp">USD ' + fmt(c.precio_usd) + '</div><div class="cm">' + fmt(c.precio_m2) + '/m²</div></div>' +
-      '<div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">' +
-      '<a class="ci-link" href="' + zonaSearch + '" target="_blank" title="Buscar en Zonaprop">' +
-      '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Zonaprop</a>' +
-      '<a class="ci-link" href="' + mlSearch + '" target="_blank" title="Buscar en MercadoLibre">' +
-      '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>ML</a>' +
+      '<div style="flex-shrink:0;color:#185FA5">' +
+      '<svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
       '</div></div>';
   }).join("");
 
