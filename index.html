@@ -251,10 +251,23 @@
   // ── AUTOCOMPLETE ──────────────────────────────────────────────
   async function fetchZonas(q) {
     try {
-      const url = `https://api-ar.redremax.com/remaxweb-ar/api/geoReference/findAll?q=${encodeURIComponent(q)}&page=0&pageSize=8&sort=%2Bid`;
+      const url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
+                + `?page=0&pageSize=50&sort=-createdAt`
+                + `&in=operationId:1,2&in=eStageId:0,1,2,3,4`
+                + `&q=${encodeURIComponent(q)}`;
       const res = await fetch(url);
       const json = await res.json();
-      return json.data?.data || [];
+      const props = json.data?.data || [];
+      const seen = new Set();
+      const zonas = [];
+      props.forEach(p => {
+        if (p.geoLabel && !seen.has(p.geoLabel)) {
+          seen.add(p.geoLabel);
+          const partes = p.geoLabel.split(',').map(s => s.trim());
+          zonas.push({ label: partes[0], sub: partes.slice(1).join(', '), full: p.geoLabel });
+        }
+      });
+      return zonas.slice(0, 8);
     } catch(e) { return []; }
   }
 
@@ -263,9 +276,9 @@
     acIdx = -1;
     if (!items.length) { cerrarAC(); return; }
     acList.innerHTML = items.map((it, i) => {
-      const label = it.label || it.name || it.value || '';
-      const sub = it.parent || it.province || '';
-      return `<div class="ac-item" data-i="${i}" data-val="${escHtml(label)}">
+      const label = it.label || it.full || '';
+      const sub = it.sub || '';
+      return `<div class="ac-item" data-i="${i}" data-val="${escHtml(it.full || label)}">
         <strong>${escHtml(label)}</strong>
         ${sub ? `<small>${escHtml(sub)}</small>` : ''}
       </div>`;
@@ -404,8 +417,7 @@
           ${feats.length ? `<div class="prop-feats">${feats.map(f=>`<span class="feat">${f}</span>`).join('')}</div>` : ''}
         </div>
         <div class="prop-footer">
-          <div class="prop-agent">${escHtml(p.associate?.name || '')} · ${escHtml(p.associate?.officeName || '')}</div>
-          <a class="prop-link" href="${slug}" target="_blank" rel="noopener">Ver aviso →</a>
+          <a class="prop-link" href="${slug}" target="_blank" rel="noopener">Ver publicación →</a>
         </div>
       </div>`;
     }).join('');
