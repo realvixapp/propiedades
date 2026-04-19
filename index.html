@@ -12,12 +12,12 @@
     header h1 { font-size: 20px; font-weight: 600; }
     header span { font-size: 13px; opacity: 0.7; }
 
-    .container { max-width: 860px; margin: 0 auto; padding: 1.5rem 1rem; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
 
     .card { background: white; border-radius: 12px; border: 1px solid #e5e5e5; padding: 1.5rem; margin-bottom: 1.5rem; }
     .card h2 { font-size: 16px; font-weight: 600; margin-bottom: 1.25rem; color: #333; }
 
-    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 14px; }
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 12px; }
     label { display: block; font-size: 12px; color: #666; margin-bottom: 5px; font-weight: 500; }
 
     input, select {
@@ -28,19 +28,21 @@
     input:focus, select:focus { border-color: #1a1a2e; }
 
     .autocomplete-wrap { position: relative; }
-    .autocomplete-list {
+    .ac-list {
       position: absolute; top: 100%; left: 0; right: 0; background: white;
       border: 1px solid #ddd; border-top: none; border-radius: 0 0 8px 8px;
-      max-height: 220px; overflow-y: auto; z-index: 100; display: none;
+      max-height: 240px; overflow-y: auto; z-index: 200; display: none; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
     }
-    .autocomplete-list.open { display: block; }
+    .ac-list.open { display: block; }
     .ac-item {
-      padding: 9px 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid #f5f5f5;
-      display: flex; flex-direction: column; gap: 2px;
+      padding: 9px 12px; font-size: 13px; cursor: pointer;
+      border-bottom: 1px solid #f5f5f5; display: flex; flex-direction: column; gap: 1px;
     }
-    .ac-item:hover, .ac-item.selected { background: #f0f0f8; }
-    .ac-item strong { font-size: 13px; font-weight: 600; color: #1a1a1a; }
-    .ac-item span { font-size: 11px; color: #999; }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover, .ac-item.active { background: #f0f0f8; }
+    .ac-item strong { font-size: 13px; color: #1a1a1a; }
+    .ac-item small { font-size: 11px; color: #999; }
+    .ac-loading { padding: 10px 12px; font-size: 13px; color: #aaa; }
 
     .btn {
       width: 100%; padding: 12px; background: #1a1a2e; color: white;
@@ -48,37 +50,71 @@
       cursor: pointer; transition: background 0.15s;
     }
     .btn:hover { background: #2a2a4e; }
+    .btn:active { transform: scale(0.99); }
 
-    .resultado { display: none; }
-    .resultado.visible { display: block; }
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid #e5e5e5; margin-bottom: 1.5rem; }
+    .tab {
+      padding: 10px 20px; font-size: 14px; font-weight: 500; cursor: pointer;
+      border-bottom: 2px solid transparent; color: #888; transition: all 0.15s;
+    }
+    .tab.active { color: #1a1a2e; border-bottom-color: #1a1a2e; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
 
     .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
     .metric { background: #f8f8f6; border-radius: 10px; padding: 1rem; text-align: center; }
-    .metric .val { font-size: 22px; font-weight: 700; color: #1a1a2e; }
-    .metric .lbl { font-size: 12px; color: #888; margin-top: 4px; }
+    .metric .val { font-size: 20px; font-weight: 700; color: #1a1a2e; line-height: 1.2; }
+    .metric .lbl { font-size: 11px; color: #888; margin-top: 5px; }
     .metric.highlight { background: #1a1a2e; }
     .metric.highlight .val { color: white; }
     .metric.highlight .lbl { color: #aaa; }
 
-    .refs-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #333; }
-    .ref-list { display: flex; flex-direction: column; gap: 8px; }
-    .ref-item {
-      background: #f8f8f6; border-radius: 8px; padding: 10px 14px;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
-    }
-    .ref-item .ref-info { font-size: 13px; color: #444; flex: 1; min-width: 200px; }
-    .ref-item .ref-precio { font-size: 14px; font-weight: 700; color: #1a1a2e; white-space: nowrap; }
-    .ref-item .ref-m2 { font-size: 12px; color: #999; }
-    .badge-ref { display: inline-block; background: #e8f4e8; color: #2a6e2a; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 6px; }
+    .section-title { font-size: 14px; font-weight: 600; margin-bottom: 10px; color: #333; }
 
-    .state-box { text-align: center; padding: 2rem; color: #aaa; font-size: 14px; }
-    .spinner { width: 26px; height: 26px; border: 3px solid #eee; border-top-color: #1a1a2e; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 10px; }
+    .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+    .prop-card {
+      background: white; border-radius: 10px; border: 1px solid #e5e5e5;
+      overflow: hidden; transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .prop-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.07); transform: translateY(-1px); }
+    .prop-card-body { padding: 1rem; }
+    .badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      padding: 2px 9px; border-radius: 20px; margin-bottom: 7px;
+      text-transform: uppercase; letter-spacing: 0.4px;
+    }
+    .badge-r { background: #fff0f0; color: #cc0000; border: 1px solid #ffcccc; }
+    .badge-n { background: #fff8e0; color: #996600; border: 1px solid #ffe599; }
+    .prop-title { font-size: 13px; font-weight: 600; color: #1a1a1a; line-height: 1.4; margin-bottom: 5px; }
+    .prop-addr { font-size: 12px; color: #888; margin-bottom: 8px; }
+    .prop-price { font-size: 18px; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
+    .prop-exp { font-size: 12px; color: #aaa; margin-bottom: 7px; }
+    .prop-feats { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .feat { font-size: 11px; background: #f5f5f3; color: #555; padding: 3px 8px; border-radius: 20px; border: 1px solid #e5e5e5; }
+    .prop-footer { border-top: 1px solid #f0f0f0; padding: 8px 1rem; display: flex; justify-content: space-between; align-items: center; }
+    .prop-agent { font-size: 11px; color: #ccc; }
+    .prop-link { font-size: 12px; font-weight: 600; color: #1a1a2e; text-decoration: none; }
+    .prop-link:hover { text-decoration: underline; }
+
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 1.5rem; padding-bottom: 1rem; }
+    .btn-page { padding: 7px 16px; border: 1px solid #ddd; background: white; border-radius: 8px; font-size: 13px; cursor: pointer; }
+    .btn-page:hover { background: #f5f5f3; }
+    .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
+    .page-info { font-size: 13px; color: #666; }
+
+    .results-meta { font-size: 13px; color: #666; margin-bottom: 1rem; }
+    .results-meta strong { color: #1a1a1a; }
+
+    .state-box { text-align: center; padding: 2.5rem 1rem; color: #aaa; font-size: 14px; }
+    .spinner { width: 26px; height: 26px; border: 3px solid #eee; border-top-color: #1a1a2e; border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto 12px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .disclaimer { font-size: 11px; color: #bbb; margin-top: 1rem; text-align: center; }
+    .disclaimer { font-size: 11px; color: #ccc; margin-top: 1rem; text-align: center; }
 
     @media (max-width: 600px) {
       .metrics { grid-template-columns: 1fr 1fr; }
+      .cards-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -91,122 +127,211 @@
 
 <div class="container">
 
+  <!-- FILTROS -->
   <div class="card">
-    <h2>Datos de la propiedad a tasar</h2>
+    <h2>Búsqueda y filtros</h2>
     <div class="form-grid">
-      <div>
+      <div style="grid-column: span 2;">
         <label>Zona / Localidad</label>
         <div class="autocomplete-wrap">
-          <input type="text" id="zonaInput" placeholder="Ej: Castelar, Palermo..." autocomplete="off" />
-          <div class="autocomplete-list" id="acList"></div>
+          <input type="text" id="zonaInput" placeholder="Escribí la zona... ej: Castelar" autocomplete="off" />
+          <div class="ac-list" id="acList"></div>
         </div>
-        <input type="hidden" id="zonaValor" />
+      </div>
+      <div>
+        <label>Operación</label>
+        <select id="operacion">
+          <option value="1,2">Venta y alquiler</option>
+          <option value="1">Solo venta</option>
+          <option value="2">Solo alquiler</option>
+        </select>
       </div>
       <div>
         <label>Tipo de propiedad</label>
         <select id="tipo">
+          <option value="">Todos</option>
           <option value="2">Departamento</option>
           <option value="9">Casa</option>
           <option value="12">PH</option>
           <option value="18">Terreno / lote</option>
           <option value="17">Local</option>
           <option value="16">Oficina</option>
+          <option value="23">Quinta</option>
         </select>
       </div>
       <div>
-        <label>Superficie (m²)</label>
-        <input type="number" id="metros" placeholder="Ej: 65" min="1" />
-      </div>
-      <div>
-        <label>Moneda de referencia</label>
+        <label>Moneda</label>
         <select id="moneda">
+          <option value="">Cualquiera</option>
           <option value="1">USD</option>
           <option value="2">ARS</option>
         </select>
       </div>
+      <div>
+        <label>Ambientes</label>
+        <select id="ambientes">
+          <option value="">Cualquiera</option>
+          <option value="1">1 ambiente</option>
+          <option value="2">2 ambientes</option>
+          <option value="3">3 ambientes</option>
+          <option value="4">4 o más</option>
+        </select>
+      </div>
     </div>
-    <button class="btn" id="btnTasar">Calcular tasación</button>
+    <div class="form-grid">
+      <div>
+        <label>Precio mínimo</label>
+        <input type="number" id="precioMin" placeholder="Sin límite" />
+      </div>
+      <div>
+        <label>Precio máximo</label>
+        <input type="number" id="precioMax" placeholder="Sin límite" />
+      </div>
+      <div>
+        <label>Ordenar por</label>
+        <select id="orden">
+          <option value="-createdAt">Más recientes</option>
+          <option value="+price">Menor precio</option>
+          <option value="-price">Mayor precio</option>
+        </select>
+      </div>
+      <div>
+        <label>Ver propiedades</label>
+        <select id="estado">
+          <option value="2">Reservadas</option>
+          <option value="3">En negociación</option>
+          <option value="2,3">Reservadas + Negociación</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn" id="btnBuscar">Buscar propiedades</button>
   </div>
 
-  <div class="card resultado" id="resultado">
-    <div id="resultadoContenido"></div>
+  <!-- RESULTADO -->
+  <div class="card" id="outputCard" style="display:none;">
+    <div class="tabs">
+      <div class="tab active" data-tab="listado">Listado</div>
+      <div class="tab" data-tab="tasacion">Tasación</div>
+    </div>
+
+    <!-- TAB LISTADO -->
+    <div class="tab-content active" id="tab-listado">
+      <div id="listadoOutput"></div>
+    </div>
+
+    <!-- TAB TASACION -->
+    <div class="tab-content" id="tab-tasacion">
+      <div class="form-grid" style="margin-bottom:14px; max-width:500px;">
+        <div>
+          <label>Superficie a tasar (m²)</label>
+          <input type="number" id="metrosTasar" placeholder="Ej: 65" min="1" />
+        </div>
+        <div style="display:flex; align-items:flex-end;">
+          <button class="btn" id="btnTasar" style="height:40px; font-size:14px;">Calcular tasación</button>
+        </div>
+      </div>
+      <div id="tasacionOutput"></div>
+    </div>
   </div>
 
 </div>
 
 <script>
-  let zonaSeleccionada = null;
   let acTimeout = null;
   let acItems = [];
-  let acIndex = -1;
+  let acIdx = -1;
+  let zonaFinal = '';
+  let propiedadesCargadas = [];
+  let currentPage = 0;
+  let totalPagesGlobal = 1;
 
   const zonaInput = document.getElementById('zonaInput');
   const acList = document.getElementById('acList');
 
-  async function buscarZonas(q) {
-    if (q.length < 2) { cerrarAC(); return; }
+  // ── AUTOCOMPLETE ──────────────────────────────────────────────
+  async function fetchZonas(q) {
     try {
-      const url = `https://api-ar.redremax.com/remaxweb-ar/api/geoReference/findAll?q=${encodeURIComponent(q)}&page=0&pageSize=10`;
+      const url = `https://api-ar.redremax.com/remaxweb-ar/api/geoReference/findAll?q=${encodeURIComponent(q)}&page=0&pageSize=8&sort=%2Bid`;
       const res = await fetch(url);
       const json = await res.json();
-      const items = json.data?.data || [];
-      mostrarAC(items);
-    } catch(e) {
-      // fallback: usar texto libre
-      zonaSeleccionada = q;
-    }
+      return json.data?.data || [];
+    } catch(e) { return []; }
   }
 
-  function mostrarAC(items) {
+  function renderAC(items) {
     acItems = items;
-    acIndex = -1;
+    acIdx = -1;
     if (!items.length) { cerrarAC(); return; }
-    acList.innerHTML = items.map((it, i) => `
-      <div class="ac-item" data-i="${i}" data-label="${escHtml(it.label || it.name || '')}" data-value="${escHtml(it.label || it.name || '')}">
-        <strong>${escHtml(it.label || it.name || '')}</strong>
-        ${it.parent ? `<span>${escHtml(it.parent)}</span>` : ''}
-      </div>`).join('');
+    acList.innerHTML = items.map((it, i) => {
+      const label = it.label || it.name || it.value || '';
+      const sub = it.parent || it.province || '';
+      return `<div class="ac-item" data-i="${i}" data-val="${escHtml(label)}">
+        <strong>${escHtml(label)}</strong>
+        ${sub ? `<small>${escHtml(sub)}</small>` : ''}
+      </div>`;
+    }).join('');
     acList.classList.add('open');
     acList.querySelectorAll('.ac-item').forEach(el => {
       el.addEventListener('mousedown', e => {
         e.preventDefault();
-        seleccionar(el.dataset.label, el.dataset.value);
+        elegirZona(el.dataset.val);
       });
     });
   }
 
-  function seleccionar(label, value) {
-    zonaInput.value = label;
-    zonaSeleccionada = value;
+  function elegirZona(val) {
+    zonaInput.value = val;
+    zonaFinal = val;
     cerrarAC();
   }
 
   function cerrarAC() {
     acList.classList.remove('open');
     acItems = [];
-    acIndex = -1;
+    acIdx = -1;
   }
 
   zonaInput.addEventListener('input', () => {
-    zonaSeleccionada = null;
+    zonaFinal = '';
+    const q = zonaInput.value.trim();
     clearTimeout(acTimeout);
-    acTimeout = setTimeout(() => buscarZonas(zonaInput.value.trim()), 280);
+    if (q.length < 2) { cerrarAC(); return; }
+    acList.innerHTML = '<div class="ac-loading">Buscando zonas...</div>';
+    acList.classList.add('open');
+    acTimeout = setTimeout(async () => {
+      const items = await fetchZonas(q);
+      if (items.length) {
+        renderAC(items);
+      } else {
+        // si la API de zonas no devuelve nada, usar texto libre
+        zonaFinal = q;
+        cerrarAC();
+      }
+    }, 300);
   });
 
   zonaInput.addEventListener('keydown', e => {
     const items = acList.querySelectorAll('.ac-item');
+    if (!items.length) return;
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      acIndex = Math.min(acIndex + 1, items.length - 1);
-      items.forEach((el, i) => el.classList.toggle('selected', i === acIndex));
+      acIdx = Math.min(acIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.classList.toggle('active', i === acIdx));
+      if (items[acIdx]) zonaInput.value = items[acIdx].dataset.val;
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      acIndex = Math.max(acIndex - 1, 0);
-      items.forEach((el, i) => el.classList.toggle('selected', i === acIndex));
-    } else if (e.key === 'Enter' && acIndex >= 0) {
+      acIdx = Math.max(acIdx - 1, 0);
+      items.forEach((el, i) => el.classList.toggle('active', i === acIdx));
+      if (items[acIdx]) zonaInput.value = items[acIdx].dataset.val;
+    } else if (e.key === 'Enter' && acList.classList.contains('open')) {
       e.preventDefault();
-      const sel = items[acIndex];
-      if (sel) seleccionar(sel.dataset.label, sel.dataset.value);
+      if (acIdx >= 0 && items[acIdx]) {
+        elegirZona(items[acIdx].dataset.val);
+      } else {
+        zonaFinal = zonaInput.value.trim();
+        cerrarAC();
+        buscar(0);
+      }
     } else if (e.key === 'Escape') {
       cerrarAC();
     }
@@ -216,71 +341,168 @@
     if (!e.target.closest('.autocomplete-wrap')) cerrarAC();
   });
 
-  async function tasar() {
-    const zona = zonaSeleccionada || zonaInput.value.trim();
-    const tipo = document.getElementById('tipo').value;
-    const metros = parseFloat(document.getElementById('metros').value);
-    const moneda = document.getElementById('moneda').value;
+  // ── TABS ──────────────────────────────────────────────────────
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
 
-    if (!zona) { alert('Ingresá una zona'); return; }
-    if (!metros || metros <= 0) { alert('Ingresá los metros cuadrados'); return; }
+  // ── BUILD URL ─────────────────────────────────────────────────
+  function buildURL(page) {
+    const zona     = zonaFinal || zonaInput.value.trim();
+    const op       = document.getElementById('operacion').value;
+    const tipo     = document.getElementById('tipo').value;
+    const moneda   = document.getElementById('moneda').value;
+    const precioMin = document.getElementById('precioMin').value;
+    const precioMax = document.getElementById('precioMax').value;
+    const ambientes = document.getElementById('ambientes').value;
+    const orden    = document.getElementById('orden').value;
+    const estado   = document.getElementById('estado').value;
 
-    const resultado = document.getElementById('resultado');
-    const contenido = document.getElementById('resultadoContenido');
-    resultado.classList.add('visible');
-    contenido.innerHTML = `<div class="state-box"><div class="spinner"></div>Analizando el mercado...</div>`;
+    let url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
+            + `?page=${page}&pageSize=21&sort=${orden}`
+            + `&in=operationId:${op}`
+            + `&in=listingStatusId:${estado}`
+            + `&in=eStageId:0,1,2,3,4`;
+
+    if (tipo)      url += `&in=listingTypeId:${tipo}`;
+    if (moneda)    url += `&in=currencyId:${moneda}`;
+    if (precioMin) url += `&gte=price:${precioMin}`;
+    if (precioMax) url += `&lte=price:${precioMax}`;
+    if (ambientes === '4') url += `&gte=totalRooms:4`;
+    else if (ambientes)    url += `&in=totalRooms:${ambientes}`;
+    if (zona)      url += `&q=${encodeURIComponent(zona)}`;
+
+    return url;
+  }
+
+  // ── RENDER CARDS ──────────────────────────────────────────────
+  function renderCards(props) {
+    return props.map(p => {
+      const esReservada = p.listingStatus?.id === 2;
+      const precio = p.priceExposure ? `${Number(p.price).toLocaleString('es-AR')} ${p.currency?.value || ''}` : 'Precio a consultar';
+      const exp = p.expensesPrice ? `+ ${Number(p.expensesPrice).toLocaleString('es-AR')} ARS expensas` : '';
+      const feats = [];
+      if (p.totalRooms)          feats.push(`${p.totalRooms} amb.`);
+      if (p.bedrooms)            feats.push(`${p.bedrooms} dorm.`);
+      if (p.bathrooms)           feats.push(`${p.bathrooms} baño${p.bathrooms > 1 ? 's' : ''}`);
+      if (p.dimensionTotalBuilt) feats.push(`${p.dimensionTotalBuilt} m²`);
+      if (p.dimensionLand > 0)   feats.push(`${p.dimensionLand} m² terreno`);
+      const slug = `https://www.remax.com.ar/listings/${p.slug}`;
+      return `
+      <div class="prop-card">
+        <div class="prop-card-body">
+          <span class="badge ${esReservada ? 'badge-r' : 'badge-n'}">${esReservada ? 'Reservada' : 'En negociación'}</span>
+          <div class="prop-title">${escHtml(p.title)}</div>
+          <div class="prop-addr">${escHtml(p.displayAddress)} — ${escHtml(p.geoLabel)}</div>
+          <div class="prop-price">${precio}</div>
+          ${exp ? `<div class="prop-exp">${exp}</div>` : ''}
+          ${feats.length ? `<div class="prop-feats">${feats.map(f=>`<span class="feat">${f}</span>`).join('')}</div>` : ''}
+        </div>
+        <div class="prop-footer">
+          <div class="prop-agent">${escHtml(p.associate?.name || '')} · ${escHtml(p.associate?.officeName || '')}</div>
+          <a class="prop-link" href="${slug}" target="_blank" rel="noopener">Ver aviso →</a>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── BUSCAR ────────────────────────────────────────────────────
+  async function buscar(page = 0) {
+    currentPage = page;
+    if (!zonaFinal && !zonaInput.value.trim()) { alert('Ingresá una zona'); return; }
+    if (!zonaFinal) zonaFinal = zonaInput.value.trim();
+
+    document.getElementById('outputCard').style.display = 'block';
+    document.getElementById('listadoOutput').innerHTML = `<div class="state-box"><div class="spinner"></div>Buscando propiedades...</div>`;
+    document.getElementById('tasacionOutput').innerHTML = '';
+    window.scrollTo({ top: 300, behavior: 'smooth' });
 
     try {
-      const url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
-                + `?page=0&pageSize=100&sort=-createdAt`
-                + `&in=operationId:1`
-                + `&in=listingStatusId:2`
-                + `&in=eStageId:0,1,2,3,4`
-                + `&in=listingTypeId:${tipo}`
-                + `&in=currencyId:${moneda}`
-                + `&q=${encodeURIComponent(zona)}`;
-
-      const res = await fetch(url);
+      const res  = await fetch(buildURL(page));
       const json = await res.json();
-      let props = (json.data?.data || []).filter(p =>
-        p.priceExposure &&
-        p.price > 0 &&
-        p.dimensionTotalBuilt > 0
-      );
+      const props = json.data?.data || [];
+      const total = json.data?.totalItems || 0;
+      totalPagesGlobal = Math.min(json.data?.totalPages || 1, 50);
+      propiedadesCargadas = props;
 
-      if (props.length < 3) {
-        contenido.innerHTML = `<div class="state-box">No hay suficientes referencias en esa zona para calcular una tasación.<br>Probá con una zona más amplia o cambiá el tipo de propiedad.</div>`;
+      if (!props.length) {
+        document.getElementById('listadoOutput').innerHTML = `<div class="state-box">No se encontraron propiedades con esos filtros.<br>Probá ampliar la búsqueda.</div>`;
         return;
       }
 
-      const preciosPorM2 = props.map(p => p.price / p.dimensionTotalBuilt);
-      preciosPorM2.sort((a, b) => a - b);
+      const maxP = totalPagesGlobal;
+      document.getElementById('listadoOutput').innerHTML = `
+        <div class="results-meta"><strong>${Number(total).toLocaleString('es-AR')}</strong> propiedades encontradas — página ${page+1} de ${maxP}</div>
+        <div class="cards-grid">${renderCards(props)}</div>
+        <div class="pagination">
+          <button class="btn-page" ${page===0?'disabled':''} onclick="buscar(${page-1})">← Anterior</button>
+          <span class="page-info">Pág. ${page+1} / ${maxP}</span>
+          <button class="btn-page" ${page>=maxP-1?'disabled':''} onclick="buscar(${page+1})">Siguiente →</button>
+        </div>`;
 
-      // quitar outliers extremos (10% de cada lado)
-      const corte = Math.floor(preciosPorM2.length * 0.1);
-      const limpios = preciosPorM2.slice(corte, preciosPorM2.length - corte);
+    } catch(e) {
+      document.getElementById('listadoOutput').innerHTML = `<div class="state-box">Error al obtener datos. Verificá tu conexión.</div>`;
+    }
+  }
 
-      const promedio = limpios.reduce((a, b) => a + b, 0) / limpios.length;
-      const min = limpios[0];
-      const max = limpios[limpios.length - 1];
+  // ── TASACIÓN ─────────────────────────────────────────────────
+  async function tasar() {
+    const metros = parseFloat(document.getElementById('metrosTasar').value);
+    if (!metros || metros <= 0) { alert('Ingresá los metros cuadrados a tasar'); return; }
 
-      const valorEstimado = Math.round(promedio * metros);
+    const out = document.getElementById('tasacionOutput');
+    out.innerHTML = `<div class="state-box"><div class="spinner"></div>Analizando el mercado...</div>`;
+
+    const zona   = zonaFinal || zonaInput.value.trim();
+    const tipo   = document.getElementById('tipo').value;
+    const moneda = document.getElementById('moneda').value || '1';
+
+    try {
+      // traer hasta 100 propiedades para mejor muestra
+      let url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
+              + `?page=0&pageSize=100&sort=-createdAt`
+              + `&in=operationId:1`
+              + `&in=listingStatusId:2`
+              + `&in=eStageId:0,1,2,3,4`
+              + `&in=currencyId:${moneda}`;
+      if (tipo) url += `&in=listingTypeId:${tipo}`;
+      if (zona) url += `&q=${encodeURIComponent(zona)}`;
+
+      const res  = await fetch(url);
+      const json = await res.json();
+      const props = (json.data?.data || []).filter(p =>
+        p.priceExposure && p.price > 0 && p.dimensionTotalBuilt > 0
+      );
+
+      if (props.length < 3) {
+        out.innerHTML = `<div class="state-box">No hay suficientes propiedades con datos de m² en esa zona para calcular una tasación.<br>Probá con una zona más amplia o sin filtrar por tipo.</div>`;
+        return;
+      }
+
+      const pm2 = props.map(p => p.price / p.dimensionTotalBuilt).sort((a,b) => a-b);
+      const corte = Math.floor(pm2.length * 0.1);
+      const limpios = pm2.slice(corte, pm2.length - corte);
+      const promedio = limpios.reduce((a,b) => a+b, 0) / limpios.length;
+      const minM2 = limpios[0];
+      const maxM2 = limpios[limpios.length-1];
+      const simbolo = moneda === '2' ? 'ARS' : 'USD';
+      const valorEstimado   = Math.round(promedio * metros);
       const valorConservador = Math.round(valorEstimado * 0.90);
-      const simbolo = moneda === '1' ? 'USD' : 'ARS';
 
-      const refsMostrar = props.slice(0, 6);
-
-      contenido.innerHTML = `
-        <h2 style="margin-bottom:1.25rem;">Resultado de tasación</h2>
-
+      out.innerHTML = `
         <div class="metrics">
           <div class="metric">
             <div class="val">${Math.round(promedio).toLocaleString('es-AR')} ${simbolo}</div>
             <div class="lbl">Precio promedio por m²</div>
           </div>
           <div class="metric">
-            <div class="val">${Math.round(min).toLocaleString('es-AR')} – ${Math.round(max).toLocaleString('es-AR')}</div>
-            <div class="lbl">Rango del mercado por m²</div>
+            <div class="val">${Math.round(minM2).toLocaleString('es-AR')} – ${Math.round(maxM2).toLocaleString('es-AR')}</div>
+            <div class="lbl">Rango del mercado / m²</div>
           </div>
           <div class="metric">
             <div class="val">${valorEstimado.toLocaleString('es-AR')} ${simbolo}</div>
@@ -292,41 +514,40 @@
           </div>
         </div>
 
-        <div class="refs-title">Propiedades de referencia (${props.length} comparables encontradas)</div>
-        <div class="ref-list">
-          ${refsMostrar.map(p => {
-            const pm2 = Math.round(p.price / p.dimensionTotalBuilt);
+        <div class="section-title">Referencias usadas (${props.length} propiedades)</div>
+        <div class="cards-grid">
+          ${props.slice(0,6).map(p => {
+            const pm2v = Math.round(p.price / p.dimensionTotalBuilt);
             return `
-            <div class="ref-item">
-              <div class="ref-info">
-                ${escHtml(p.displayAddress)} — ${escHtml(p.geoLabel)}
-                <span class="badge-ref">Referencia</span>
-                <div class="ref-m2">${p.dimensionTotalBuilt} m² · ${p.totalRooms ? p.totalRooms + ' amb.' : ''}</div>
-              </div>
-              <div>
-                <div class="ref-precio">${p.price.toLocaleString('es-AR')} ${simbolo}</div>
-                <div class="ref-m2" style="text-align:right">${pm2.toLocaleString('es-AR')} ${simbolo}/m²</div>
+            <div class="prop-card">
+              <div class="prop-card-body">
+                <span class="badge badge-r">Referencia</span>
+                <div class="prop-title">${escHtml(p.displayAddress)} — ${escHtml(p.geoLabel)}</div>
+                <div class="prop-price">${p.price.toLocaleString('es-AR')} ${simbolo}</div>
+                <div class="prop-feats">
+                  ${p.dimensionTotalBuilt ? `<span class="feat">${p.dimensionTotalBuilt} m²</span>` : ''}
+                  ${p.totalRooms ? `<span class="feat">${p.totalRooms} amb.</span>` : ''}
+                  <span class="feat">${pm2v.toLocaleString('es-AR')} ${simbolo}/m²</span>
+                </div>
               </div>
             </div>`;
           }).join('')}
         </div>
-
-        <p class="disclaimer">Estimación basada en ${props.length} operaciones de referencia en la zona. Los valores son orientativos.</p>
+        <p class="disclaimer">Estimación basada en ${props.length} operaciones cerradas en la zona. Los valores son orientativos.</p>
       `;
 
     } catch(e) {
-      contenido.innerHTML = `<div class="state-box">Error al obtener datos. Verificá tu conexión e intentá de nuevo.</div>`;
+      out.innerHTML = `<div class="state-box">Error al calcular tasación.</div>`;
     }
   }
 
+  document.getElementById('btnBuscar').addEventListener('click', () => buscar(0));
   document.getElementById('btnTasar').addEventListener('click', tasar);
-  zonaInput.addEventListener('keydown', e => { if (e.key === 'Enter' && !acList.classList.contains('open')) tasar(); });
 
-  function escHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  function escHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 </script>
-
 </body>
 </html>
