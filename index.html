@@ -1,606 +1,441 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TasadorBA2 — Gran Buenos Aires</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px}
-.app{display:flex;width:100%;max-width:1100px;min-height:620px;border:0.5px solid #e0ddd6;border-radius:12px;overflow:hidden;background:#f5f5f3;box-shadow:0 2px 24px rgba(0,0,0,0.07)}
-.sidebar{width:210px;background:#fff;border-right:0.5px solid #e0ddd6;display:flex;flex-direction:column;flex-shrink:0}
-.logo{padding:16px;border-bottom:0.5px solid #e0ddd6}
-.logo-t{font-size:15px;font-weight:500;color:#1a1a18}
-.logo-s{font-size:11px;color:#888780;margin-top:2px}
-.nav{padding:10px 8px}
-.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:13px;color:#888780;margin-bottom:2px;transition:background 0.15s;text-decoration:none;cursor:pointer;border:none;background:none;width:100%;text-align:left}
-.ni.active{background:#e6f1fb;color:#185FA5;font-weight:500}
-.ni:hover:not(.active){background:#f5f5f3}
-.ml-connect{margin:10px 8px;padding:9px 10px;background:#FFE600;color:#1a1a18;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:opacity 0.15s;width:calc(100% - 16px)}
-.ml-connect:hover{opacity:0.85}
-.ml-connected{margin:10px 8px;padding:9px 10px;background:#eaf3de;border:0.5px solid #3B6D11;border-radius:8px;font-size:11px;color:#3B6D11;display:flex;align-items:center;gap:6px}
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
-.topbar{padding:12px 20px;background:#fff;border-bottom:0.5px solid #e0ddd6;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.topbar-t{font-size:14px;font-weight:500;color:#1a1a18}
-.badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#eaf3de;color:#3B6D11}
-.badge.ml{background:#FFE600;color:#1a1a18;font-weight:600}
-.content{flex:1;overflow-y:auto;padding:18px;display:flex;gap:14px}
-.lp{width:275px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
-.rp{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
-.card{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:14px 16px}
-.ct{font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px}
-.field{margin-bottom:9px}
-.field label{font-size:12px;color:#888780;display:block;margin-bottom:3px}
-.field input,.field select{width:100%;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;font-family:inherit;outline:none;transition:border-color 0.15s}
-.field input:focus,.field select:focus{border-color:#185FA5}
-.fr{display:flex;gap:7px}
-.fr .field{flex:1}
-.btn{width:100%;padding:9px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:opacity 0.15s}
-.btn:hover{opacity:0.88}
-.btn:disabled{opacity:0.5;cursor:not-allowed}
-.apisec{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:7px}
-.apisec label{font-size:12px;color:#888780}
-.apisec select,.apisec input{width:100%;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;font-family:inherit;outline:none}
-.chip{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
-.chip.free{border-color:#3B6D11;color:#3B6D11;background:#eaf3de}
-.ok{font-size:11px;color:#3B6D11}
-.warn{font-size:11px;color:#BA7517}
-.hint{font-size:11px;color:#888780;line-height:1.5}
-.rb{text-align:center;padding:18px 14px}
-.rl{font-size:12px;color:#888780;margin-bottom:5px}
-.rv{font-size:30px;font-weight:500;color:#1a1a18}
-.rr{font-size:12px;color:#888780;margin-top:4px}
-.rs{font-size:13px;color:#888780;margin-top:7px}
-.mg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
-.met{background:#f5f5f3;border-radius:8px;padding:9px 11px}
-.mv{font-size:15px;font-weight:500;color:#1a1a18}
-.ms{font-size:11px;color:#888780;margin-top:1px}
-.cl{display:flex;flex-direction:column;gap:5px}
-.ci{display:flex;align-items:center;padding:8px 10px;background:#f5f5f3;border-radius:8px;gap:8px;cursor:pointer;transition:background 0.15s;border:0.5px solid transparent}
-.ci:hover{background:#e6f1fb;border-color:#9BB8D8}
-.ca{font-size:12px;color:#1a1a18;font-weight:500}
-.cd{font-size:11px;color:#888780;margin-top:1px}
-.cp{font-size:13px;font-weight:500;color:#1a1a18;text-align:right}
-.cm{font-size:11px;color:#888780}
-.ci-days{font-size:10px;padding:2px 6px;border-radius:10px;background:#fff;border:0.5px solid #e0ddd6;color:#888780;white-space:nowrap}
-.ci-days.fresh{border-color:#3B6D11;color:#3B6D11;background:#eaf3de}
-.ci-days.old{border-color:#BA7517;color:#BA7517;background:#FFF3E0}
-.bc{display:flex;flex-direction:column;gap:7px}
-.br-row{display:flex;align-items:center;gap:7px}
-.bl{font-size:11px;color:#888780;width:110px;text-align:right;flex-shrink:0}
-.bt{flex:1;height:17px;background:#f5f5f3;border-radius:3px;overflow:hidden}
-.bf{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:5px}
-.bf span{font-size:10px;font-weight:500;color:#fff;white-space:nowrap}
-.bf.hl{background:#185FA5}
-.bf.nm{background:#9FB8D8}
-.tag-g{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;background:#eaf3de;color:#3B6D11}
-.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:10px;background:#f5f5f3;border-radius:12px;text-align:center;border:0.5px dashed #b4b2a9}
-.ph-t{font-size:13px;font-weight:500;color:#1a1a18}
-.ph-s{font-size:12px;color:#888780;max-width:260px;line-height:1.6}
-.err{font-size:12px;color:#A32D2D;background:#FCEBEB;padding:9px 11px;border-radius:8px;line-height:1.5}
-.ld{display:inline-flex;gap:4px;align-items:center}
-.ld span{width:6px;height:6px;border-radius:50%;background:#888780;animation:b 1.2s infinite}
-.ld span:nth-child(2){animation-delay:0.2s}
-.ld span:nth-child(3){animation-delay:0.4s}
-@keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
-.src-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
-.src-tag{font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
-.src-tag.real{border-color:#3B6D11;color:#3B6D11;background:#eaf3de}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);z-index:1000;align-items:center;justify-content:center}
-.modal-overlay.open{display:flex}
-.modal{background:#fff;border-radius:14px;width:420px;max-width:94vw;box-shadow:0 8px 40px rgba(0,0,0,0.18);position:relative;overflow:hidden}
-.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:18px;color:#888780;cursor:pointer;z-index:2}
-.modal-close:hover{color:#1a1a18}
-.modal-img{width:100%;height:160px;object-fit:cover;background:#f5f5f3}
-.modal-img-ph{width:100%;height:100px;background:#f5f5f3;display:flex;align-items:center;justify-content:center;color:#b4b2a9;font-size:12px}
-.modal-body{padding:18px 20px}
-.modal-dir{font-size:16px;font-weight:500;color:#1a1a18;margin-bottom:3px}
-.modal-det{font-size:12px;color:#888780;margin-bottom:14px}
-.modal-price{font-size:28px;font-weight:500;color:#1a1a18;margin-bottom:2px}
-.modal-m2{font-size:13px;color:#888780;margin-bottom:14px}
-.modal-row{display:flex;justify-content:space-between;padding:7px 0;border-top:0.5px solid #e0ddd6;font-size:13px}
-.modal-row span:first-child{color:#888780}
-.modal-row span:last-child{font-weight:500;color:#1a1a18}
-.modal-search-btns{display:flex;gap:8px;margin-top:14px}
-.modal-btn{flex:1;padding:8px;border-radius:8px;border:0.5px solid #b4b2a9;background:#f5f5f3;font-size:12px;color:#185FA5;cursor:pointer;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;gap:5px;transition:background 0.15s}
-.modal-btn:hover{background:#e6f1fb;border-color:#9BB8D8}
-.modal-btn.ml-btn{background:#FFE600;border-color:#e6d600;color:#1a1a18;font-weight:600}
-.modal-btn.ml-btn:hover{background:#f5d800}
-@media(max-width:700px){.app{flex-direction:column}.sidebar{width:100%;border-right:none;border-bottom:0.5px solid #e0ddd6}.content{flex-direction:column}.lp{width:100%}}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Propiedades Reservadas — REMAX Argentina</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f3;
+      color: #1a1a1a;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #cc0000;
+      color: white;
+      padding: 1.25rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header h1 { font-size: 20px; font-weight: 600; }
+    header span { font-size: 13px; opacity: 0.85; }
+
+    .container { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+    .filters-box {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e5e5;
+      padding: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .filters-box h2 { font-size: 15px; font-weight: 600; margin-bottom: 1rem; color: #333; }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    label { display: block; font-size: 12px; color: #666; margin-bottom: 4px; font-weight: 500; }
+
+    input, select {
+      width: 100%;
+      padding: 9px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      background: white;
+      color: #1a1a1a;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input:focus, select:focus { border-color: #cc0000; }
+
+    .btn-buscar {
+      width: 100%;
+      padding: 11px;
+      background: #cc0000;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.15s;
+    }
+    .btn-buscar:hover { background: #aa0000; }
+    .btn-buscar:active { background: #990000; transform: scale(0.99); }
+
+    .results-meta {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .results-meta strong { color: #1a1a1a; }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e5e5;
+      overflow: hidden;
+      transition: box-shadow 0.15s, transform 0.15s;
+    }
+    .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+    .card-body { padding: 1rem; }
+
+    .badge-reservada {
+      display: inline-block;
+      background: #fff0f0;
+      color: #cc0000;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid #ffcccc;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.45;
+      margin-bottom: 5px;
+    }
+
+    .card-addr {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: flex-start;
+      gap: 4px;
+    }
+    .card-addr svg { flex-shrink: 0; margin-top: 1px; }
+
+    .card-price {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 2px;
+    }
+    .card-expenses {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 8px;
+    }
+
+    .card-features {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .feature-pill {
+      font-size: 11px;
+      background: #f5f5f3;
+      color: #555;
+      padding: 3px 9px;
+      border-radius: 20px;
+      border: 1px solid #e5e5e5;
+    }
+
+    .card-footer {
+      border-top: 1px solid #f0f0f0;
+      padding: 10px 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-agent { font-size: 11px; color: #aaa; }
+    .card-link {
+      font-size: 12px;
+      font-weight: 600;
+      color: #cc0000;
+      text-decoration: none;
+    }
+    .card-link:hover { text-decoration: underline; }
+
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 2rem;
+      padding-bottom: 2rem;
+    }
+    .btn-page {
+      padding: 8px 18px;
+      border: 1px solid #ddd;
+      background: white;
+      border-radius: 8px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .btn-page:hover { background: #f5f5f3; }
+    .btn-page:disabled { opacity: 0.4; cursor: not-allowed; }
+    .page-info { font-size: 13px; color: #666; }
+
+    .state-box {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #aaa;
+      font-size: 14px;
+    }
+    .state-box .icon { font-size: 32px; margin-bottom: 10px; }
+
+    .spinner {
+      width: 28px; height: 28px;
+      border: 3px solid #f0f0f0;
+      border-top-color: #cc0000;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 600px) {
+      header { padding: 1rem; }
+      .cards { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-<div class="app">
-  <div class="sidebar">
-    <div class="logo">
-      <div class="logo-t">TasadorBA</div>
-      <div class="logo-s">Gran Buenos Aires</div>
-    </div>
-    <div class="nav">
-      <button class="ni active">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor"/></svg>
-        Tasador
-      </button>
-      <a class="ni" href="https://zonaprop.com.ar" target="_blank">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-        Zonaprop
-      </a>
-      <a class="ni" href="https://properati.com.ar" target="_blank">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2C5.24 2 3 4.24 3 7c0 3.5 5 9 5 9s5-5.5 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="7" r="1.5" fill="currentColor"/></svg>
-        Properati
-      </a>
-      <a class="ni" href="https://inmuebles.mercadolibre.com.ar" target="_blank">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="10" width="2" height="4" rx="1" fill="currentColor"/><rect x="6" y="6" width="2" height="8" rx="1" fill="currentColor"/><rect x="10" y="3" width="2" height="11" rx="1" fill="currentColor"/></svg>
-        MercadoLibre
-      </a>
-    </div>
-    <div id="ml-auth-section" style="margin-top:auto;padding-bottom:12px">
-      <button class="ml-connect" id="btn-ml-login" onclick="loginML()">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M5 8l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Conectar MercadoLibre
-      </button>
-    </div>
+
+<header>
+  <div>
+    <h1>Propiedades Reservadas</h1>
+    <span>REMAX Argentina — datos en tiempo real</span>
   </div>
+</header>
 
-  <div class="main">
-    <div class="topbar">
-      <div class="topbar-t">Tasación de propiedad</div>
-      <span class="badge" id="badge-prov">IA · Groq Llama 3.3</span>
-    </div>
-    <div class="content">
-      <div class="lp">
-        <div class="apisec">
-          <label>Proveedor de IA</label>
-          <select id="proveedor" onchange="onProv()">
-            <option value="groq">Groq — Llama 3.3 70b (gratis)</option>
-            <option value="anthropic">Anthropic — Claude Sonnet</option>
-            <option value="openai">OpenAI — GPT-4o mini</option>
-            <option value="gemini">Google — Gemini 2.0 Flash</option>
-          </select>
-          <label id="lbl-key">Clave API</label>
-          <input type="password" id="apikey" placeholder="gsk_..." oninput="checkKey()"/>
-          <div id="key-status"></div>
-          <div id="key-hint"></div>
-        </div>
+<div class="container">
 
-        <div class="card">
-          <div class="ct">Datos de la propiedad</div>
-          <div class="field"><label>Tipo</label>
-            <select id="tipo"><option>Departamento</option><option>Casa</option><option>PH</option><option>Local comercial</option></select>
-          </div>
-          <div class="field"><label>Partido / Zona</label>
-            <select id="partido" onchange="updateBarrios()">
-              <option>Morón</option><option>La Matanza</option><option>San Isidro</option>
-              <option>Tigre</option><option>Quilmes</option><option>Lanús</option>
-              <option>Lomas de Zamora</option><option>Vicente López</option><option>Avellaneda</option>
-              <option>San Martín</option><option>Tres de Febrero</option><option>Merlo</option>
-            </select>
-          </div>
-          <div class="field"><label>Barrio</label><select id="barrio"></select></div>
-          <div class="fr">
-            <div class="field"><label>Sup. total (m²)</label><input type="number" id="sup_total" value="65" min="10"/></div>
-            <div class="field"><label>Sup. cubierta</label><input type="number" id="sup_cub" value="58" min="10"/></div>
-          </div>
-          <div class="fr">
-            <div class="field"><label>Ambientes</label><select id="amb"><option>1</option><option selected>2</option><option>3</option><option>4+</option></select></div>
-            <div class="field"><label>Antigüedad</label><select id="ant"><option>A estrenar</option><option>1-5 años</option><option>5-15 años</option><option selected>15-25 años</option><option>+25 años</option></select></div>
-          </div>
-          <div class="fr">
-            <div class="field"><label>Piso</label><input type="number" id="piso" value="3" min="0"/></div>
-            <div class="field"><label>Estado</label><select id="estado"><option>Excelente</option><option selected>Bueno</option><option>Regular</option><option>A reciclar</option></select></div>
-          </div>
-          <div class="field"><label>Extras (opcional)</label>
-            <input type="text" id="extras" placeholder="cochera, amenities, piscina..."/>
-          </div>
-          <button class="btn" id="btn-tasar" onclick="tasar()">Calcular tasación ↗</button>
-        </div>
+  <div class="filters-box">
+    <h2>Filtros de búsqueda</h2>
 
-        <div class="card">
-          <div class="ct">Fuentes</div>
-          <div class="src-row">
-            <span class="src-tag real">● MercadoLibre</span>
-            <span class="src-tag">IA análisis</span>
-          </div>
-          <div style="font-size:11px;color:#888780;margin-top:8px;line-height:1.5" id="src-status">
-            Conectá MercadoLibre para comparables reales.
-          </div>
-        </div>
+    <div class="filters-grid">
+      <div>
+        <label for="zona">Zona / ciudad / barrio</label>
+        <input type="text" id="zona" placeholder="Ej: Morón, Palermo..." />
       </div>
-
-      <div class="rp" id="rp">
-        <div class="ph">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="16" width="28" height="16" rx="2" stroke="#b4b2a9" stroke-width="1.5"/><path d="M12 16V10a6 6 0 0 1 12 0v6" stroke="#b4b2a9" stroke-width="1.5"/><circle cx="18" cy="24" r="2" fill="#b4b2a9"/></svg>
-          <div class="ph-t">Conectá MercadoLibre y calculá</div>
-          <div class="ph-s">Hacé click en "Conectar MercadoLibre", luego completá los datos y la app trae comparables reales del mercado.</div>
-        </div>
+      <div>
+        <label for="operacion">Operación</label>
+        <select id="operacion">
+          <option value="1,2">Venta y alquiler</option>
+          <option value="1">Solo venta</option>
+          <option value="2">Solo alquiler</option>
+        </select>
+      </div>
+      <div>
+        <label for="tipo">Tipo de propiedad</label>
+        <select id="tipo">
+          <option value="">Todos</option>
+          <option value="2">Departamento</option>
+          <option value="9">Casa</option>
+          <option value="18">Terreno / lote</option>
+          <option value="17">Local</option>
+          <option value="16">Oficina</option>
+          <option value="12">PH</option>
+          <option value="23">Quinta</option>
+          <option value="22">Galpón</option>
+        </select>
+      </div>
+      <div>
+        <label for="moneda">Moneda</label>
+        <select id="moneda">
+          <option value="">Cualquiera</option>
+          <option value="1">USD</option>
+          <option value="2">ARS</option>
+        </select>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOverlay(event)">
-  <div class="modal">
-    <button class="modal-close" onclick="document.getElementById('modal-overlay').classList.remove('open')">✕</button>
-    <div id="m-img-wrap"></div>
-    <div class="modal-body">
-      <div class="modal-dir" id="m-dir"></div>
-      <div class="modal-det" id="m-det"></div>
-      <div class="modal-price" id="m-price"></div>
-      <div class="modal-m2" id="m-m2"></div>
-      <div class="modal-row"><span>Precio/m²</span><span id="m-pm2"></span></div>
-      <div class="modal-row"><span>Ambientes</span><span id="m-amb"></span></div>
-      <div class="modal-row"><span>Superficie</span><span id="m-sup"></span></div>
-      <div class="modal-row"><span>Publicado hace</span><span id="m-dias"></span></div>
-      <div class="modal-search-btns">
-        <a class="modal-btn ml-btn" id="m-link-ml" href="#" target="_blank">Ver en MercadoLibre ↗</a>
-        <a class="modal-btn" id="m-link-zona" href="#" target="_blank">Buscar en Zonaprop</a>
+    <div class="filters-grid">
+      <div>
+        <label for="precioMin">Precio mínimo</label>
+        <input type="number" id="precioMin" placeholder="0" />
+      </div>
+      <div>
+        <label for="precioMax">Precio máximo</label>
+        <input type="number" id="precioMax" placeholder="Sin límite" />
+      </div>
+      <div>
+        <label for="ambientes">Ambientes</label>
+        <select id="ambientes">
+          <option value="">Cualquiera</option>
+          <option value="1">1 ambiente</option>
+          <option value="2">2 ambientes</option>
+          <option value="3">3 ambientes</option>
+          <option value="4">4 o más</option>
+        </select>
+      </div>
+      <div>
+        <label for="orden">Ordenar por</label>
+        <select id="orden">
+          <option value="-createdAt">Más recientes</option>
+          <option value="+price">Menor precio</option>
+          <option value="-price">Mayor precio</option>
+          <option value="+id">ID ascendente</option>
+        </select>
       </div>
     </div>
+
+    <button class="btn-buscar" id="btnBuscar">Buscar propiedades reservadas</button>
   </div>
+
+  <div id="output"></div>
+
 </div>
 
 <script>
-const ML_CLIENT_ID = "1187774012169537";
-const ML_REDIRECT  = "https://realvixapp.github.io/propiedades/";
-let mlToken = null;
+  let currentPage = 0;
+  let totalPages = 1;
 
-function loginML() {
-  const url = "https://auth.mercadolibre.com.ar/authorization" +
-    "?response_type=token" +
-    "&client_id=" + ML_CLIENT_ID +
-    "&redirect_uri=" + encodeURIComponent(ML_REDIRECT);
-  window.location.href = url;
-}
+  function buildURL(page) {
+    const zona     = document.getElementById('zona').value.trim();
+    const op       = document.getElementById('operacion').value;
+    const tipo     = document.getElementById('tipo').value;
+    const moneda   = document.getElementById('moneda').value;
+    const precioMin = document.getElementById('precioMin').value;
+    const precioMax = document.getElementById('precioMax').value;
+    const ambientes = document.getElementById('ambientes').value;
+    const orden    = document.getElementById('orden').value;
 
-function checkMLToken() {
-  const hash = window.location.hash;
-  if (hash.includes("access_token")) {
-    const params = new URLSearchParams(hash.replace(/^#/,""));
-    mlToken = params.get("access_token");
-    if (mlToken) {
-      localStorage.setItem("ml_token", mlToken);
-      window.history.replaceState(null, "", window.location.pathname);
-      setMLConnected();
-      return;
-    }
-  }
-  const saved = localStorage.getItem("ml_token");
-  if (saved) { mlToken = saved; setMLConnected(); }
-}
+    let url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
+            + `?page=${page}&pageSize=21&sort=${orden}`
+            + `&in=operationId:${op}`
+            + `&in=listingStatusId:2`
+            + `&in=eStageId:0,1,2,3,4`;
 
-function setMLConnected() {
-  const sec = document.getElementById("ml-auth-section");
-  sec.innerHTML =
-    '<div class="ml-connected">' +
-    '<svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" fill="#3B6D11"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
-    'ML conectado' +
-    '<button onclick="disconnectML()" style="margin-left:auto;background:none;border:none;font-size:10px;color:#888780;cursor:pointer">Salir</button>' +
-    '</div>';
-  document.getElementById("src-status").textContent = "✓ Comparables reales de MercadoLibre activos.";
-  document.getElementById("badge-prov").textContent = "ML + IA";
-  document.getElementById("badge-prov").className = "badge ml";
-  document.getElementById("rp").innerHTML =
-    '<div class="ph"><div class="ph-t">¡MercadoLibre conectado!</div>' +
-    '<div class="ph-s">Completá los datos y hacé click en Calcular tasación.</div></div>';
-}
+    if (tipo)      url += `&in=listingTypeId:${tipo}`;
+    if (moneda)    url += `&in=currencyId:${moneda}`;
+    if (precioMin) url += `&gte=price:${precioMin}`;
+    if (precioMax) url += `&lte=price:${precioMax}`;
+    if (ambientes === '4') url += `&gte=totalRooms:4`;
+    else if (ambientes)    url += `&in=totalRooms:${ambientes}`;
+    if (zona)      url += `&q=${encodeURIComponent(zona)}`;
 
-function disconnectML() {
-  mlToken = null;
-  localStorage.removeItem("ml_token");
-  location.reload();
-}
-
-const barrios = {
-  "Morón":["Morón Centro","Castelar","El Palomar","Haedo","Castelar Norte","Villa del Parque Morón"],
-  "La Matanza":["Ramos Mejía","San Justo","Isidro Casanova","Tapiales","Ciudad Evita","Gregorio de Laferrere"],
-  "San Isidro":["San Isidro Centro","Martínez","Acassuso","Beccar","Boulogne","Villa Adelina"],
-  "Tigre":["Tigre Centro","Don Torcuato","General Pacheco","Rincón de Milberg","Ricardo Rojas","El Talar"],
-  "Quilmes":["Quilmes Centro","Bernal","Berazategui","San Francisco Solano","Wilde","Don Bosco"],
-  "Lanús":["Lanús Este","Lanús Oeste","Remedios de Escalada","Monte Chingolo","Gerli"],
-  "Lomas de Zamora":["Lomas Centro","Banfield","Temperley","Turdera","Adrogué","Burzaco"],
-  "Vicente López":["Vicente López Centro","Olivos","Florida","Munro","La Lucila","Carapachay"],
-  "Avellaneda":["Avellaneda Centro","Sarandí","Piñeiro","Villa Domínico","Dock Sud"],
-  "San Martín":["San Martín Centro","Villa Ballester","Palermo Chico","José León Suárez","Villa Lynch"],
-  "Tres de Febrero":["Ciudadela","Caseros","El Palomar Norte","Pablo Nogués","El Libertador"],
-  "Merlo":["Merlo Centro","Pontevedra","San Antonio de Padua","Mariano Acosta","Libertad"]
-};
-
-function updateBarrios() {
-  const p = document.getElementById("partido").value;
-  const b = document.getElementById("barrio");
-  b.innerHTML = "";
-  (barrios[p]||[]).forEach(n => { const o = document.createElement("option"); o.textContent = n; b.appendChild(o); });
-}
-updateBarrios();
-
-const CFG = {
-  groq:      { nombre:"Groq",          ph:"gsk_...",      pre:"gsk_",    gratis:true,  url:"https://console.groq.com/keys",        hint:"Plan gratuito disponible en console.groq.com" },
-  anthropic: { nombre:"Anthropic",     ph:"sk-ant-...",   pre:"sk-ant-", gratis:false, url:"https://console.anthropic.com/keys",   hint:"~$0.003 por tasación" },
-  openai:    { nombre:"OpenAI",        ph:"sk-...",       pre:"sk-",     gratis:false, url:"https://platform.openai.com/api-keys", hint:"~$0.001 por tasación" },
-  gemini:    { nombre:"Google Gemini", ph:"AIza...",      pre:"AIza",    gratis:false, url:"https://aistudio.google.com/apikey",   hint:"Requiere billing" }
-};
-
-function onProv() {
-  const prov = document.getElementById("proveedor").value;
-  const c = CFG[prov];
-  document.getElementById("apikey").value = "";
-  document.getElementById("apikey").placeholder = c.ph;
-  document.getElementById("lbl-key").textContent = "Clave API — " + c.nombre;
-  document.getElementById("key-status").textContent = "";
-  document.getElementById("key-hint").innerHTML =
-    `<span class="chip${c.gratis?' free':''}">${c.gratis?"✓ Gratis":"De pago"}</span> ` +
-    `<span class="hint">${c.hint} · <a href="${c.url}" target="_blank" style="color:#185FA5">Obtener clave</a></span>`;
-}
-onProv();
-
-function checkKey() {
-  const prov = document.getElementById("proveedor").value;
-  const c = CFG[prov];
-  const k = document.getElementById("apikey").value.trim();
-  const el = document.getElementById("key-status");
-  if (k.length > 10 && k.startsWith(c.pre)) { el.className = "ok"; el.textContent = "✓ Clave válida"; }
-  else if (k.length > 0) { el.className = "warn"; el.textContent = "Formato esperado: " + c.ph; }
-  else { el.className = ""; el.textContent = ""; }
-}
-
-function fmt(n) { return Number(Math.round(n)).toLocaleString("es-AR"); }
-
-function diasDesde(fechaStr) {
-  if (!fechaStr) return null;
-  return Math.floor((new Date() - new Date(fechaStr)) / (1000*60*60*24));
-}
-
-// Categorías ML
-const ML_CATS = {
-  "Departamento":"MLA1473",
-  "Casa":"MLA1459",
-  "PH":"MLA1476",
-  "Local comercial":"MLA1500"
-};
-
-async function buscarComparablesML(tipo, barrio, partido, ambientes) {
-  if (!mlToken) return null;
-  const cat = ML_CATS[tipo] || "MLA1459";
-  const q = encodeURIComponent(barrio + " " + partido);
-  const ambNum = ambientes === "4+" ? 4 : parseInt(ambientes);
-
-  // Intentar con filtro de ambientes primero
-  const urls = [
-    `https://api.mercadolibre.com/sites/MLA/search?category=${cat}&q=${q}&ROOMS=${ambNum}&limit=8&access_token=${mlToken}`,
-    `https://api.mercadolibre.com/sites/MLA/search?category=${cat}&q=${q}&limit=8&access_token=${mlToken}`
-  ];
-
-  for (const url of urls) {
-    try {
-      const res = await fetch(url);
-      if (res.status === 401) { disconnectML(); return null; }
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (data.results && data.results.length > 0) return data.results;
-    } catch(e) { continue; }
-  }
-  return [];
-}
-
-async function llamarAPI(prov, key, prompt) {
-  let res, data, raw;
-  if (prov === "groq" || prov === "openai") {
-    const url   = prov === "groq" ? "https://api.groq.com/openai/v1/chat/completions" : "https://api.openai.com/v1/chat/completions";
-    const model = prov === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini";
-    res  = await fetch(url, { method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+key}, body:JSON.stringify({model, messages:[{role:"user",content:prompt}], temperature:0.3, max_tokens:900}) });
-    data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw  = data.choices?.[0]?.message?.content || "";
-  } else if (prov === "anthropic") {
-    res  = await fetch("https://api.anthropic.com/v1/messages", { method:"POST", headers:{"Content-Type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"}, body:JSON.stringify({model:"claude-sonnet-4-20250514", max_tokens:900, messages:[{role:"user",content:prompt}]}) });
-    data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw  = (data.content||[]).map(i=>i.text||"").join("");
-  } else {
-    res  = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key="+key, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({contents:[{parts:[{text:prompt}]}], generationConfig:{temperature:0.3, maxOutputTokens:900}}) });
-    data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw  = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  }
-  return raw.replace(/```json|```/g,"").trim();
-}
-
-async function tasar() {
-  const prov = document.getElementById("proveedor").value;
-  const key  = document.getElementById("apikey").value.trim();
-  const c    = CFG[prov];
-  if (!key || !key.startsWith(c.pre)) { alert("Ingresá tu clave de " + c.nombre + ".\nFormato: " + c.ph); return; }
-  if (!mlToken) { alert("Primero conectá tu cuenta de MercadoLibre."); return; }
-
-  const btn = document.getElementById("btn-tasar");
-  btn.disabled = true; btn.textContent = "Buscando comparables reales...";
-
-  const tipo    = document.getElementById("tipo").value;
-  const partido = document.getElementById("partido").value;
-  const barrio  = document.getElementById("barrio").value;
-  const sup     = parseFloat(document.getElementById("sup_total").value) || 65;
-  const cub     = document.getElementById("sup_cub").value;
-  const amb     = document.getElementById("amb").value;
-  const ant     = document.getElementById("ant").value;
-  const piso    = document.getElementById("piso").value;
-  const estado  = document.getElementById("estado").value;
-  const extras  = document.getElementById("extras").value;
-
-  document.getElementById("rp").innerHTML =
-    '<div class="card"><div class="ct">Buscando en MercadoLibre</div>' +
-    '<div style="padding:20px 0;display:flex;align-items:center;gap:10px;color:#888780;font-size:13px">' +
-    '<div class="ld"><span></span><span></span><span></span></div> Buscando propiedades reales en ML...</div></div>';
-
-  // 1. Comparables reales de ML
-  const mlResults = await buscarComparablesML(tipo, barrio, partido, amb);
-  let comparablesData = [];
-  let comparablesTexto = "";
-
-  if (mlResults && mlResults.length > 0) {
-    comparablesData = mlResults.slice(0, 6).map(item => {
-      const attrs   = item.attributes || [];
-      const getAttr = id => attrs.find(a => a.id === id)?.value_name || null;
-      const supItem = getAttr("TOTAL_AREA_MT") || getAttr("COVERED_AREA_MT") || null;
-      const ambItem = getAttr("ROOMS") || null;
-      const dias    = diasDesde(item.date_created);
-      const pm2     = supItem ? Math.round(item.price / parseFloat(supItem)) : null;
-      return {
-        id:        item.id,
-        direccion: item.location?.address_line || item.title,
-        detalle:   `${supItem ? supItem+"m²" : ""}${ambItem ? " "+ambItem+"amb" : ""}`.trim() || item.title,
-        precio_usd: item.price,
-        precio_m2:  pm2,
-        sup:        supItem,
-        ambientes:  ambItem,
-        dias:       dias,
-        thumbnail:  item.thumbnail,
-        permalink:  item.permalink,
-        fuente:     "MercadoLibre"
-      };
-    });
-    comparablesTexto = comparablesData.map((c,i) =>
-      `${i+1}. ${c.direccion} | ${c.detalle} | USD ${fmt(c.precio_usd)}${c.precio_m2 ? " | "+fmt(c.precio_m2)+"/m²":""} | publicado hace ${c.dias} días`
-    ).join("\n");
+    return url;
   }
 
-  document.getElementById("rp").innerHTML =
-    '<div class="card"><div class="ct">Analizando con IA</div>' +
-    '<div style="padding:20px 0;display:flex;align-items:center;gap:10px;color:#888780;font-size:13px">' +
-    '<div class="ld"><span></span><span></span><span></span></div> ' +
-    (mlResults?.length ? `${mlResults.length} comparables reales. Calculando tasación...` : "Analizando mercado con IA...") +
-    '</div></div>';
-
-  // 2. Prompt a la IA con datos reales
-  const prompt =
-    "Sos un tasador inmobiliario experto en el mercado del Gran Buenos Aires (GBA), Argentina.\n" +
-    "Respondé SOLO con JSON válido, sin texto adicional, sin backticks.\n\n" +
-    "Propiedad a tasar:\n" +
-    `- Tipo: ${tipo}\n- Partido: ${partido}\n- Barrio: ${barrio}\n` +
-    `- Superficie total: ${sup} m²\n- Superficie cubierta: ${cub} m²\n` +
-    `- Ambientes: ${amb}\n- Antigüedad: ${ant}\n- Piso: ${piso}\n- Estado: ${estado}\n` +
-    `- Extras: ${extras || "ninguno"}\n\n` +
-    (comparablesTexto
-      ? `COMPARABLES REALES de MercadoLibre (usalos para calcular):\n${comparablesTexto}\n\n`
-      : "Sin comparables de ML. Usá conocimiento del mercado GBA 2025-2026.\n\n") +
-    `Devolvé exactamente este JSON con valores reales para ${tipo} ${amb}amb ${sup}m² en ${barrio}:\n` +
-    `{"valor_publicacion":0,"valor_cierre":0,"precio_m2":0,"rango_min":0,"rango_max":0,` +
-    `"ajuste_cierre_pct":-5.0,"mercado_estado":"Activo","oferta_activa":0,"tiempo_mercado_dias":0,` +
-    `"zonas_m2":[{"zona":"${barrio}","precio":0,"es_sujeto":true},{"zona":"barrio_vecino_1","precio":0,"es_sujeto":false},{"zona":"barrio_vecino_2","precio":0,"es_sujeto":false},{"zona":"barrio_vecino_3","precio":0,"es_sujeto":false}],` +
-    `"factores_positivos":["factor"],"factores_negativos":["factor"],` +
-    `"analisis":"Fundamentación basada en los comparables reales encontrados."}\n\n` +
-    `IMPORTANTE: Los valores deben corresponder a ${tipo} (no mezclar con otros tipos). Solo JSON puro.`;
-
-  try {
-    const clean = await llamarAPI(prov, key, prompt);
-    let d;
-    try { d = JSON.parse(clean); } catch(e) {
-      document.getElementById("rp").innerHTML =
-        '<div class="card"><div class="err">Error al parsear respuesta. Intentá de nuevo.<br><small style="opacity:0.7">' + clean.slice(0,300) + '</small></div></div>';
-      btn.disabled = false; btn.textContent = "Recalcular ↗"; return;
-    }
-    renderResult(d, barrio, sup, tipo, comparablesData);
-  } catch(e) {
-    document.getElementById("rp").innerHTML =
-      '<div class="card"><div class="err">Error con ' + c.nombre + ': ' + e.message + '</div></div>';
+  function formatPrice(p) {
+    if (!p.priceExposure) return 'Precio a consultar';
+    return `${Number(p.price).toLocaleString('es-AR')} ${p.currency.value}`;
   }
-  btn.disabled = false; btn.textContent = "Recalcular ↗";
-}
 
-function renderResult(d, barrio, sup, tipo, mlComps) {
-  const maxZ = Math.max(...(d.zonas_m2||[]).map(z => z.precio));
-  const bars = (d.zonas_m2||[]).map(z => {
-    const pct = Math.round((z.precio/maxZ)*85+10);
-    return '<div class="br-row"><div class="bl">' + z.zona + '</div><div class="bt"><div class="bf ' +
-      (z.es_sujeto?"hl":"nm") + '" style="width:' + pct + '%"><span>USD ' + fmt(z.precio) + (z.es_sujeto?" ★":"") + '</span></div></div></div>';
-  }).join("");
+  function renderCards(props) {
+    return props.map(p => {
+      const precio   = formatPrice(p);
+      const expenses = p.expensesPrice ? `+ ${Number(p.expensesPrice).toLocaleString('es-AR')} ARS expensas` : '';
+      const feats    = [];
+      if (p.totalRooms)          feats.push(`${p.totalRooms} amb.`);
+      if (p.bedrooms)            feats.push(`${p.bedrooms} dorm.`);
+      if (p.bathrooms)           feats.push(`${p.bathrooms} baño${p.bathrooms > 1 ? 's' : ''}`);
+      if (p.dimensionTotalBuilt) feats.push(`${p.dimensionTotalBuilt} m²`);
+      if (p.dimensionLand > 0)   feats.push(`${p.dimensionLand} m² terreno`);
 
-  let compsHtml = "";
-  if (mlComps && mlComps.length > 0) {
-    compsHtml = mlComps.map(comp => {
-      const diasClass = comp.dias < 30 ? "fresh" : comp.dias > 90 ? "old" : "";
-      const diasLabel = comp.dias === 0 ? "hoy" : (comp.dias + "d");
-      return `<div class="ci" onclick='openModal(${JSON.stringify(comp).replace(/'/g,"&#39;")})'>
-        <div style="flex:1;min-width:0">
-          <div class="ca">${comp.direccion}</div>
-          <div class="cd">${comp.detalle}</div>
+      const slug = `https://www.remax.com.ar/listings/${p.slug}`;
+      const agente = p.associate ? p.associate.name : '';
+      const oficina = p.associate ? p.associate.officeName : '';
+
+      return `
+      <div class="card">
+        <div class="card-body">
+          <span class="badge-reservada">Reservada</span>
+          <div class="card-title">${escHtml(p.title)}</div>
+          <div class="card-addr">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2">
+              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+              <circle cx="12" cy="9" r="2.5"/>
+            </svg>
+            ${escHtml(p.displayAddress)} — ${escHtml(p.geoLabel)}
+          </div>
+          <div class="card-price">${precio}</div>
+          ${expenses ? `<div class="card-expenses">${expenses}</div>` : ''}
+          ${feats.length ? `<div class="card-features">${feats.map(f => `<span class="feature-pill">${f}</span>`).join('')}</div>` : ''}
         </div>
-        <div style="text-align:right;flex-shrink:0">
-          <div class="cp">USD ${fmt(comp.precio_usd)}</div>
-          <div class="cm">${comp.precio_m2 ? fmt(comp.precio_m2)+"/m²" : ""}</div>
-        </div>
-        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
-          <span class="ci-days ${diasClass}">${diasLabel}</span>
-          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" style="color:#185FA5"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5"/><path d="M8 5v6M5 8h6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <div class="card-footer">
+          <div class="card-agent">${escHtml(agente)}<br><span style="color:#ccc">${escHtml(oficina)}</span></div>
+          <a class="card-link" href="${slug}" target="_blank" rel="noopener">Ver aviso →</a>
         </div>
       </div>`;
-    }).join("");
-  } else {
-    compsHtml = '<div style="font-size:12px;color:#888780;padding:8px 0">No se encontraron comparables en MercadoLibre para estos parámetros.</div>';
+    }).join('');
   }
 
-  const pos = (d.factores_positivos||[]).map(f =>
-    '<div style="font-size:12px;color:#1a1a18;padding:3px 0;display:flex;gap:6px"><span style="color:#3B6D11;font-weight:500">+</span>' + f + '</div>'
-  ).join("");
-  const neg = (d.factores_negativos||[]).map(f =>
-    '<div style="font-size:12px;color:#1a1a18;padding:3px 0;display:flex;gap:6px"><span style="color:#A32D2D;font-weight:500">-</span>' + f + '</div>'
-  ).join("");
-
-  const aj    = (d.ajuste_cierre_pct >= 0 ? "+" : "") + d.ajuste_cierre_pct;
-  const m2c   = Math.round(d.valor_cierre / (sup||1));
-  const mlTag = mlComps?.length
-    ? `<span style="font-size:10px;background:#FFE600;color:#1a1a18;padding:2px 7px;border-radius:10px;font-weight:600;margin-left:6px">● ${mlComps.length} reales</span>`
-    : `<span style="font-size:10px;background:#FCEBEB;color:#A32D2D;padding:2px 7px;border-radius:10px;margin-left:6px">Sin resultados ML</span>`;
-
-  document.getElementById("rp").innerHTML =
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
-    '<div class="card rb"><div class="rl">Valor de publicación</div><div class="rv">USD ' + fmt(d.valor_publicacion) + '</div>' +
-    '<div class="rr">Rango: USD ' + fmt(d.rango_min) + ' – ' + fmt(d.rango_max) + '</div><div class="rs">USD ' + fmt(d.precio_m2) + '/m²</div></div>' +
-    '<div class="card rb"><div class="rl">Estimado de cierre real</div><div class="rv" style="color:#185FA5">USD ' + fmt(d.valor_cierre) + '</div>' +
-    '<div class="rr">Ajuste cierre: ' + aj + '%</div><div class="rs">USD ' + fmt(m2c) + '/m² · <span class="tag-g">' + d.mercado_estado + '</span></div></div></div>' +
-
-    '<div class="card"><div class="ct">Precio m² por zona — comparación</div><div class="bc">' + bars + '</div></div>' +
-
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
-    '<div class="card"><div class="ct" style="display:flex;align-items:center">Comparables activos' + mlTag + '</div><div class="cl">' + compsHtml + '</div></div>' +
-    '<div class="card"><div class="ct">Métricas de mercado</div>' +
-    '<div class="mg">' +
-    '<div class="met"><div style="font-size:11px;color:#888780;margin-bottom:2px">Oferta activa</div><div class="mv">' + d.oferta_activa + '</div><div class="ms">propiedades similares</div></div>' +
-    '<div class="met"><div style="font-size:11px;color:#888780;margin-bottom:2px">Tiempo mercado</div><div class="mv">' + d.tiempo_mercado_dias + 'd</div><div class="ms">promedio zona</div></div></div>' +
-    '<div style="margin-top:10px">' + pos + neg + '</div></div></div>' +
-
-    '<div class="card"><div class="ct">Análisis del mercado</div>' +
-    '<div style="font-size:13px;color:#1a1a18;line-height:1.7">' + d.analisis + '</div></div>';
-}
-
-function openModal(comp) {
-  const imgWrap = document.getElementById("m-img-wrap");
-  if (comp.thumbnail) {
-    const bigImg = comp.thumbnail.replace("-I.jpg","-O.jpg").replace("http:","https:");
-    imgWrap.innerHTML = `<img class="modal-img" src="${bigImg}" onerror="this.parentNode.innerHTML='<div class=modal-img-ph>Sin foto</div>'" alt="foto">`;
-  } else {
-    imgWrap.innerHTML = '<div class="modal-img-ph">Sin foto disponible</div>';
+  function escHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
-  document.getElementById("m-dir").textContent   = comp.direccion || "";
-  document.getElementById("m-det").textContent   = comp.detalle   || "";
-  document.getElementById("m-price").textContent = "USD " + fmt(comp.precio_usd);
-  document.getElementById("m-m2").textContent    = comp.precio_m2 ? "USD " + fmt(comp.precio_m2) + "/m²" : "";
-  document.getElementById("m-pm2").textContent   = comp.precio_m2 ? "USD " + fmt(comp.precio_m2) + "/m²" : "—";
-  document.getElementById("m-amb").textContent   = comp.ambientes || "—";
-  document.getElementById("m-sup").textContent   = comp.sup ? comp.sup + " m²" : "—";
-  document.getElementById("m-dias").textContent  = comp.dias !== null && comp.dias !== undefined ? comp.dias + " días" : "—";
-  document.getElementById("m-link-ml").href      = comp.permalink || "#";
-  const slug = (comp.direccion||"").toLowerCase().replace(/\s+/g,"-").normalize("NFD").replace(/[\u0300-\u036f]/g,"");
-  document.getElementById("m-link-zona").href    = "https://www.zonaprop.com.ar/inmuebles-venta-" + slug + ".html";
-  document.getElementById("modal-overlay").classList.add("open");
-}
 
-function closeModalOverlay(e) {
-  if (e.target === document.getElementById("modal-overlay"))
-    document.getElementById("modal-overlay").classList.remove("open");
-}
+  async function buscar(page = 0) {
+    currentPage = page;
+    const output = document.getElementById('output');
+    output.innerHTML = `<div class="state-box"><div class="spinner"></div>Buscando propiedades reservadas...</div>`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
-checkMLToken();
+    try {
+      const res  = await fetch(buildURL(page));
+      const json = await res.json();
+      const props = json.data.data || [];
+      const total = json.data.totalItems || 0;
+      totalPages  = json.data.totalPages || 1;
+
+      if (!props.length) {
+        output.innerHTML = `<div class="state-box"><div class="icon">🔍</div>No se encontraron propiedades reservadas con esos filtros.<br>Probá ampliar la búsqueda.</div>`;
+        return;
+      }
+
+      const maxPage = Math.min(totalPages, 50);
+
+      output.innerHTML = `
+        <div class="results-meta">
+          <span><strong>${Number(total).toLocaleString('es-AR')}</strong> propiedades reservadas encontradas</span>
+          <span>Página ${page + 1} de ${maxPage}</span>
+        </div>
+        <div class="cards">${renderCards(props)}</div>
+        <div class="pagination">
+          <button class="btn-page" id="btnPrev" ${page === 0 ? 'disabled' : ''} onclick="buscar(${page - 1})">← Anterior</button>
+          <span class="page-info">Pág. ${page + 1} / ${maxPage}</span>
+          <button class="btn-page" id="btnNext" ${page >= maxPage - 1 ? 'disabled' : ''} onclick="buscar(${page + 1})">Siguiente →</button>
+        </div>`;
+
+    } catch(e) {
+      output.innerHTML = `<div class="state-box"><div class="icon">⚠️</div>Error al conectar con la API de REMAX.<br>Verificá tu conexión e intentá de nuevo.</div>`;
+      console.error(e);
+    }
+  }
+
+  document.getElementById('btnBuscar').addEventListener('click', () => buscar(0));
+  document.getElementById('zona').addEventListener('keydown', e => {
+    if (e.key === 'Enter') buscar(0);
+  });
+
+  buscar(0);
 </script>
+
 </body>
 </html>
