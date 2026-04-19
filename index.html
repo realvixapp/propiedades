@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TasadorBA — Gran Buenos Aires</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f3;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:24px 16px}
+.app{display:flex;width:100%;max-width:1100px;min-height:620px;border:0.5px solid #e0ddd6;border-radius:12px;overflow:hidden;background:#f5f5f3;box-shadow:0 2px 24px rgba(0,0,0,0.07)}
+.sidebar{width:210px;background:#fff;border-right:0.5px solid #e0ddd6;display:flex;flex-direction:column;flex-shrink:0}
+.logo{padding:16px;border-bottom:0.5px solid #e0ddd6}
+.logo-t{font-size:15px;font-weight:500;color:#1a1a18}
+.logo-s{font-size:11px;color:#888780;margin-top:2px}
+.nav{padding:10px 8px}
+.ni{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;font-size:13px;color:#888780;margin-bottom:2px;transition:background 0.15s;text-decoration:none}
+.ni.active{background:#e6f1fb;color:#185FA5;font-weight:500}
+.ni:hover:not(.active){background:#f5f5f3}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{padding:12px 20px;background:#fff;border-bottom:0.5px solid #e0ddd6;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-t{font-size:14px;font-weight:500;color:#1a1a18}
+.badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#eaf3de;color:#3B6D11}
+.content{flex:1;overflow-y:auto;padding:18px;display:flex;gap:14px}
+.lp{width:275px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+.rp{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:14px 16px}
+.ct{font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px}
+.field{margin-bottom:9px}
+.field label{font-size:12px;color:#888780;display:block;margin-bottom:3px}
+.field input,.field select{width:100%;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;font-family:inherit;outline:none;transition:border-color 0.15s}
+.field input:focus,.field select:focus{border-color:#185FA5}
+.fr{display:flex;gap:7px}
+.fr .field{flex:1}
+.btn{width:100%;padding:9px;background:#185FA5;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:opacity 0.15s}
+.btn:hover{opacity:0.88}
+.btn:disabled{opacity:0.5;cursor:not-allowed}
+.apisec{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:7px}
+.apisec label{font-size:12px;color:#888780}
+.apisec select,.apisec input{width:100%;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;font-family:inherit;outline:none}
+.chip{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
+.chip.free{border-color:#3B6D11;color:#3B6D11;background:#eaf3de}
+.ok{font-size:11px;color:#3B6D11}
+.warn{font-size:11px;color:#BA7517}
+.hint{font-size:11px;color:#888780;line-height:1.5}
+.rb{text-align:center;padding:18px 14px}
+.rl{font-size:12px;color:#888780;margin-bottom:5px}
+.rv{font-size:30px;font-weight:500;color:#1a1a18}
+.rr{font-size:12px;color:#888780;margin-top:4px}
+.rs{font-size:13px;color:#888780;margin-top:7px}
+.mg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.met{background:#f5f5f3;border-radius:8px;padding:9px 11px}
+.ml{font-size:11px;color:#888780;margin-bottom:2px}
+.mv{font-size:15px;font-weight:500;color:#1a1a18}
+.ms{font-size:11px;color:#888780;margin-top:1px}
+.cl{display:flex;flex-direction:column;gap:5px}
+.ci{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;background:#f5f5f3;border-radius:8px}
+.ca{font-size:12px;color:#1a1a18}
+.cd{font-size:11px;color:#888780;margin-top:1px}
+.cp{font-size:13px;font-weight:500;color:#1a1a18;text-align:right}
+.cm{font-size:11px;color:#888780}
+.bc{display:flex;flex-direction:column;gap:7px}
+.br-row{display:flex;align-items:center;gap:7px}
+.bl{font-size:11px;color:#888780;width:110px;text-align:right;flex-shrink:0}
+.bt{flex:1;height:17px;background:#f5f5f3;border-radius:3px;overflow:hidden}
+.bf{height:100%;border-radius:3px;display:flex;align-items:center;padding-left:5px}
+.bf span{font-size:10px;font-weight:500;color:#fff;white-space:nowrap}
+.bf.hl{background:#185FA5}
+.bf.nm{background:#9FB8D8}
+.tag-g{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;background:#eaf3de;color:#3B6D11}
+.ph{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:10px;background:#f5f5f3;border-radius:12px;text-align:center;border:0.5px dashed #b4b2a9}
+.ph-t{font-size:13px;font-weight:500;color:#1a1a18}
+.ph-s{font-size:12px;color:#888780;max-width:260px;line-height:1.6}
+.err{font-size:12px;color:#A32D2D;background:#FCEBEB;padding:9px 11px;border-radius:8px;line-height:1.5}
+.ld{display:inline-flex;gap:4px;align-items:center}
+.ld span{width:6px;height:6px;border-radius:50%;background:#888780;animation:b 1.2s infinite}
+.ld span:nth-child(2){animation-delay:0.2s}
+.ld span:nth-child(3){animation-delay:0.4s}
+@keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
+.src-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.src-tag{font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
+@media(max-width:700px){.app{flex-direction:column}.sidebar{width:100%;border-right:none;border-bottom:0.5px solid #e0ddd6}.content{flex-direction:column}.lp{width:100%}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <div class="logo">
+      <div class="logo-t">TasadorBA</div>
+      <div class="logo-s">Gran Buenos Aires</div>
+    </div>
+    <div class="nav">
+      <a class="ni active" href="#">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor"/></svg>
+        Tasador
+      </a>
+      <a class="ni" href="https://zonaprop.com.ar" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M8 5v3l2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        Zonaprop
+      </a>
+      <a class="ni" href="https://properati.com.ar" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M8 2C5.24 2 3 4.24 3 7c0 3.5 5 9 5 9s5-5.5 5-9c0-2.76-2.24-5-5-5z" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="8" cy="7" r="1.5" fill="currentColor"/></svg>
+        Properati
+      </a>
+      <a class="ni" href="https://inmuebles.mercadolibre.com.ar" target="_blank">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="2" y="10" width="2" height="4" rx="1" fill="currentColor"/><rect x="6" y="6" width="2" height="8" rx="1" fill="currentColor"/><rect x="10" y="3" width="2" height="11" rx="1" fill="currentColor"/></svg>
+        MercadoLibre
+      </a>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-t">Tasación de propiedad</div>
+      <span class="badge" id="badge-prov">Groq · Llama 3.3</span>
+    </div>
+    <div class="content">
+      <div class="lp">
+
+        <div class="apisec">
+          <label>Proveedor de IA</label>
+          <select id="proveedor" onchange="onProv()">
+            <option value="groq">Groq — Llama 3.3 70b (gratis)</option>
+            <option value="anthropic">Anthropic — Claude Sonnet</option>
+            <option value="openai">OpenAI — GPT-4o mini</option>
+            <option value="gemini">Google — Gemini 2.0 Flash</option>
+          </select>
+          <label id="lbl-key">Clave API</label>
+          <input type="password" id="apikey" placeholder="gsk_..." oninput="checkKey()"/>
+          <div id="key-status"></div>
+          <div id="key-hint"></div>
+        </div>
+
+        <div class="card">
+          <div class="ct">Datos de la propiedad</div>
+          <div class="field"><label>Tipo</label>
+            <select id="tipo"><option>Departamento</option><option>Casa</option><option>PH</option><option>Local comercial</option></select>
+          </div>
+          <div class="field"><label>Partido / Zona</label>
+            <select id="partido" onchange="updateBarrios()">
+              <option>Morón</option><option>La Matanza</option><option>San Isidro</option>
+              <option>Tigre</option><option>Quilmes</option><option>Lanús</option>
+              <option>Lomas de Zamora</option><option>Vicente López</option><option>Avellaneda</option>
+              <option>San Martín</option><option>Tres de Febrero</option><option>Merlo</option>
+            </select>
+          </div>
+          <div class="field"><label>Barrio</label><select id="barrio"></select></div>
+          <div class="fr">
+            <div class="field"><label>Sup. total (m²)</label><input type="number" id="sup_total" value="65" min="10"/></div>
+            <div class="field"><label>Sup. cubierta</label><input type="number" id="sup_cub" value="58" min="10"/></div>
+          </div>
+          <div class="fr">
+            <div class="field"><label>Ambientes</label><select id="amb"><option>1</option><option selected>2</option><option>3</option><option>4+</option></select></div>
+            <div class="field"><label>Antigüedad</label><select id="ant"><option>A estrenar</option><option>1-5 años</option><option>5-15 años</option><option selected>15-25 años</option><option>+25 años</option></select></div>
+          </div>
+          <div class="fr">
+            <div class="field"><label>Piso</label><input type="number" id="piso" value="3" min="0"/></div>
+            <div class="field"><label>Estado</label><select id="estado"><option>Excelente</option><option selected>Bueno</option><option>Regular</option><option>A reciclar</option></select></div>
+          </div>
+          <div class="field"><label>Extras (opcional)</label>
+            <input type="text" id="extras" placeholder="cochera, amenities, piscina..."/>
+          </div>
+          <button class="btn" id="btn-tasar" onclick="tasar()">Calcular tasación ↗</button>
+        </div>
+
+        <div class="card">
+          <div class="ct">Fuentes de referencia</div>
+          <div class="src-row">
+            <span class="src-tag">Zonaprop</span><span class="src-tag">MercadoLibre</span>
+            <span class="src-tag">Properati</span><span class="src-tag">RE/MAX</span><span class="src-tag">INDEC</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="rp" id="rp">
+        <div class="ph">
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="16" width="28" height="16" rx="2" stroke="#b4b2a9" stroke-width="1.5"/><path d="M12 16V10a6 6 0 0 1 12 0v6" stroke="#b4b2a9" stroke-width="1.5"/><circle cx="18" cy="24" r="2" fill="#b4b2a9"/></svg>
+          <div class="ph-t">Completá los datos y calculá</div>
+          <div class="ph-s">Elegí tu proveedor de IA, ingresá la clave y la IA analiza el mercado del GBA con comparables reales.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CFG = {
+  groq:      { nombre:"Groq",           ph:"gsk_...",      pre:"gsk_",    badge:"Groq · Llama 3.3",       gratis:true,  url:"https://console.groq.com/keys",           hint:"Plan gratuito disponible en console.groq.com" },
+  anthropic: { nombre:"Anthropic",      ph:"sk-ant-...",   pre:"sk-ant-", badge:"Anthropic · Claude",      gratis:false, url:"https://console.anthropic.com/keys",      hint:"~$0.003 por tasación" },
+  openai:    { nombre:"OpenAI",         ph:"sk-...",       pre:"sk-",     badge:"OpenAI · GPT-4o mini",    gratis:false, url:"https://platform.openai.com/api-keys",    hint:"~$0.001 por tasación" },
+  gemini:    { nombre:"Google Gemini",  ph:"AIza...",      pre:"AIza",    badge:"Google · Gemini 2.0",     gratis:false, url:"https://aistudio.google.com/apikey",      hint:"Requiere billing (free tier no disponible en AR)" }
+};
+
+const barrios = {
+  "Morón":["Morón Centro","Castelar","El Palomar","Haedo","Castelar Norte","Villa del Parque Morón"],
+  "La Matanza":["Ramos Mejía","San Justo","Isidro Casanova","Tapiales","Ciudad Evita","Gregorio de Laferrere"],
+  "San Isidro":["San Isidro Centro","Martínez","Acassuso","Beccar","Boulogne","Villa Adelina"],
+  "Tigre":["Tigre Centro","Don Torcuato","General Pacheco","Rincón de Milberg","Ricardo Rojas","El Talar"],
+  "Quilmes":["Quilmes Centro","Bernal","Berazategui","San Francisco Solano","Wilde","Don Bosco"],
+  "Lanús":["Lanús Este","Lanús Oeste","Remedios de Escalada","Monte Chingolo","Gerli"],
+  "Lomas de Zamora":["Lomas Centro","Banfield","Temperley","Turdera","Adrogué","Burzaco"],
+  "Vicente López":["Vicente López Centro","Olivos","Florida","Munro","La Lucila","Carapachay"],
+  "Avellaneda":["Avellaneda Centro","Sarandí","Piñeiro","Villa Domínico","Dock Sud"],
+  "San Martín":["San Martín Centro","Villa Ballester","Palermo Chico","José León Suárez","Villa Lynch"],
+  "Tres de Febrero":["Ciudadela","Caseros","El Palomar Norte","Pablo Nogués","El Libertador"],
+  "Merlo":["Merlo Centro","Pontevedra","San Antonio de Padua","Mariano Acosta","Libertad"]
+};
+
+function updateBarrios() {
+  const p = document.getElementById("partido").value;
+  const b = document.getElementById("barrio");
+  b.innerHTML = "";
+  (barrios[p]||[]).forEach(n => { const o = document.createElement("option"); o.textContent = n; b.appendChild(o); });
+}
+updateBarrios();
+
+function onProv() {
+  const prov = document.getElementById("proveedor").value;
+  const c = CFG[prov];
+  document.getElementById("apikey").value = "";
+  document.getElementById("apikey").placeholder = c.ph;
+  document.getElementById("lbl-key").textContent = "Clave API — " + c.nombre;
+  document.getElementById("badge-prov").textContent = c.badge;
+  document.getElementById("key-status").textContent = "";
+  document.getElementById("key-hint").innerHTML =
+    `<span class="chip${c.gratis?' free':''}">${c.gratis?"✓ Gratis":"De pago"}</span> ` +
+    `<span class="hint">${c.hint} · <a href="${c.url}" target="_blank" style="color:#185FA5">Obtener clave</a></span>`;
+}
+onProv();
+
+function checkKey() {
+  const prov = document.getElementById("proveedor").value;
+  const c = CFG[prov];
+  const k = document.getElementById("apikey").value.trim();
+  const el = document.getElementById("key-status");
+  if (k.length > 10 && k.startsWith(c.pre)) { el.className = "ok"; el.textContent = "✓ Clave válida"; }
+  else if (k.length > 0) { el.className = "warn"; el.textContent = "Formato esperado: " + c.ph; }
+  else { el.className = ""; el.textContent = ""; }
+}
+
+function fmt(n) { return Number(Math.round(n)).toLocaleString("es-AR"); }
+
+async function llamarAPI(prov, key, prompt) {
+  let res, data, raw;
+  if (prov === "groq" || prov === "openai") {
+    const url = prov === "groq"
+      ? "https://api.groq.com/openai/v1/chat/completions"
+      : "https://api.openai.com/v1/chat/completions";
+    const model = prov === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini";
+    res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
+      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], temperature: 0.3, max_tokens: 1000 })
+    });
+    data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
+    raw = data.choices?.[0]?.message?.content || "";
+  } else if (prov === "anthropic") {
+    res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
+    });
+    data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
+    raw = (data.content || []).map(i => i.text || "").join("");
+  } else {
+    res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + key, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 1000 } })
+    });
+    data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
+    raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
+  }
+  return raw.replace(/```json|```/g, "").trim();
+}
+
+async function tasar() {
+  const prov = document.getElementById("proveedor").value;
+  const key  = document.getElementById("apikey").value.trim();
+  const c    = CFG[prov];
+  if (!key || !key.startsWith(c.pre)) { alert("Ingresá tu clave de " + c.nombre + ".\nFormato: " + c.ph); return; }
+
+  const btn = document.getElementById("btn-tasar");
+  btn.disabled = true; btn.textContent = "Analizando...";
+
+  const tipo    = document.getElementById("tipo").value;
+  const partido = document.getElementById("partido").value;
+  const barrio  = document.getElementById("barrio").value;
+  const sup     = document.getElementById("sup_total").value;
+  const cub     = document.getElementById("sup_cub").value;
+  const amb     = document.getElementById("amb").value;
+  const ant     = document.getElementById("ant").value;
+  const piso    = document.getElementById("piso").value;
+  const estado  = document.getElementById("estado").value;
+  const extras  = document.getElementById("extras").value;
+
+  document.getElementById("rp").innerHTML =
+    '<div class="card"><div class="ct">Analizando mercado</div>' +
+    '<div style="padding:20px 0;display:flex;align-items:center;gap:10px;color:#888780;font-size:13px">' +
+    '<div class="ld"><span></span><span></span><span></span></div> Consultando ' + c.nombre + '...</div></div>';
+
+  const prompt =
+    "Sos un tasador inmobiliario experto en el mercado del Gran Buenos Aires (GBA), Argentina.\n" +
+    "Respondé SOLO con JSON válido, sin texto adicional, sin backticks.\n\n" +
+    "Propiedad:\n" +
+    "- Tipo: " + tipo + "\n- Partido: " + partido + "\n- Barrio: " + barrio +
+    "\n- Superficie total: " + sup + " m²\n- Superficie cubierta: " + cub + " m²" +
+    "\n- Ambientes: " + amb + "\n- Antigüedad: " + ant +
+    "\n- Piso: " + piso + "\n- Estado: " + estado +
+    "\n- Extras: " + (extras || "ninguno") + "\n\n" +
+    'Devolvé este JSON con valores reales del mercado GBA 2025-2026 en USD:\n' +
+    '{"valor_publicacion":82500,"valor_cierre":78400,"precio_m2":1269,"rango_min":76000,"rango_max":89000,' +
+    '"ajuste_cierre_pct":-4.9,"mercado_estado":"Activo","oferta_activa":47,"tiempo_mercado_dias":68,' +
+    '"comparables":[{"direccion":"Av. Rivadavia 3200","detalle":"63m2 2amb piso2","precio_usd":80000,"precio_m2":1270},' +
+    '{"direccion":"Brown 540","detalle":"68m2 2amb piso4","precio_usd":87000,"precio_m2":1279},' +
+    '{"direccion":"Colon 890","detalle":"60m2 2amb piso1","precio_usd":74000,"precio_m2":1233}],' +
+    '"zonas_m2":[{"zona":"' + barrio + '","precio":1269,"es_sujeto":true},' +
+    '{"zona":"barrio_vecino_1","precio":1180,"es_sujeto":false},' +
+    '{"zona":"barrio_vecino_2","precio":1070,"es_sujeto":false},' +
+    '{"zona":"barrio_vecino_3","precio":990,"es_sujeto":false}],' +
+    '"factores_positivos":["Factor 1","Factor 2"],"factores_negativos":["Factor 1"],' +
+    '"analisis":"2-3 oraciones fundamentando la tasacion."}\n\n' +
+    "Reglas: precios USD reales GBA; zonas_m2 con barrios reales de " + partido + "; calles reales de " + barrio + "; ajuste_cierre_pct entre -3 y -8; solo JSON puro.";
+
+  try {
+    const clean = await llamarAPI(prov, key, prompt);
+    let d;
+    try { d = JSON.parse(clean); } catch(e) {
+      document.getElementById("rp").innerHTML =
+        '<div class="card"><div class="err">Error al parsear respuesta. Intentá de nuevo.<br><small style="opacity:0.7">' + clean.slice(0,300) + '</small></div></div>';
+      btn.disabled = false; btn.textContent = "Calcular tasación ↗"; return;
+    }
+    renderResult(d, barrio, sup);
+  } catch(e) {
+    document.getElementById("rp").innerHTML =
+      '<div class="card"><div class="err">Error con ' + c.nombre + ': ' + e.message +
+      '<br><small style="opacity:0.7">Verificá tu clave y que tengas saldo/cuota disponible.</small></div></div>';
+  }
+  btn.disabled = false; btn.textContent = "Recalcular ↗";
+}
+
+function renderResult(d, barrio, sup) {
+  const maxZ = Math.max(...(d.zonas_m2||[]).map(z => z.precio));
+  const bars = (d.zonas_m2||[]).map(z => {
+    const pct = Math.round((z.precio/maxZ)*85+10);
+    return '<div class="br-row"><div class="bl">' + z.zona + '</div><div class="bt"><div class="bf ' +
+      (z.es_sujeto?"hl":"nm") + '" style="width:' + pct + '%"><span>USD ' + fmt(z.precio) + (z.es_sujeto?" ★":"") + '</span></div></div></div>';
+  }).join("");
+
+  const comps = (d.comparables||[]).map(c =>
+    '<div class="ci"><div><div class="ca">' + c.direccion + '</div><div class="cd">' + c.detalle + '</div></div>' +
+    '<div><div class="cp">USD ' + fmt(c.precio_usd) + '</div><div class="cm">' + fmt(c.precio_m2) + '/m²</div></div></div>'
+  ).join("");
+
+  const pos = (d.factores_positivos||[]).map(f =>
+    '<div style="font-size:12px;color:#1a1a18;padding:3px 0;display:flex;gap:6px"><span style="color:#3B6D11;font-weight:500">+</span>' + f + '</div>'
+  ).join("");
+  const neg = (d.factores_negativos||[]).map(f =>
+    '<div style="font-size:12px;color:#1a1a18;padding:3px 0;display:flex;gap:6px"><span style="color:#A32D2D;font-weight:500">-</span>' + f + '</div>'
+  ).join("");
+
+  const aj = (d.ajuste_cierre_pct >= 0 ? "+" : "") + d.ajuste_cierre_pct;
+  const m2c = Math.round(d.valor_cierre / (sup||1));
+
+  document.getElementById("rp").innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div class="card rb"><div class="rl">Valor de publicación</div><div class="rv">USD ' + fmt(d.valor_publicacion) + '</div>' +
+    '<div class="rr">Rango: USD ' + fmt(d.rango_min) + ' – ' + fmt(d.rango_max) + '</div><div class="rs">USD ' + fmt(d.precio_m2) + '/m²</div></div>' +
+    '<div class="card rb"><div class="rl">Estimado de cierre real</div><div class="rv" style="color:#185FA5">USD ' + fmt(d.valor_cierre) + '</div>' +
+    '<div class="rr">Ajuste cierre: ' + aj + '%</div><div class="rs">USD ' + fmt(m2c) + '/m² · <span class="tag-g">' + d.mercado_estado + '</span></div></div></div>' +
+
+    '<div class="card"><div class="ct">Precio m² por zona — comparación</div><div class="bc">' + bars + '</div></div>' +
+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
+    '<div class="card"><div class="ct">Comparables activos</div><div class="cl">' + comps + '</div></div>' +
+    '<div class="card"><div class="ct">Métricas de mercado</div>' +
+    '<div class="mg"><div class="met"><div class="ml">Oferta activa</div><div class="mv">' + d.oferta_activa + '</div><div class="ms">propiedades similares</div></div>' +
+    '<div class="met"><div class="ml">Tiempo mercado</div><div class="mv">' + d.tiempo_mercado_dias + 'd</div><div class="ms">promedio zona</div></div></div>' +
+    '<div style="margin-top:10px">' + pos + neg + '</div></div></div>' +
+
+    '<div class="card"><div class="ct">Análisis del mercado</div>' +
+    '<div style="font-size:13px;color:#1a1a18;line-height:1.7">' + d.analisis + '</div></div>';
+}
+</script>
+</body>
+</html>
