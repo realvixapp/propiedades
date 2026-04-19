@@ -19,7 +19,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .topbar{padding:12px 20px;background:#fff;border-bottom:0.5px solid #e0ddd6;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .topbar-t{font-size:14px;font-weight:500;color:#1a1a18}
-.badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#e6f1fb;color:#185FA5}
 .badge-real{font-size:11px;padding:3px 8px;border-radius:20px;background:#eaf3de;color:#3B6D11;font-weight:500}
 .content{flex:1;overflow-y:auto;padding:18px;display:flex;gap:14px}
 .lp{width:275px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
@@ -37,9 +36,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .btn:disabled{opacity:0.5;cursor:not-allowed}
 .apisec{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:7px}
 .apisec label{font-size:12px;color:#888780}
-.apisec select,.apisec input{width:100%;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;font-family:inherit;outline:none}
-.chip{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
-.chip.free{border-color:#3B6D11;color:#3B6D11;background:#eaf3de}
+.apisec input{width:100%;padding:7px 10px;border:0.5px solid #b4b2a9;border-radius:8px;font-size:13px;background:#fff;color:#1a1a18;font-family:inherit;outline:none}
 .ok{font-size:11px;color:#3B6D11}
 .warn{font-size:11px;color:#BA7517}
 .hint{font-size:11px;color:#888780;line-height:1.5}
@@ -50,15 +47,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .rs{font-size:13px;color:#888780;margin-top:7px}
 .mg{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
 .met{background:#f5f5f3;border-radius:8px;padding:9px 11px}
-.ml{font-size:11px;color:#888780;margin-bottom:2px}
+.ml-l{font-size:11px;color:#888780;margin-bottom:2px}
 .mv{font-size:15px;font-weight:500;color:#1a1a18}
 .ms{font-size:11px;color:#888780;margin-top:1px}
 .cl{display:flex;flex-direction:column;gap:5px}
-.ci{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;background:#f5f5f3;border-radius:8px;gap:8px}
-.ci-link{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#185FA5;background:#e6f1fb;border:0.5px solid #9BB8D8;border-radius:6px;padding:3px 7px;text-decoration:none;white-space:nowrap;flex-shrink:0;cursor:pointer;transition:background 0.15s}
-.ci-link:hover{background:#cce0f5}
-.ci-link.real{color:#3B6D11;background:#eaf3de;border-color:#8bb84a}
-.ca{font-size:12px;color:#1a1a18}
+.ci{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;background:#f5f5f3;border-radius:8px;gap:8px;cursor:default}
+.ci:hover{background:#edf2f7}
+.btn-ver{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#185FA5;background:#e6f1fb;border:0.5px solid #9BB8D8;border-radius:6px;padding:4px 8px;white-space:nowrap;flex-shrink:0;cursor:pointer;transition:background 0.15s;border:none;font-family:inherit}
+.btn-ver:hover{background:#cce0f5}
+.ca{font-size:12px;color:#1a1a18;font-weight:500}
 .cd{font-size:11px;color:#888780;margin-top:1px}
 .cp{font-size:13px;font-weight:500;color:#1a1a18;text-align:right}
 .cm{font-size:11px;color:#888780}
@@ -71,7 +68,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bf.hl{background:#185FA5}
 .bf.nm{background:#9FB8D8}
 .tag-g{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;background:#eaf3de;color:#3B6D11}
-.tag-real{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;background:#eaf3de;color:#3B6D11;border:0.5px solid #8bb84a}
+.tag-real{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;background:#eaf3de;color:#3B6D11;border:0.5px solid #8bb84a;margin-left:6px}
 .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:10px;background:#f5f5f3;border-radius:12px;text-align:center;border:0.5px dashed #b4b2a9}
 .ph-t{font-size:13px;font-weight:500;color:#1a1a18}
 .ph-s{font-size:12px;color:#888780;max-width:260px;line-height:1.6}
@@ -81,14 +78,46 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ld span:nth-child(2){animation-delay:0.2s}
 .ld span:nth-child(3){animation-delay:0.4s}
 @keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
-.src-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
-.src-tag{font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
-.fuente-nota{font-size:10px;color:#3B6D11;background:#eaf3de;border:0.5px solid #b4d98a;border-radius:6px;padding:5px 9px;margin-top:8px;line-height:1.5}
-.loading-steps{display:flex;flex-direction:column;gap:6px;padding:10px 0}
-.lstep{font-size:12px;color:#888780;display:flex;align-items:center;gap:7px}
-.lstep.done{color:#3B6D11}
-.lstep.active{color:#185FA5;font-weight:500}
-@media(max-width:700px){.app{flex-direction:column}.sidebar{width:100%;border-right:none;border-bottom:0.5px solid #e0ddd6}.content{flex-direction:column}.lp{width:100%}}
+.fuente-nota{font-size:11px;color:#3B6D11;background:#eaf3de;border:0.5px solid #b4d98a;border-radius:8px;padding:7px 11px;line-height:1.5}
+
+/* ── POPUP ── */
+.popup-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.popup-box{background:#fff;border-radius:14px;width:100%;max-width:620px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 8px 40px rgba(0,0,0,0.18);overflow:hidden}
+.popup-header{padding:14px 18px;border-bottom:0.5px solid #e0ddd6;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.popup-title{font-size:14px;font-weight:500;color:#1a1a18}
+.popup-close{background:none;border:none;font-size:18px;color:#888780;cursor:pointer;padding:2px 6px;border-radius:6px;line-height:1}
+.popup-close:hover{background:#f5f5f3}
+.popup-body{flex:1;overflow-y:auto;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.popup-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:30px 0;color:#888780;font-size:13px}
+.popup-prop-card{background:#f5f5f3;border-radius:10px;padding:13px 15px;display:flex;flex-direction:column;gap:5px}
+.popup-prop-title{font-size:13px;font-weight:500;color:#1a1a18}
+.popup-prop-detail{font-size:12px;color:#888780}
+.popup-prop-price{font-size:18px;font-weight:500;color:#185FA5;margin-top:4px}
+.popup-prop-m2{font-size:12px;color:#888780}
+.popup-results{display:flex;flex-direction:column;gap:8px}
+.popup-result-item{border:0.5px solid #e0ddd6;border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;transition:border-color 0.15s}
+.popup-result-item:hover{border-color:#9BB8D8}
+.pri-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.pri-title{font-size:13px;font-weight:500;color:#1a1a18;line-height:1.4}
+.pri-price{font-size:14px;font-weight:500;color:#185FA5;flex-shrink:0}
+.pri-detail{font-size:11px;color:#888780;line-height:1.5}
+.pri-footer{display:flex;align-items:center;justify-content:space-between;margin-top:2px}
+.pri-source{font-size:10px;color:#888780;background:#f5f5f3;padding:2px 7px;border-radius:20px}
+.btn-ir{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#fff;background:#185FA5;border:none;border-radius:7px;padding:5px 10px;cursor:pointer;font-family:inherit;text-decoration:none;transition:opacity 0.15s}
+.btn-ir:hover{opacity:0.85}
+.popup-no-results{text-align:center;padding:20px;font-size:13px;color:#888780;line-height:1.6}
+.popup-section-title{font-size:11px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+.src-divider{display:flex;align-items:center;gap:8px;margin:4px 0}
+.src-divider span{font-size:10px;color:#b4b2a9;white-space:nowrap}
+.src-divider::before,.src-divider::after{content:'';flex:1;height:0.5px;background:#e0ddd6}
+
+@media(max-width:700px){
+  .app{flex-direction:column}
+  .sidebar{width:100%;border-right:none;border-bottom:0.5px solid #e0ddd6}
+  .content{flex-direction:column}
+  .lp{width:100%}
+  .popup-box{max-height:92vh}
+}
 </style>
 </head>
 <body>
@@ -121,16 +150,16 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="main">
     <div class="topbar">
       <div class="topbar-t">Tasación de propiedad</div>
-      <span class="badge-real" id="badge-prov">⚡ Claude + Web Search Real</span>
+      <span class="badge-real">Groq · Llama 3.3 · Comparables Reales</span>
     </div>
     <div class="content">
       <div class="lp">
         <div class="apisec">
-          <label>Clave API — Anthropic (Claude)</label>
-          <input type="password" id="apikey" placeholder="sk-ant-..." oninput="checkKey()"/>
+          <label>Clave API — Groq (gratis)</label>
+          <input type="password" id="apikey" placeholder="gsk_..." oninput="checkKey()"/>
           <div id="key-status"></div>
-          <div id="key-hint">
-            <span class="hint">Claude usa <strong>web_search</strong> para buscar comparables reales en Zonaprop y MercadoLibre en tiempo real. · <a href="https://console.anthropic.com/keys" target="_blank" style="color:#185FA5">Obtener clave</a></span>
+          <div style="font-size:11px;color:#888780;line-height:1.5">
+            Plan gratuito en <a href="https://console.groq.com/keys" target="_blank" style="color:#185FA5">console.groq.com</a>
           </div>
         </div>
 
@@ -163,31 +192,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <div class="field"><label>Extras (opcional)</label>
             <input type="text" id="extras" placeholder="cochera, amenities, piscina..."/>
           </div>
-          <button class="btn" id="btn-tasar" onclick="tasar()">Calcular tasación con datos reales ↗</button>
+          <button class="btn" id="btn-tasar" onclick="tasar()">Calcular tasación ↗</button>
         </div>
 
         <div class="card">
-          <div class="ct">Cómo funciona</div>
-          <div style="font-size:12px;color:#888780;line-height:1.7">
-            <div style="margin-bottom:5px">🔍 <strong style="color:#1a1a18">Búsqueda real:</strong> Claude usa web_search para consultar Zonaprop y MercadoLibre ahora.</div>
-            <div style="margin-bottom:5px">📊 <strong style="color:#1a1a18">Comparables reales:</strong> Los precios y propiedades son de anuncios activos.</div>
-            <div>💡 <strong style="color:#1a1a18">No inventa:</strong> Si no encuentra datos, lo indica.</div>
+          <div class="ct" style="margin-bottom:6px">Cómo funciona</div>
+          <div style="font-size:11px;color:#888780;line-height:1.7">
+            🤖 <strong style="color:#1a1a18">Groq/Llama</strong> calcula la tasación<br>
+            🔍 <strong style="color:#1a1a18">Clic en "Ver"</strong> busca anuncios reales en Zonaprop y MercadoLibre en ese momento<br>
+            🔗 <strong style="color:#1a1a18">Ir al anuncio</strong> abre la URL original
           </div>
         </div>
       </div>
 
       <div class="rp" id="rp">
         <div class="ph">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="14" r="8" stroke="#b4b2a9" stroke-width="1.5" fill="none"/><path d="M26 26c0-4.4-3.6-8-8-8s-8 3.6-8 8" stroke="#b4b2a9" stroke-width="1.5" stroke-linecap="round"/></svg>
-          <div class="ph-t">Tasación con comparables reales</div>
-          <div class="ph-s">Claude busca propiedades reales en Zonaprop y MercadoLibre antes de tasar. Los comparables son anuncios activos, no inventados.</div>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="16" width="28" height="16" rx="2" stroke="#b4b2a9" stroke-width="1.5"/><path d="M12 16V10a6 6 0 0 1 12 0v6" stroke="#b4b2a9" stroke-width="1.5"/><circle cx="18" cy="24" r="2" fill="#b4b2a9"/></svg>
+          <div class="ph-t">Completá los datos y calculá</div>
+          <div class="ph-s">Groq analiza el mercado y podés ver comparables reales de Zonaprop y MercadoLibre con un clic.</div>
         </div>
       </div>
     </div>
   </div>
 </div>
 
+<!-- POPUP -->
+<div class="popup-overlay" id="popup" style="display:none" onclick="closePopupOutside(event)">
+  <div class="popup-box">
+    <div class="popup-header">
+      <div class="popup-title" id="popup-title">Buscando comparable...</div>
+      <button class="popup-close" onclick="closePopup()">✕</button>
+    </div>
+    <div class="popup-body" id="popup-body">
+      <div class="popup-loading">
+        <div class="ld"><span></span><span></span><span></span></div>
+        Buscando en Zonaprop y MercadoLibre...
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
+// ── Datos ──────────────────────────────────────────────────────────────────
 const barrios = {
   "Morón":["Morón Centro","Castelar","El Palomar","Haedo","Castelar Norte","Villa del Parque Morón"],
   "La Matanza":["Ramos Mejía","San Justo","Isidro Casanova","Tapiales","Ciudad Evita","Gregorio de Laferrere"],
@@ -214,34 +260,23 @@ updateBarrios();
 function checkKey() {
   const k = document.getElementById("apikey").value.trim();
   const el = document.getElementById("key-status");
-  if (k.length > 10 && k.startsWith("sk-ant-")) { el.className = "ok"; el.textContent = "✓ Clave válida"; }
-  else if (k.length > 0) { el.className = "warn"; el.textContent = "Formato esperado: sk-ant-..."; }
+  if (k.length > 10 && k.startsWith("gsk_")) { el.className = "ok"; el.textContent = "✓ Clave válida"; }
+  else if (k.length > 0) { el.className = "warn"; el.textContent = "Formato esperado: gsk_..."; }
   else { el.className = ""; el.textContent = ""; }
 }
 
 function fmt(n) { return Number(Math.round(n)).toLocaleString("es-AR"); }
 
-function showLoadingSteps(steps) {
-  return '<div class="card"><div class="ct">Buscando datos reales</div>' +
-    '<div class="loading-steps">' +
-    steps.map((s, i) =>
-      `<div class="lstep ${i===0?'active':''}" id="lstep-${i}">
-        <div class="ld"><span></span><span></span><span></span></div>
-        ${s}
-      </div>`
-    ).join("") +
-    '</div></div>';
-}
-
+// ── Tasación con Groq ──────────────────────────────────────────────────────
 async function tasar() {
   const key = document.getElementById("apikey").value.trim();
-  if (!key || !key.startsWith("sk-ant-")) {
-    alert("Ingresá tu clave de Anthropic.\nFormato: sk-ant-...\nObtener en: console.anthropic.com/keys");
+  if (!key || !key.startsWith("gsk_")) {
+    alert("Ingresá tu clave de Groq.\nFormato: gsk_...\nObtener gratis en: console.groq.com/keys");
     return;
   }
 
   const btn = document.getElementById("btn-tasar");
-  btn.disabled = true; btn.textContent = "Buscando datos reales...";
+  btn.disabled = true; btn.textContent = "Analizando...";
 
   const tipo    = document.getElementById("tipo").value;
   const partido = document.getElementById("partido").value;
@@ -254,137 +289,74 @@ async function tasar() {
   const estado  = document.getElementById("estado").value;
   const extras  = document.getElementById("extras").value;
 
-  document.getElementById("rp").innerHTML = showLoadingSteps([
-    "Buscando comparables en Zonaprop...",
-    "Buscando comparables en MercadoLibre...",
-    "Analizando precios del mercado real...",
-    "Calculando tasación..."
-  ]);
+  document.getElementById("rp").innerHTML =
+    '<div class="card"><div class="ct">Analizando mercado</div>' +
+    '<div style="padding:20px 0;display:flex;align-items:center;gap:10px;color:#888780;font-size:13px">' +
+    '<div class="ld"><span></span><span></span><span></span></div> Consultando Groq · Llama 3.3...</div></div>';
 
-  // Prompt mejorado que instruye a Claude a usar web_search OBLIGATORIAMENTE
-  const systemPrompt = `Sos un tasador inmobiliario experto en el Gran Buenos Aires (GBA), Argentina.
-Tu tarea es tasar una propiedad usando EXCLUSIVAMENTE datos reales obtenidos mediante búsquedas web.
-
-PROCESO OBLIGATORIO:
-1. Buscá en Zonaprop: inmuebles similares en ${barrio}, ${partido}
-2. Buscá en MercadoLibre Inmuebles: inmuebles similares en ${barrio}, ${partido}  
-3. Buscá precios m² en ${partido} o ${barrio} actuales 2025-2026
-4. Con esos datos reales, calculá la tasación
-
-REGLAS ESTRICTAS:
-- Los comparables DEBEN ser propiedades reales que encontraste en las búsquedas
-- Si encontrás URLs de Zonaprop o MercadoLibre, incluilas en url_fuente
-- Si no encontrás datos reales de una dirección específica, ponés "Ver búsqueda" como dirección
-- NO inventes precios ni direcciones — usá solo lo que encontraste
-- El campo "fuente_busqueda" debe indicar de dónde obtuviste cada dato
-
-Respondé SOLO con JSON válido, sin texto adicional, sin backticks:
-{
-  "valor_publicacion": 82500,
-  "valor_cierre": 78400,
-  "precio_m2": 1269,
-  "rango_min": 76000,
-  "rango_max": 89000,
-  "ajuste_cierre_pct": -4.9,
-  "mercado_estado": "Activo",
-  "oferta_activa": 47,
-  "tiempo_mercado_dias": 68,
-  "comparables": [
-    {
-      "direccion": "Dirección o descripción real encontrada",
-      "detalle": "Xm2 Xamb pisoX",
-      "precio_usd": 80000,
-      "precio_m2": 1270,
-      "url_fuente": "https://url-real-de-zonaprop-o-ml.com o null",
-      "fuente": "Zonaprop"
-    }
-  ],
-  "zonas_m2": [
-    {"zona": "${barrio}", "precio": 1269, "es_sujeto": true},
-    {"zona": "barrio vecino real", "precio": 1180, "es_sujeto": false},
-    {"zona": "barrio vecino real", "precio": 1070, "es_sujeto": false}
-  ],
-  "factores_positivos": ["Factor real 1", "Factor real 2"],
-  "factores_negativos": ["Factor real 1"],
-  "fuentes_consultadas": ["Zonaprop", "MercadoLibre"],
-  "analisis": "2-3 oraciones fundamentando la tasación con los datos reales encontrados."
-}`;
-
-  const userPrompt = `Tasá esta propiedad buscando comparables REALES en Zonaprop y MercadoLibre:
-
-- Tipo: ${tipo}
-- Partido: ${partido}
-- Barrio: ${barrio}
-- Superficie total: ${sup} m²
-- Superficie cubierta: ${cub} m²
-- Ambientes: ${amb}
-- Antigüedad: ${ant}
-- Piso: ${piso}
-- Estado: ${estado}
-- Extras: ${extras || "ninguno"}
-
-Buscá ahora mismo en Zonaprop y MercadoLibre propiedades similares en ${barrio}, ${partido}. Usá web_search con queries como:
-- "departamento ${amb} ambientes ${barrio} ${partido} venta zonaprop"
-- "departamento venta ${barrio} ${partido} mercadolibre"
-- "precio m2 ${barrio} ${partido} 2025"
-
-Devolvé solo JSON con los datos reales que encontraste.`;
+  const prompt =
+    "Sos un tasador inmobiliario experto en el mercado del Gran Buenos Aires (GBA), Argentina.\n" +
+    "Respondé SOLO con JSON válido, sin texto adicional, sin backticks, sin markdown.\n\n" +
+    "Propiedad a tasar:\n" +
+    "- Tipo: " + tipo + "\n- Partido: " + partido + "\n- Barrio: " + barrio +
+    "\n- Superficie total: " + sup + " m²\n- Superficie cubierta: " + cub + " m²" +
+    "\n- Ambientes: " + amb + "\n- Antigüedad: " + ant +
+    "\n- Piso: " + piso + "\n- Estado: " + estado +
+    "\n- Extras: " + (extras || "ninguno") + "\n\n" +
+    "Devolvé exactamente este JSON con valores reales del mercado GBA 2025-2026 en USD:\n" +
+    '{"valor_publicacion":82500,"valor_cierre":78400,"precio_m2":1269,"rango_min":76000,"rango_max":89000,' +
+    '"ajuste_cierre_pct":-4.9,"mercado_estado":"Activo","oferta_activa":47,"tiempo_mercado_dias":68,' +
+    '"comparables":[' +
+    '{"descripcion":"' + amb + ' amb ' + cub + 'm² piso alto estado similar","ambientes":' + amb + ',"superficie":' + cub + ',"precio_usd":80000,"precio_m2":1270},' +
+    '{"descripcion":"' + amb + ' amb ' + Math.round(+cub+5) + 'm² con cochera","ambientes":' + amb + ',"superficie":' + Math.round(+cub+5) + ',"precio_usd":91000,"precio_m2":1310},' +
+    '{"descripcion":"' + amb + ' amb ' + Math.round(+cub-5) + 'm² a reciclar","ambientes":' + amb + ',"superficie":' + Math.round(+cub-5) + ',"precio_usd":68000,"precio_m2":1200}],' +
+    '"zonas_m2":[{"zona":"' + barrio + '","precio":1269,"es_sujeto":true},' +
+    '{"zona":"barrio_vecino_1","precio":1180,"es_sujeto":false},' +
+    '{"zona":"barrio_vecino_2","precio":1070,"es_sujeto":false},' +
+    '{"zona":"barrio_vecino_3","precio":990,"es_sujeto":false}],' +
+    '"factores_positivos":["Factor positivo real 1","Factor positivo real 2"],' +
+    '"factores_negativos":["Factor negativo real 1"],' +
+    '"analisis":"2-3 oraciones fundamentando la tasacion con datos reales del mercado."}\n\n' +
+    "Reglas: precios USD reales GBA 2025-2026; zonas_m2 con barrios reales de " + partido + "; ajuste_cierre_pct entre -3 y -8; solo JSON puro sin ningún texto extra.";
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": key,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true"
-      },
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 4000,
-        system: systemPrompt,
-        tools: [
-          {
-            type: "web_search_20250305",
-            name: "web_search"
-          }
-        ],
-        messages: [{ role: "user", content: userPrompt }]
+        model: "llama-3.3-70b-versatile",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.2,
+        max_tokens: 1200
       })
     });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
 
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error?.message || "Error " + response.status);
-
-    // Extraer el texto final de la respuesta (puede venir después de tool_use blocks)
-    let raw = "";
-    for (const block of (data.content || [])) {
-      if (block.type === "text") raw += block.text;
-    }
-    raw = raw.replace(/```json|```/g, "").trim();
-
-    // Intentar extraer JSON si hay texto extra
-    const jsonMatch = raw.match(/\{[\s\S]*\}/);
-    if (jsonMatch) raw = jsonMatch[0];
+    let raw = (data.choices?.[0]?.message?.content || "").replace(/```json|```/g,"").trim();
+    const m = raw.match(/\{[\s\S]*\}/);
+    if (m) raw = m[0];
 
     let d;
     try { d = JSON.parse(raw); }
     catch(e) {
       document.getElementById("rp").innerHTML =
-        '<div class="card"><div class="err">Error al parsear respuesta. La IA no devolvió JSON válido.<br><small style="opacity:0.7">' + raw.slice(0,400) + '</small></div></div>';
-      btn.disabled = false; btn.textContent = "Reintentar ↗"; return;
+        '<div class="card"><div class="err">Error al parsear respuesta. Intentá de nuevo.<br><small style="opacity:0.7">' + raw.slice(0,300) + '</small></div></div>';
+      btn.disabled = false; btn.textContent = "Calcular tasación ↗"; return;
     }
 
-    renderResult(d, barrio, sup);
+    // Guardar contexto para el popup
+    window._tasContext = { tipo, partido, barrio, sup, cub, amb, ant, estado };
+    renderResult(d, barrio, sup, amb, partido);
   } catch(e) {
     document.getElementById("rp").innerHTML =
-      '<div class="card"><div class="err">Error: ' + e.message +
-      '<br><small style="opacity:0.7">Verificá tu clave de Anthropic y que tengas saldo disponible.</small></div></div>';
+      '<div class="card"><div class="err">Error con Groq: ' + e.message + '</div></div>';
   }
   btn.disabled = false; btn.textContent = "Recalcular ↗";
 }
 
-function renderResult(d, barrio, sup) {
+// ── Render resultado ───────────────────────────────────────────────────────
+function renderResult(d, barrio, sup, amb, partido) {
   const maxZ = Math.max(...(d.zonas_m2||[]).map(z => z.precio));
   const bars = (d.zonas_m2||[]).map(z => {
     const pct = Math.round((z.precio/maxZ)*85+10);
@@ -392,23 +364,28 @@ function renderResult(d, barrio, sup) {
       (z.es_sujeto?"hl":"nm") + '" style="width:' + pct + '%"><span>USD ' + fmt(z.precio) + (z.es_sujeto?" ★":"") + '</span></div></div></div>';
   }).join("");
 
-  const comps = (d.comparables||[]).map(c => {
-    // Construir links: si tiene URL real, usarla; si no, búsqueda genérica
-    const zonaSearch = "https://www.zonaprop.com.ar/inmuebles-venta-" + encodeURIComponent(barrio.toLowerCase().replace(/\s+/g,"-")) + ".html";
-    const mlSearch = "https://inmuebles.mercadolibre.com.ar/venta/_DisplayType_G#D[A:" + encodeURIComponent(barrio + " " + document.getElementById("partido").value) + "]";
-    const urlFuente = c.url_fuente && c.url_fuente !== "null" ? c.url_fuente : null;
-    const fuente = c.fuente || "Zonaprop";
-
+  const comps = (d.comparables||[]).map((c, i) => {
+    const label = c.descripcion || (c.detalle || ("Comparable " + (i+1)));
+    const dataEnc = encodeURIComponent(JSON.stringify({
+      desc: label,
+      amb: c.ambientes || amb,
+      sup: c.superficie || sup,
+      precio_usd: c.precio_usd,
+      precio_m2: c.precio_m2
+    }));
     return '<div class="ci">' +
-      '<div style="flex:1;min-width:0"><div class="ca">' + c.direccion + '</div><div class="cd">' + c.detalle + '</div></div>' +
-      '<div style="text-align:right;flex-shrink:0"><div class="cp">USD ' + fmt(c.precio_usd) + '</div><div class="cm">' + fmt(c.precio_m2) + '/m²</div></div>' +
-      '<div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">' +
-      (urlFuente
-        ? '<a class="ci-link real" href="' + urlFuente + '" target="_blank">🔗 Ver anuncio real</a>'
-        : '<a class="ci-link" href="' + zonaSearch + '" target="_blank">Zonaprop</a>' +
-          '<a class="ci-link" href="' + mlSearch + '" target="_blank">ML</a>'
-      ) +
-      '</div></div>';
+      '<div style="flex:1;min-width:0">' +
+        '<div class="ca">' + label + '</div>' +
+        '<div class="cd">' + fmt(c.precio_m2) + ' USD/m²</div>' +
+      '</div>' +
+      '<div style="text-align:right;flex-shrink:0;margin-right:8px">' +
+        '<div class="cp">USD ' + fmt(c.precio_usd) + '</div>' +
+      '</div>' +
+      '<button class="btn-ver" onclick="abrirPopup(' + "'" + dataEnc + "'" + ',\'' + encodeURIComponent(barrio) + '\',\'' + encodeURIComponent(partido) + '\')">' +
+        '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>' +
+        ' Ver real' +
+      '</button>' +
+    '</div>';
   }).join("");
 
   const pos = (d.factores_positivos||[]).map(f =>
@@ -420,12 +397,8 @@ function renderResult(d, barrio, sup) {
 
   const aj = (d.ajuste_cierre_pct >= 0 ? "+" : "") + d.ajuste_cierre_pct;
   const m2c = Math.round(d.valor_cierre / (sup||1));
-  const fuentes = (d.fuentes_consultadas||["Web"]).join(", ");
 
   document.getElementById("rp").innerHTML =
-    // Nota de fuentes reales
-    '<div class="fuente-nota">🔍 Datos obtenidos en tiempo real mediante búsqueda web en: <strong>' + fuentes + '</strong>. Los comparables son anuncios activos encontrados ahora.</div>' +
-
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
     '<div class="card rb"><div class="rl">Valor de publicación</div><div class="rv">USD ' + fmt(d.valor_publicacion) + '</div>' +
     '<div class="rr">Rango: USD ' + fmt(d.rango_min) + ' – ' + fmt(d.rango_max) + '</div><div class="rs">USD ' + fmt(d.precio_m2) + '/m²</div></div>' +
@@ -435,15 +408,211 @@ function renderResult(d, barrio, sup) {
     '<div class="card"><div class="ct">Precio m² por zona — comparación</div><div class="bc">' + bars + '</div></div>' +
 
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
-    '<div class="card"><div class="ct">Comparables activos <span class="tag-real">Datos reales</span></div><div class="cl">' + comps + '</div></div>' +
+    '<div class="card"><div class="ct">Comparables estimados <span class="tag-real">🔍 Clic "Ver real"</span></div>' +
+    '<div class="fuente-nota" style="margin-bottom:10px;font-size:10px">Los comparables son estimaciones de Groq. Clic en <strong>"Ver real"</strong> para buscar anuncios reales ahora mismo en Zonaprop y MercadoLibre.</div>' +
+    '<div class="cl">' + comps + '</div></div>' +
     '<div class="card"><div class="ct">Métricas de mercado</div>' +
-    '<div class="mg"><div class="met"><div class="ml">Oferta activa</div><div class="mv">' + d.oferta_activa + '</div><div class="ms">propiedades similares</div></div>' +
-    '<div class="met"><div class="ml">Tiempo mercado</div><div class="mv">' + d.tiempo_mercado_dias + 'd</div><div class="ms">promedio zona</div></div></div>' +
+    '<div class="mg"><div class="met"><div class="ml-l">Oferta activa</div><div class="mv">' + d.oferta_activa + '</div><div class="ms">propiedades similares</div></div>' +
+    '<div class="met"><div class="ml-l">Tiempo mercado</div><div class="mv">' + d.tiempo_mercado_dias + 'd</div><div class="ms">promedio zona</div></div></div>' +
     '<div style="margin-top:10px">' + pos + neg + '</div></div></div>' +
 
     '<div class="card"><div class="ct">Análisis del mercado</div>' +
     '<div style="font-size:13px;color:#1a1a18;line-height:1.7">' + d.analisis + '</div></div>';
 }
+
+// ── POPUP: buscar comparables reales ──────────────────────────────────────
+async function abrirPopup(dataEnc, barrioEnc, partidoEnc) {
+  const comp = JSON.parse(decodeURIComponent(dataEnc));
+  const barrio = decodeURIComponent(barrioEnc);
+  const partido = decodeURIComponent(partidoEnc);
+
+  document.getElementById("popup-title").textContent = "Buscando comparable real en " + barrio;
+  document.getElementById("popup-body").innerHTML =
+    '<div class="popup-loading"><div class="ld"><span></span><span></span><span></span></div>Buscando en Zonaprop y MercadoLibre...</div>';
+  document.getElementById("popup").style.display = "flex";
+
+  // Card del comparable estimado
+  const propCard =
+    '<div class="popup-prop-card">' +
+    '<div class="popup-prop-title">📋 Comparable estimado por Groq</div>' +
+    '<div class="popup-prop-detail">' + comp.desc + '</div>' +
+    '<div class="popup-prop-price">USD ' + fmt(comp.precio_usd) + '</div>' +
+    '<div class="popup-prop-m2">USD ' + fmt(comp.precio_m2) + '/m²</div>' +
+    '</div>';
+
+  try {
+    // Buscar en Zonaprop y MercadoLibre via AllOrigins proxy
+    const [zpResults, mlResults] = await Promise.all([
+      buscarZonaprop(barrio, partido, comp.amb, comp.sup),
+      buscarML(barrio, partido, comp.amb, comp.sup)
+    ]);
+
+    const allResults = [...zpResults, ...mlResults];
+
+    let resultsHTML = '';
+    if (allResults.length === 0) {
+      resultsHTML = '<div class="popup-no-results">No se encontraron anuncios en este momento.<br><br>' +
+        '<a href="' + urlZonapropBuscar(barrio, partido, comp.amb) + '" target="_blank" class="btn-ir">🔍 Buscar manualmente en Zonaprop</a>' +
+        '</div>';
+    } else {
+      // Separar por fuente
+      const zp = allResults.filter(r => r.fuente === "Zonaprop");
+      const ml = allResults.filter(r => r.fuente === "MercadoLibre");
+
+      if (zp.length) {
+        resultsHTML += '<div class="src-divider"><span>Zonaprop</span></div>';
+        resultsHTML += zp.map(renderResultItem).join("");
+      }
+      if (ml.length) {
+        resultsHTML += '<div class="src-divider"><span>MercadoLibre</span></div>';
+        resultsHTML += ml.map(renderResultItem).join("");
+      }
+    }
+
+    document.getElementById("popup-title").textContent = "Comparables reales — " + barrio + " (" + allResults.length + " encontrados)";
+    document.getElementById("popup-body").innerHTML =
+      propCard +
+      '<div class="popup-section-title">Anuncios activos encontrados ahora</div>' +
+      '<div class="popup-results">' + resultsHTML + '</div>';
+
+  } catch(e) {
+    // Si falla el fetch (CORS), mostrar links directos
+    document.getElementById("popup-title").textContent = "Ver en portales reales — " + barrio;
+    document.getElementById("popup-body").innerHTML =
+      propCard +
+      '<div class="popup-no-results" style="text-align:left">' +
+      '<div style="font-size:12px;color:#888780;margin-bottom:12px">Los portales bloquean el acceso directo desde el browser. Usá los links para buscar manualmente:</div>' +
+      '<div style="display:flex;flex-direction:column;gap:8px">' +
+      '<a href="' + urlZonapropBuscar(barrio, partido, comp.amb) + '" target="_blank" class="btn-ir" style="font-size:12px;padding:8px 12px">🔍 Buscar en Zonaprop — ' + barrio + ' · ' + comp.amb + ' amb</a>' +
+      '<a href="' + urlMLBuscar(barrio, partido, comp.amb) + '" target="_blank" class="btn-ir" style="font-size:12px;padding:8px 12px">🔍 Buscar en MercadoLibre — ' + barrio + ' · ' + comp.amb + ' amb</a>' +
+      '<a href="' + urlProperatiB(barrio, partido) + '" target="_blank" class="btn-ir" style="font-size:12px;padding:8px 12px;background:#888780">🔍 Buscar en Properati</a>' +
+      '</div></div>';
+  }
+}
+
+function renderResultItem(r) {
+  return '<div class="popup-result-item">' +
+    '<div class="pri-header">' +
+      '<div class="pri-title">' + r.titulo + '</div>' +
+      '<div class="pri-price">' + (r.precio || "Consultar") + '</div>' +
+    '</div>' +
+    '<div class="pri-detail">' + r.detalle + '</div>' +
+    '<div class="pri-footer">' +
+      '<span class="pri-source">' + r.fuente + '</span>' +
+      (r.url ? '<a href="' + r.url + '" target="_blank" class="btn-ir">🔗 Ir al anuncio</a>' : '') +
+    '</div>' +
+  '</div>';
+}
+
+// ── Búsquedas reales ──────────────────────────────────────────────────────
+function urlZonapropBuscar(barrio, partido, amb) {
+  const slug = (barrio + "-" + partido).toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
+  return "https://www.zonaprop.com.ar/inmuebles-venta-" + slug + ".html";
+}
+
+function urlMLBuscar(barrio, partido, amb) {
+  const q = encodeURIComponent(barrio + " " + partido + " " + amb + " ambientes");
+  return "https://inmuebles.mercadolibre.com.ar/venta/_DisplayType_G#D[A:" + q + "]";
+}
+
+function urlProperatiB(barrio, partido) {
+  const slug = (barrio).toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
+  return "https://www.properati.com.ar/s/" + slug + "/departamento/venta/";
+}
+
+async function buscarZonaprop(barrio, partido, amb, sup) {
+  const slug = (barrio + "-" + partido).toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
+  const url = "https://www.zonaprop.com.ar/inmuebles-venta-" + slug + ".html";
+  const proxy = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+
+  const r = await fetch(proxy, {signal: AbortSignal.timeout(8000)});
+  const j = await r.json();
+  const html = j.contents || "";
+
+  return parseZonaprop(html, url);
+}
+
+function parseZonaprop(html, baseUrl) {
+  const results = [];
+  // Buscar postings en el HTML de Zonaprop
+  const re = /"postingId":(\d+).*?"title":"([^"]+)".*?"price":\{[^}]*"amount":(\d+)[^}]*"currency":"([^"]+)".*?"surface":(\d+)/g;
+  let m;
+  while ((m = re.exec(html)) !== null && results.length < 4) {
+    results.push({
+      titulo: decodeUnicode(m[2]),
+      precio: m[4] + " " + fmt(parseInt(m[3])),
+      detalle: m[5] + " m²",
+      url: "https://www.zonaprop.com.ar/propiedades/" + m[1] + ".html",
+      fuente: "Zonaprop"
+    });
+  }
+
+  // Fallback: buscar patrones de precio en texto
+  if (results.length === 0) {
+    const re2 = /data-id="(\d+)"[^>]*>[\s\S]{0,800}?<[^>]+class="[^"]*price[^"]*"[^>]*>\s*([^<]+)</gi;
+    let m2;
+    while ((m2 = re2.exec(html)) !== null && results.length < 3) {
+      const precio = m2[2].trim();
+      if (precio.match(/\d{2,}/)) {
+        results.push({
+          titulo: "Propiedad en venta",
+          precio: precio,
+          detalle: "Ver detalles en Zonaprop",
+          url: "https://www.zonaprop.com.ar/propiedades/" + m2[1] + ".html",
+          fuente: "Zonaprop"
+        });
+      }
+    }
+  }
+  return results;
+}
+
+async function buscarML(barrio, partido, amb, sup) {
+  const q = encodeURIComponent(barrio + " " + partido);
+  const apiUrl = "https://api.mercadolibre.com/sites/MLA/search?category=MLA1459&q=" + q + "&price_currency=USD&limit=4";
+
+  const r = await fetch(apiUrl, {signal: AbortSignal.timeout(8000)});
+  const data = await r.json();
+
+  return (data.results || []).slice(0, 4).map(item => ({
+    titulo: item.title,
+    precio: (item.currency_id || "USD") + " " + fmt(item.price),
+    detalle: buildMLDetail(item),
+    url: item.permalink,
+    fuente: "MercadoLibre"
+  }));
+}
+
+function buildMLDetail(item) {
+  const attrs = item.attributes || [];
+  const sup = attrs.find(a => a.id === "TOTAL_AREA" || a.id === "COVERED_AREA");
+  const amb = attrs.find(a => a.id === "ROOMS");
+  const parts = [];
+  if (sup) parts.push(sup.value_name);
+  if (amb) parts.push(amb.value_name + " amb.");
+  if (item.address?.city_name) parts.push(item.address.city_name);
+  return parts.join(" · ") || "Ver detalles";
+}
+
+function decodeUnicode(str) {
+  try { return decodeURIComponent(JSON.parse('"' + str.replace(/"/g, '\\"') + '"')); }
+  catch { return str; }
+}
+
+// ── Popup helpers ──────────────────────────────────────────────────────────
+function closePopup() {
+  document.getElementById("popup").style.display = "none";
+}
+function closePopupOutside(e) {
+  if (e.target === document.getElementById("popup")) closePopup();
+}
+document.addEventListener("keydown", e => { if (e.key === "Escape") closePopup(); });
 </script>
 </body>
 </html>
