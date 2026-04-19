@@ -111,6 +111,17 @@
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .disclaimer { font-size: 11px; color: #ccc; margin-top: 1rem; text-align: center; }
+    
+    .zone-tag {
+      display: inline-block;
+      background: #e8f4ff;
+      color: #0066cc;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
 
     @media (max-width: 600px) {
       .metrics { grid-template-columns: 1fr 1fr; }
@@ -121,7 +132,7 @@
 <body>
 
 <header>
-  <h1>Tasador Inteligente2</h1>
+  <h1>Tasador Inteligente</h1>
   <span>Estimación de valor de mercado en tiempo real</span>
 </header>
 
@@ -137,6 +148,7 @@
           <input type="text" id="zonaInput" placeholder="Escribí la zona... ej: Castelar" autocomplete="off" />
           <div class="ac-list" id="acList"></div>
         </div>
+        <div id="selectedZoneTag"></div>
       </div>
       <div>
         <label>Operación</label>
@@ -167,231 +179,178 @@
           <option value="2">ARS</option>
         </select>
       </div>
+    </div>
+
+    <div class="form-grid">
       <div>
         <label>Ambientes</label>
         <select id="ambientes">
           <option value="">Cualquiera</option>
-          <option value="1">1 ambiente</option>
-          <option value="2">2 ambientes</option>
-          <option value="3">3 ambientes</option>
-          <option value="4">4 o más</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5+</option>
         </select>
       </div>
-    </div>
-    <div class="form-grid">
       <div>
         <label>Precio mínimo</label>
-        <input type="number" id="precioMin" placeholder="Sin límite" />
+        <input type="text" id="precioMin" placeholder="Sin límite" />
       </div>
       <div>
         <label>Precio máximo</label>
-        <input type="number" id="precioMax" placeholder="Sin límite" />
+        <input type="text" id="precioMax" placeholder="Sin límite" />
       </div>
       <div>
         <label>Ordenar por</label>
         <select id="orden">
           <option value="-createdAt">Más recientes</option>
-          <option value="+price">Menor precio</option>
+          <option value="price">Menor precio</option>
           <option value="-price">Mayor precio</option>
         </select>
       </div>
       <div>
         <label>Ver propiedades</label>
-        <select id="estado">
+        <select id="verProps">
           <option value="2">Reservadas</option>
-          <option value="3">En negociación</option>
-          <option value="2,3">Reservadas + Negociación</option>
+          <option value="1">En negociación</option>
         </select>
       </div>
     </div>
-    <button class="btn" id="btnBuscar">Buscar propiedades</button>
+
+    <button id="btnBuscar" class="btn">Buscar propiedades</button>
   </div>
 
-  <!-- RESULTADO -->
+  <!-- SALIDA -->
   <div class="card" id="outputCard" style="display:none;">
+
+    <!-- TABS -->
     <div class="tabs">
       <div class="tab active" data-tab="listado">Listado</div>
       <div class="tab" data-tab="tasacion">Tasación</div>
     </div>
 
-    <!-- TAB LISTADO -->
-    <div class="tab-content active" id="tab-listado">
+    <!-- LISTADO -->
+    <div class="tab-content active" id="listadoContent">
       <div id="listadoOutput"></div>
     </div>
 
-    <!-- TAB TASACION -->
-    <div class="tab-content" id="tab-tasacion">
-      <div class="form-grid" style="margin-bottom:14px; max-width:500px;">
-        <div>
-          <label>Superficie a tasar (m²)</label>
-          <input type="number" id="metrosTasar" placeholder="Ej: 65" min="1" />
-        </div>
-        <div style="display:flex; align-items:flex-end;">
-          <button class="btn" id="btnTasar" style="height:40px; font-size:14px;">Calcular tasación</button>
+    <!-- TASACIÓN -->
+    <div class="tab-content" id="tasacionContent">
+      <div style="margin-bottom: 1.5rem;">
+        <label>Metros cuadrados a tasar</label>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <input type="number" id="metrosTasar" placeholder="Ej: 75" style="flex:1;" />
+          <button id="btnTasar" class="btn" style="flex:0 0 auto; width:auto; padding:0 2rem;">Calcular tasación</button>
         </div>
       </div>
       <div id="tasacionOutput"></div>
     </div>
+
   </div>
 
 </div>
 
 <script>
-  let acTimeout = null;
-  let acItems = [];
-  let acIdx = -1;
-  let zonaFinal = '';
-  let propiedadesCargadas = [];
+  // ── ESTADO ────────────────────────────────────────────────────
+  let zonaSeleccionada = null; // objeto completo: { label, value, geoData }
   let currentPage = 0;
   let totalPagesGlobal = 1;
+  let propiedadesCargadas = [];
+  let timeoutAC;
 
   const zonaInput = document.getElementById('zonaInput');
   const acList = document.getElementById('acList');
-
-  // ── AUTOCOMPLETE ──────────────────────────────────────────────
-  async function fetchZonas(q) {
-    try {
-      const url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
-                + `?page=0&pageSize=100&sort=-createdAt`
-                + `&in=operationId:1,2&in=eStageId:0,1,2,3,4`
-                + `&q=${encodeURIComponent(q)}`;
-      const res = await fetch(url);
-      const json = await res.json();
-      const props = json.data?.data || [];
-      // Agrupar zonas que contengan el texto buscado
-      const mapa = {};
-      props.forEach(p => {
-        if (!p.geoLabel) return;
-        const partes = p.geoLabel.split(',').map(s => s.trim());
-        const ciudad = partes[0];
-        if (ciudad.toLowerCase().includes(q.toLowerCase())) {
-          if (!mapa[ciudad]) mapa[ciudad] = { label: ciudad, sub: partes.slice(1).join(', '), full: ciudad, count: 0 };
-          mapa[ciudad].count++;
-        }
-      });
-      return Object.values(mapa).sort((a,b) => b.count - a.count).slice(0, 8);
-    } catch(e) { return []; }
-  }
-
-  function renderAC(items) {
-    acItems = items;
-    acIdx = -1;
-    if (!items.length) { cerrarAC(); return; }
-    acList.innerHTML = items.map((it, i) => {
-      const label = it.label || it.full || '';
-      const sub = it.sub || '';
-      const countTxt = it.count ? ` (${it.count})` : '';
-      return `<div class="ac-item" data-i="${i}" data-val="${escHtml(it.label || label)}" data-display="${escHtml(label)}">
-        <strong>${escHtml(label)}${countTxt}</strong>
-        ${sub ? `<small>${escHtml(sub)}</small>` : ''}
-      </div>`;
-    }).join('');
-    acList.classList.add('open');
-    acList.querySelectorAll('.ac-item').forEach(el => {
-      el.addEventListener('mousedown', e => {
-        e.preventDefault();
-        elegirZona(el.dataset.val, el.dataset.display);
-      });
-    });
-  }
-
-  function elegirZona(val, display) {
-    zonaInput.value = display || val;
-    zonaFinal = val;
-    cerrarAC();
-  }
-
-  function cerrarAC() {
-    acList.classList.remove('open');
-    acItems = [];
-    acIdx = -1;
-  }
-
-  zonaInput.addEventListener('input', () => {
-    zonaFinal = '';
-    const q = zonaInput.value.trim();
-    clearTimeout(acTimeout);
-    if (q.length < 2) { cerrarAC(); return; }
-    acList.innerHTML = '<div class="ac-loading">Buscando zonas...</div>';
-    acList.classList.add('open');
-    acTimeout = setTimeout(async () => {
-      const items = await fetchZonas(q);
-      if (items.length) {
-        renderAC(items);
-      } else {
-        // si la API de zonas no devuelve nada, usar texto libre
-        zonaFinal = q;
-        cerrarAC();
-      }
-    }, 300);
-  });
-
-  zonaInput.addEventListener('keydown', e => {
-    const items = acList.querySelectorAll('.ac-item');
-    if (!items.length) return;
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      acIdx = Math.min(acIdx + 1, items.length - 1);
-      items.forEach((el, i) => el.classList.toggle('active', i === acIdx));
-      if (items[acIdx]) zonaInput.value = items[acIdx].dataset.display || items[acIdx].dataset.val;
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      acIdx = Math.max(acIdx - 1, 0);
-      items.forEach((el, i) => el.classList.toggle('active', i === acIdx));
-      if (items[acIdx]) zonaInput.value = items[acIdx].dataset.display || items[acIdx].dataset.val;
-    } else if (e.key === 'Enter' && acList.classList.contains('open')) {
-      e.preventDefault();
-      if (acIdx >= 0 && items[acIdx]) {
-        elegirZona(items[acIdx].dataset.val, items[acIdx].dataset.display);
-      } else {
-        zonaFinal = zonaInput.value.trim();
-        cerrarAC();
-        buscar(0);
-      }
-    } else if (e.key === 'Escape') {
-      cerrarAC();
-    }
-  });
-
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.autocomplete-wrap')) cerrarAC();
-  });
+  const zonaTagContainer = document.getElementById('selectedZoneTag');
 
   // ── TABS ──────────────────────────────────────────────────────
-  document.querySelectorAll('.tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      document.getElementById(t.dataset.tab + 'Content').classList.add('active');
     });
   });
 
-  // ── BUILD URL ─────────────────────────────────────────────────
-  function buildURL(page) {
-    const zona     = zonaFinal || zonaInput.value.trim();
-    const op       = document.getElementById('operacion').value;
-    const tipo     = document.getElementById('tipo').value;
-    const moneda   = document.getElementById('moneda').value;
-    const precioMin = document.getElementById('precioMin').value;
-    const precioMax = document.getElementById('precioMax').value;
-    const ambientes = document.getElementById('ambientes').value;
-    const orden    = document.getElementById('orden').value;
-    const estado   = document.getElementById('estado').value;
+  // ── AUTOCOMPLETADO ────────────────────────────────────────────
+  zonaInput.addEventListener('input', () => {
+    clearTimeout(timeoutAC);
+    const val = zonaInput.value.trim();
+    if (val.length < 2) {
+      acList.innerHTML = '';
+      acList.classList.remove('open');
+      return;
+    }
+    acList.innerHTML = '<div class="ac-loading">Buscando...</div>';
+    acList.classList.add('open');
+    timeoutAC = setTimeout(() => fetchAutoComplete(val), 300);
+  });
+
+  async function fetchAutoComplete(q) {
+    try {
+      const url = `https://api-ar.redremax.com/remaxweb-ar/api/locations/findAll?q=${encodeURIComponent(q)}&pageSize=10`;
+      const res = await fetch(url);
+      const json = await res.json();
+      const items = json.data || [];
+      if (!items.length) {
+        acList.innerHTML = '<div class="ac-loading">Sin resultados</div>';
+        return;
+      }
+      acList.innerHTML = items.map(it => `
+        <div class="ac-item" data-geo='${JSON.stringify(it)}'>
+          <strong>${escHtml(it.label)}</strong>
+          <small>${escHtml(it.value)}</small>
+        </div>
+      `).join('');
+
+      acList.querySelectorAll('.ac-item').forEach(el => {
+        el.addEventListener('click', () => {
+          const geoData = JSON.parse(el.getAttribute('data-geo'));
+          zonaSeleccionada = geoData;
+          zonaInput.value = geoData.label;
+          acList.classList.remove('open');
+          
+          // Mostrar tag de zona seleccionada
+          zonaTagContainer.innerHTML = `<span class="zone-tag">📍 ${escHtml(geoData.label)}</span>`;
+        });
+      });
+    } catch(e) {
+      acList.innerHTML = '<div class="ac-loading">Error de conexión</div>';
+    }
+  }
+
+  zonaInput.addEventListener('blur', () => setTimeout(() => acList.classList.remove('open'), 150));
+
+  // ── CONSTRUIR URL ─────────────────────────────────────────────
+  function buildURL(page = 0) {
+    const oper = document.getElementById('operacion').value;
+    const tipo = document.getElementById('tipo').value;
+    const mon  = document.getElementById('moneda').value;
+    const amb  = document.getElementById('ambientes').value;
+    const pmin = document.getElementById('precioMin').value.replace(/\D/g,'');
+    const pmax = document.getElementById('precioMax').value.replace(/\D/g,'');
+    const ord  = document.getElementById('orden').value;
+    const vp   = document.getElementById('verProps').value;
 
     let url = `https://api-ar.redremax.com/remaxweb-ar/api/listings/findAllWithEntrepreneurships`
-            + `?page=${page}&pageSize=21&sort=${orden}`
-            + `&in=operationId:${op}`
-            + `&in=listingStatusId:${estado}`
+            + `?page=${page}&pageSize=50&sort=${ord}`
+            + `&in=operationId:${oper}`
+            + `&in=listingStatusId:${vp}`
             + `&in=eStageId:0,1,2,3,4`;
+    
+    if (tipo) url += `&in=listingTypeId:${tipo}`;
+    if (mon)  url += `&in=currencyId:${mon}`;
+    if (amb)  url += `&eq=totalRooms:${amb === '5' ? '5' : amb}${amb === '5' ? '&gte=totalRooms:5' : ''}`;
+    if (pmin) url += `&gte=price:${pmin}`;
+    if (pmax) url += `&lte=price:${pmax}`;
 
-    if (tipo)      url += `&in=listingTypeId:${tipo}`;
-    if (moneda)    url += `&in=currencyId:${moneda}`;
-    if (precioMin) url += `&gte=price:${precioMin}`;
-    if (precioMax) url += `&lte=price:${precioMax}`;
-    if (ambientes === '4') url += `&gte=totalRooms:4`;
-    else if (ambientes)    url += `&in=totalRooms:${ambientes}`;
-    if (zona)      url += `&q=${encodeURIComponent(zona)}`;
+    // ✅ FILTRO DE ZONA CORREGIDO
+    if (zonaSeleccionada) {
+      // Usar el ID de la ubicación para filtrado preciso
+      const locationId = zonaSeleccionada.id;
+      url += `&in=locationId:${locationId}`;
+    }
 
     return url;
   }
@@ -429,11 +388,14 @@
   // ── BUSCAR ────────────────────────────────────────────────────
   async function buscar(page = 0) {
     currentPage = page;
-    if (!zonaFinal && !zonaInput.value.trim()) { alert('Ingresá una zona'); return; }
-    if (!zonaFinal) zonaFinal = zonaInput.value.trim();
+    
+    if (!zonaSeleccionada) {
+      alert('Por favor, seleccioná una zona del listado que aparece al escribir');
+      return;
+    }
 
     document.getElementById('outputCard').style.display = 'block';
-    document.getElementById('listadoOutput').innerHTML = `<div class="state-box"><div class="spinner"></div>Buscando propiedades...</div>`;
+    document.getElementById('listadoOutput').innerHTML = `<div class="state-box"><div class="spinner"></div>Buscando propiedades en ${escHtml(zonaSeleccionada.label)}...</div>`;
     document.getElementById('tasacionOutput').innerHTML = '';
     window.scrollTo({ top: 300, behavior: 'smooth' });
 
@@ -446,13 +408,13 @@
       propiedadesCargadas = props;
 
       if (!props.length) {
-        document.getElementById('listadoOutput').innerHTML = `<div class="state-box">No se encontraron propiedades con esos filtros.<br>Probá ampliar la búsqueda.</div>`;
+        document.getElementById('listadoOutput').innerHTML = `<div class="state-box">No se encontraron propiedades con esos filtros en <strong>${escHtml(zonaSeleccionada.label)}</strong>.<br>Probá ampliar la búsqueda o cambiar los filtros.</div>`;
         return;
       }
 
       const maxP = totalPagesGlobal;
       document.getElementById('listadoOutput').innerHTML = `
-        <div class="results-meta"><strong>${Number(total).toLocaleString('es-AR')}</strong> propiedades encontradas — página ${page+1} de ${maxP}</div>
+        <div class="results-meta"><strong>${Number(total).toLocaleString('es-AR')}</strong> propiedades encontradas en <strong>${escHtml(zonaSeleccionada.label)}</strong> — página ${page+1} de ${maxP}</div>
         <div class="cards-grid">${renderCards(props)}</div>
         <div class="pagination">
           <button class="btn-page" ${page===0?'disabled':''} onclick="buscar(${page-1})">← Anterior</button>
@@ -469,11 +431,15 @@
   async function tasar() {
     const metros = parseFloat(document.getElementById('metrosTasar').value);
     if (!metros || metros <= 0) { alert('Ingresá los metros cuadrados a tasar'); return; }
+    
+    if (!zonaSeleccionada) {
+      alert('Por favor, seleccioná una zona primero');
+      return;
+    }
 
     const out = document.getElementById('tasacionOutput');
-    out.innerHTML = `<div class="state-box"><div class="spinner"></div>Analizando el mercado...</div>`;
+    out.innerHTML = `<div class="state-box"><div class="spinner"></div>Analizando el mercado en ${escHtml(zonaSeleccionada.label)}...</div>`;
 
-    const zona   = zonaFinal || zonaInput.value.trim();
     const tipo   = document.getElementById('tipo').value;
     const moneda = document.getElementById('moneda').value || '1';
 
@@ -485,8 +451,13 @@
               + `&in=listingStatusId:2`
               + `&in=eStageId:0,1,2,3,4`
               + `&in=currencyId:${moneda}`;
+      
       if (tipo) url += `&in=listingTypeId:${tipo}`;
-      if (zona) url += `&q=${encodeURIComponent(zona)}`;
+      
+      // ✅ FILTRO DE ZONA CORREGIDO PARA TASACIÓN
+      if (zonaSeleccionada) {
+        url += `&in=locationId:${zonaSeleccionada.id}`;
+      }
 
       const res  = await fetch(url);
       const json = await res.json();
@@ -495,7 +466,7 @@
       );
 
       if (props.length < 3) {
-        out.innerHTML = `<div class="state-box">No hay suficientes propiedades con datos de m² en esa zona para calcular una tasación.<br>Probá con una zona más amplia o sin filtrar por tipo.</div>`;
+        out.innerHTML = `<div class="state-box">No hay suficientes propiedades con datos de m² en <strong>${escHtml(zonaSeleccionada.label)}</strong> para calcular una tasación.<br>Probá con una zona más amplia o sin filtrar por tipo.</div>`;
         return;
       }
 
@@ -513,7 +484,7 @@
         <div class="metrics">
           <div class="metric">
             <div class="val">${Math.round(promedio).toLocaleString('es-AR')} ${simbolo}</div>
-            <div class="lbl">Precio promedio por m²</div>
+            <div class="lbl">Precio promedio por m² en ${escHtml(zonaSeleccionada.label)}</div>
           </div>
           <div class="metric">
             <div class="val">${Math.round(minM2).toLocaleString('es-AR')} – ${Math.round(maxM2).toLocaleString('es-AR')}</div>
@@ -529,7 +500,7 @@
           </div>
         </div>
 
-        <div class="section-title">Referencias usadas (${props.length} propiedades)</div>
+        <div class="section-title">Referencias usadas (${props.length} propiedades en ${escHtml(zonaSeleccionada.label)})</div>
         <div class="cards-grid">
           ${props.slice(0,6).map(p => {
             const pm2v = Math.round(p.price / p.dimensionTotalBuilt);
@@ -548,7 +519,7 @@
             </div>`;
           }).join('')}
         </div>
-        <p class="disclaimer">Estimación basada en ${props.length} operaciones cerradas en la zona. Los valores son orientativos.</p>
+        <p class="disclaimer">Estimación basada en ${props.length} operaciones cerradas en ${escHtml(zonaSeleccionada.label)}. Los valores son orientativos.</p>
       `;
 
     } catch(e) {
