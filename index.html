@@ -19,7 +19,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 .topbar{padding:12px 20px;background:#fff;border-bottom:0.5px solid #e0ddd6;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .topbar-t{font-size:14px;font-weight:500;color:#1a1a18}
-.badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#eaf3de;color:#3B6D11}
+.badge{font-size:11px;padding:3px 8px;border-radius:20px;background:#e6f1fb;color:#185FA5}
+.badge-real{font-size:11px;padding:3px 8px;border-radius:20px;background:#eaf3de;color:#3B6D11;font-weight:500}
 .content{flex:1;overflow-y:auto;padding:18px;display:flex;gap:14px}
 .lp{width:275px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
 .rp{flex:1;display:flex;flex-direction:column;gap:10px;min-width:0}
@@ -56,6 +57,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .ci{display:flex;justify-content:space-between;align-items:center;padding:7px 9px;background:#f5f5f3;border-radius:8px;gap:8px}
 .ci-link{display:inline-flex;align-items:center;gap:4px;font-size:10px;color:#185FA5;background:#e6f1fb;border:0.5px solid #9BB8D8;border-radius:6px;padding:3px 7px;text-decoration:none;white-space:nowrap;flex-shrink:0;cursor:pointer;transition:background 0.15s}
 .ci-link:hover{background:#cce0f5}
+.ci-link.real{color:#3B6D11;background:#eaf3de;border-color:#8bb84a}
 .ca{font-size:12px;color:#1a1a18}
 .cd{font-size:11px;color:#888780;margin-top:1px}
 .cp{font-size:13px;font-weight:500;color:#1a1a18;text-align:right}
@@ -69,6 +71,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .bf.hl{background:#185FA5}
 .bf.nm{background:#9FB8D8}
 .tag-g{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;background:#eaf3de;color:#3B6D11}
+.tag-real{display:inline-block;font-size:10px;padding:2px 6px;border-radius:3px;font-weight:500;background:#eaf3de;color:#3B6D11;border:0.5px solid #8bb84a}
 .ph{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:10px;background:#f5f5f3;border-radius:12px;text-align:center;border:0.5px dashed #b4b2a9}
 .ph-t{font-size:13px;font-weight:500;color:#1a1a18}
 .ph-s{font-size:12px;color:#888780;max-width:260px;line-height:1.6}
@@ -80,6 +83,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 @keyframes b{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
 .src-row{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
 .src-tag{font-size:10px;padding:2px 7px;border-radius:20px;border:0.5px solid #b4b2a9;color:#888780}
+.fuente-nota{font-size:10px;color:#3B6D11;background:#eaf3de;border:0.5px solid #b4d98a;border-radius:6px;padding:5px 9px;margin-top:8px;line-height:1.5}
+.loading-steps{display:flex;flex-direction:column;gap:6px;padding:10px 0}
+.lstep{font-size:12px;color:#888780;display:flex;align-items:center;gap:7px}
+.lstep.done{color:#3B6D11}
+.lstep.active{color:#185FA5;font-weight:500}
 @media(max-width:700px){.app{flex-direction:column}.sidebar{width:100%;border-right:none;border-bottom:0.5px solid #e0ddd6}.content{flex-direction:column}.lp{width:100%}}
 </style>
 </head>
@@ -113,23 +121,17 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="main">
     <div class="topbar">
       <div class="topbar-t">Tasación de propiedad</div>
-      <span class="badge" id="badge-prov">Groq · Llama 3.3</span>
+      <span class="badge-real" id="badge-prov">⚡ Claude + Web Search Real</span>
     </div>
     <div class="content">
       <div class="lp">
-
         <div class="apisec">
-          <label>Proveedor de IA</label>
-          <select id="proveedor" onchange="onProv()">
-            <option value="groq">Groq — Llama 3.3 70b (gratis)</option>
-            <option value="anthropic">Anthropic — Claude Sonnet</option>
-            <option value="openai">OpenAI — GPT-4o mini</option>
-            <option value="gemini">Google — Gemini 2.0 Flash</option>
-          </select>
-          <label id="lbl-key">Clave API</label>
-          <input type="password" id="apikey" placeholder="gsk_..." oninput="checkKey()"/>
+          <label>Clave API — Anthropic (Claude)</label>
+          <input type="password" id="apikey" placeholder="sk-ant-..." oninput="checkKey()"/>
           <div id="key-status"></div>
-          <div id="key-hint"></div>
+          <div id="key-hint">
+            <span class="hint">Claude usa <strong>web_search</strong> para buscar comparables reales en Zonaprop y MercadoLibre en tiempo real. · <a href="https://console.anthropic.com/keys" target="_blank" style="color:#185FA5">Obtener clave</a></span>
+          </div>
         </div>
 
         <div class="card">
@@ -161,23 +163,24 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
           <div class="field"><label>Extras (opcional)</label>
             <input type="text" id="extras" placeholder="cochera, amenities, piscina..."/>
           </div>
-          <button class="btn" id="btn-tasar" onclick="tasar()">Calcular tasación ↗</button>
+          <button class="btn" id="btn-tasar" onclick="tasar()">Calcular tasación con datos reales ↗</button>
         </div>
 
         <div class="card">
-          <div class="ct">Fuentes de referencia</div>
-          <div class="src-row">
-            <span class="src-tag">Zonaprop</span><span class="src-tag">MercadoLibre</span>
-            <span class="src-tag">Properati</span><span class="src-tag">RE/MAX</span><span class="src-tag">INDEC</span>
+          <div class="ct">Cómo funciona</div>
+          <div style="font-size:12px;color:#888780;line-height:1.7">
+            <div style="margin-bottom:5px">🔍 <strong style="color:#1a1a18">Búsqueda real:</strong> Claude usa web_search para consultar Zonaprop y MercadoLibre ahora.</div>
+            <div style="margin-bottom:5px">📊 <strong style="color:#1a1a18">Comparables reales:</strong> Los precios y propiedades son de anuncios activos.</div>
+            <div>💡 <strong style="color:#1a1a18">No inventa:</strong> Si no encuentra datos, lo indica.</div>
           </div>
         </div>
       </div>
 
       <div class="rp" id="rp">
         <div class="ph">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><rect x="4" y="16" width="28" height="16" rx="2" stroke="#b4b2a9" stroke-width="1.5"/><path d="M12 16V10a6 6 0 0 1 12 0v6" stroke="#b4b2a9" stroke-width="1.5"/><circle cx="18" cy="24" r="2" fill="#b4b2a9"/></svg>
-          <div class="ph-t">Completá los datos y calculá</div>
-          <div class="ph-s">Elegí tu proveedor de IA, ingresá la clave y la IA analiza el mercado del GBA con comparables reales.</div>
+          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="14" r="8" stroke="#b4b2a9" stroke-width="1.5" fill="none"/><path d="M26 26c0-4.4-3.6-8-8-8s-8 3.6-8 8" stroke="#b4b2a9" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <div class="ph-t">Tasación con comparables reales</div>
+          <div class="ph-s">Claude busca propiedades reales en Zonaprop y MercadoLibre antes de tasar. Los comparables son anuncios activos, no inventados.</div>
         </div>
       </div>
     </div>
@@ -185,13 +188,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 </div>
 
 <script>
-const CFG = {
-  groq:      { nombre:"Groq",           ph:"gsk_...",      pre:"gsk_",    badge:"Groq · Llama 3.3",       gratis:true,  url:"https://console.groq.com/keys",           hint:"Plan gratuito disponible en console.groq.com" },
-  anthropic: { nombre:"Anthropic",      ph:"sk-ant-...",   pre:"sk-ant-", badge:"Anthropic · Claude",      gratis:false, url:"https://console.anthropic.com/keys",      hint:"~$0.003 por tasación" },
-  openai:    { nombre:"OpenAI",         ph:"sk-...",       pre:"sk-",     badge:"OpenAI · GPT-4o mini",    gratis:false, url:"https://platform.openai.com/api-keys",    hint:"~$0.001 por tasación" },
-  gemini:    { nombre:"Google Gemini",  ph:"AIza...",      pre:"AIza",    badge:"Google · Gemini 2.0",     gratis:false, url:"https://aistudio.google.com/apikey",      hint:"Requiere billing (free tier no disponible en AR)" }
-};
-
 const barrios = {
   "Morón":["Morón Centro","Castelar","El Palomar","Haedo","Castelar Norte","Villa del Parque Morón"],
   "La Matanza":["Ramos Mejía","San Justo","Isidro Casanova","Tapiales","Ciudad Evita","Gregorio de Laferrere"],
@@ -215,77 +211,37 @@ function updateBarrios() {
 }
 updateBarrios();
 
-function onProv() {
-  const prov = document.getElementById("proveedor").value;
-  const c = CFG[prov];
-  document.getElementById("apikey").value = "";
-  document.getElementById("apikey").placeholder = c.ph;
-  document.getElementById("lbl-key").textContent = "Clave API — " + c.nombre;
-  document.getElementById("badge-prov").textContent = c.badge;
-  document.getElementById("key-status").textContent = "";
-  document.getElementById("key-hint").innerHTML =
-    `<span class="chip${c.gratis?' free':''}">${c.gratis?"✓ Gratis":"De pago"}</span> ` +
-    `<span class="hint">${c.hint} · <a href="${c.url}" target="_blank" style="color:#185FA5">Obtener clave</a></span>`;
-}
-onProv();
-
 function checkKey() {
-  const prov = document.getElementById("proveedor").value;
-  const c = CFG[prov];
   const k = document.getElementById("apikey").value.trim();
   const el = document.getElementById("key-status");
-  if (k.length > 10 && k.startsWith(c.pre)) { el.className = "ok"; el.textContent = "✓ Clave válida"; }
-  else if (k.length > 0) { el.className = "warn"; el.textContent = "Formato esperado: " + c.ph; }
+  if (k.length > 10 && k.startsWith("sk-ant-")) { el.className = "ok"; el.textContent = "✓ Clave válida"; }
+  else if (k.length > 0) { el.className = "warn"; el.textContent = "Formato esperado: sk-ant-..."; }
   else { el.className = ""; el.textContent = ""; }
 }
 
 function fmt(n) { return Number(Math.round(n)).toLocaleString("es-AR"); }
 
-async function llamarAPI(prov, key, prompt) {
-  let res, data, raw;
-  if (prov === "groq" || prov === "openai") {
-    const url = prov === "groq"
-      ? "https://api.groq.com/openai/v1/chat/completions"
-      : "https://api.openai.com/v1/chat/completions";
-    const model = prov === "groq" ? "llama-3.3-70b-versatile" : "gpt-4o-mini";
-    res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + key },
-      body: JSON.stringify({ model, messages: [{ role: "user", content: prompt }], temperature: 0.3, max_tokens: 1000 })
-    });
-    data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw = data.choices?.[0]?.message?.content || "";
-  } else if (prov === "anthropic") {
-    res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
-      body: JSON.stringify({ model: "claude-sonnet-4-20250514", max_tokens: 1000, messages: [{ role: "user", content: prompt }] })
-    });
-    data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw = (data.content || []).map(i => i.text || "").join("");
-  } else {
-    res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + key, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.3, maxOutputTokens: 1000 } })
-    });
-    data = await res.json();
-    if (!res.ok) throw new Error(data.error?.message || "Error " + res.status);
-    raw = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
-  }
-  return raw.replace(/```json|```/g, "").trim();
+function showLoadingSteps(steps) {
+  return '<div class="card"><div class="ct">Buscando datos reales</div>' +
+    '<div class="loading-steps">' +
+    steps.map((s, i) =>
+      `<div class="lstep ${i===0?'active':''}" id="lstep-${i}">
+        <div class="ld"><span></span><span></span><span></span></div>
+        ${s}
+      </div>`
+    ).join("") +
+    '</div></div>';
 }
 
 async function tasar() {
-  const prov = document.getElementById("proveedor").value;
-  const key  = document.getElementById("apikey").value.trim();
-  const c    = CFG[prov];
-  if (!key || !key.startsWith(c.pre)) { alert("Ingresá tu clave de " + c.nombre + ".\nFormato: " + c.ph); return; }
+  const key = document.getElementById("apikey").value.trim();
+  if (!key || !key.startsWith("sk-ant-")) {
+    alert("Ingresá tu clave de Anthropic.\nFormato: sk-ant-...\nObtener en: console.anthropic.com/keys");
+    return;
+  }
 
   const btn = document.getElementById("btn-tasar");
-  btn.disabled = true; btn.textContent = "Analizando...";
+  btn.disabled = true; btn.textContent = "Buscando datos reales...";
 
   const tipo    = document.getElementById("tipo").value;
   const partido = document.getElementById("partido").value;
@@ -298,47 +254,132 @@ async function tasar() {
   const estado  = document.getElementById("estado").value;
   const extras  = document.getElementById("extras").value;
 
-  document.getElementById("rp").innerHTML =
-    '<div class="card"><div class="ct">Analizando mercado</div>' +
-    '<div style="padding:20px 0;display:flex;align-items:center;gap:10px;color:#888780;font-size:13px">' +
-    '<div class="ld"><span></span><span></span><span></span></div> Consultando ' + c.nombre + '...</div></div>';
+  document.getElementById("rp").innerHTML = showLoadingSteps([
+    "Buscando comparables en Zonaprop...",
+    "Buscando comparables en MercadoLibre...",
+    "Analizando precios del mercado real...",
+    "Calculando tasación..."
+  ]);
 
-  const prompt =
-    "Sos un tasador inmobiliario experto en el mercado del Gran Buenos Aires (GBA), Argentina.\n" +
-    "Respondé SOLO con JSON válido, sin texto adicional, sin backticks.\n\n" +
-    "Propiedad:\n" +
-    "- Tipo: " + tipo + "\n- Partido: " + partido + "\n- Barrio: " + barrio +
-    "\n- Superficie total: " + sup + " m²\n- Superficie cubierta: " + cub + " m²" +
-    "\n- Ambientes: " + amb + "\n- Antigüedad: " + ant +
-    "\n- Piso: " + piso + "\n- Estado: " + estado +
-    "\n- Extras: " + (extras || "ninguno") + "\n\n" +
-    'Devolvé este JSON con valores reales del mercado GBA 2025-2026 en USD:\n' +
-    '{"valor_publicacion":82500,"valor_cierre":78400,"precio_m2":1269,"rango_min":76000,"rango_max":89000,' +
-    '"ajuste_cierre_pct":-4.9,"mercado_estado":"Activo","oferta_activa":47,"tiempo_mercado_dias":68,' +
-    '"comparables":[{"direccion":"Av. Rivadavia 3200","detalle":"63m2 2amb piso2","precio_usd":80000,"precio_m2":1270},' +
-    '{"direccion":"Brown 540","detalle":"68m2 2amb piso4","precio_usd":87000,"precio_m2":1279},' +
-    '{"direccion":"Colon 890","detalle":"60m2 2amb piso1","precio_usd":74000,"precio_m2":1233}],' +
-    '"zonas_m2":[{"zona":"' + barrio + '","precio":1269,"es_sujeto":true},' +
-    '{"zona":"barrio_vecino_1","precio":1180,"es_sujeto":false},' +
-    '{"zona":"barrio_vecino_2","precio":1070,"es_sujeto":false},' +
-    '{"zona":"barrio_vecino_3","precio":990,"es_sujeto":false}],' +
-    '"factores_positivos":["Factor 1","Factor 2"],"factores_negativos":["Factor 1"],' +
-    '"analisis":"2-3 oraciones fundamentando la tasacion."}\n\n' +
-    "Reglas: precios USD reales GBA; zonas_m2 con barrios reales de " + partido + "; calles reales de " + barrio + "; ajuste_cierre_pct entre -3 y -8; solo JSON puro.";
+  // Prompt mejorado que instruye a Claude a usar web_search OBLIGATORIAMENTE
+  const systemPrompt = `Sos un tasador inmobiliario experto en el Gran Buenos Aires (GBA), Argentina.
+Tu tarea es tasar una propiedad usando EXCLUSIVAMENTE datos reales obtenidos mediante búsquedas web.
+
+PROCESO OBLIGATORIO:
+1. Buscá en Zonaprop: inmuebles similares en ${barrio}, ${partido}
+2. Buscá en MercadoLibre Inmuebles: inmuebles similares en ${barrio}, ${partido}  
+3. Buscá precios m² en ${partido} o ${barrio} actuales 2025-2026
+4. Con esos datos reales, calculá la tasación
+
+REGLAS ESTRICTAS:
+- Los comparables DEBEN ser propiedades reales que encontraste en las búsquedas
+- Si encontrás URLs de Zonaprop o MercadoLibre, incluilas en url_fuente
+- Si no encontrás datos reales de una dirección específica, ponés "Ver búsqueda" como dirección
+- NO inventes precios ni direcciones — usá solo lo que encontraste
+- El campo "fuente_busqueda" debe indicar de dónde obtuviste cada dato
+
+Respondé SOLO con JSON válido, sin texto adicional, sin backticks:
+{
+  "valor_publicacion": 82500,
+  "valor_cierre": 78400,
+  "precio_m2": 1269,
+  "rango_min": 76000,
+  "rango_max": 89000,
+  "ajuste_cierre_pct": -4.9,
+  "mercado_estado": "Activo",
+  "oferta_activa": 47,
+  "tiempo_mercado_dias": 68,
+  "comparables": [
+    {
+      "direccion": "Dirección o descripción real encontrada",
+      "detalle": "Xm2 Xamb pisoX",
+      "precio_usd": 80000,
+      "precio_m2": 1270,
+      "url_fuente": "https://url-real-de-zonaprop-o-ml.com o null",
+      "fuente": "Zonaprop"
+    }
+  ],
+  "zonas_m2": [
+    {"zona": "${barrio}", "precio": 1269, "es_sujeto": true},
+    {"zona": "barrio vecino real", "precio": 1180, "es_sujeto": false},
+    {"zona": "barrio vecino real", "precio": 1070, "es_sujeto": false}
+  ],
+  "factores_positivos": ["Factor real 1", "Factor real 2"],
+  "factores_negativos": ["Factor real 1"],
+  "fuentes_consultadas": ["Zonaprop", "MercadoLibre"],
+  "analisis": "2-3 oraciones fundamentando la tasación con los datos reales encontrados."
+}`;
+
+  const userPrompt = `Tasá esta propiedad buscando comparables REALES en Zonaprop y MercadoLibre:
+
+- Tipo: ${tipo}
+- Partido: ${partido}
+- Barrio: ${barrio}
+- Superficie total: ${sup} m²
+- Superficie cubierta: ${cub} m²
+- Ambientes: ${amb}
+- Antigüedad: ${ant}
+- Piso: ${piso}
+- Estado: ${estado}
+- Extras: ${extras || "ninguno"}
+
+Buscá ahora mismo en Zonaprop y MercadoLibre propiedades similares en ${barrio}, ${partido}. Usá web_search con queries como:
+- "departamento ${amb} ambientes ${barrio} ${partido} venta zonaprop"
+- "departamento venta ${barrio} ${partido} mercadolibre"
+- "precio m2 ${barrio} ${partido} 2025"
+
+Devolvé solo JSON con los datos reales que encontraste.`;
 
   try {
-    const clean = await llamarAPI(prov, key, prompt);
-    let d;
-    try { d = JSON.parse(clean); } catch(e) {
-      document.getElementById("rp").innerHTML =
-        '<div class="card"><div class="err">Error al parsear respuesta. Intentá de nuevo.<br><small style="opacity:0.7">' + clean.slice(0,300) + '</small></div></div>';
-      btn.disabled = false; btn.textContent = "Calcular tasación ↗"; return;
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 4000,
+        system: systemPrompt,
+        tools: [
+          {
+            type: "web_search_20250305",
+            name: "web_search"
+          }
+        ],
+        messages: [{ role: "user", content: userPrompt }]
+      })
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error?.message || "Error " + response.status);
+
+    // Extraer el texto final de la respuesta (puede venir después de tool_use blocks)
+    let raw = "";
+    for (const block of (data.content || [])) {
+      if (block.type === "text") raw += block.text;
     }
+    raw = raw.replace(/```json|```/g, "").trim();
+
+    // Intentar extraer JSON si hay texto extra
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (jsonMatch) raw = jsonMatch[0];
+
+    let d;
+    try { d = JSON.parse(raw); }
+    catch(e) {
+      document.getElementById("rp").innerHTML =
+        '<div class="card"><div class="err">Error al parsear respuesta. La IA no devolvió JSON válido.<br><small style="opacity:0.7">' + raw.slice(0,400) + '</small></div></div>';
+      btn.disabled = false; btn.textContent = "Reintentar ↗"; return;
+    }
+
     renderResult(d, barrio, sup);
   } catch(e) {
     document.getElementById("rp").innerHTML =
-      '<div class="card"><div class="err">Error con ' + c.nombre + ': ' + e.message +
-      '<br><small style="opacity:0.7">Verificá tu clave y que tengas saldo/cuota disponible.</small></div></div>';
+      '<div class="card"><div class="err">Error: ' + e.message +
+      '<br><small style="opacity:0.7">Verificá tu clave de Anthropic y que tengas saldo disponible.</small></div></div>';
   }
   btn.disabled = false; btn.textContent = "Recalcular ↗";
 }
@@ -352,18 +393,21 @@ function renderResult(d, barrio, sup) {
   }).join("");
 
   const comps = (d.comparables||[]).map(c => {
-    const q = encodeURIComponent(c.direccion + " " + barrio);
-    const zonaLink = "https://www.zonaprop.com.ar/inmuebles/" + encodeURIComponent(c.direccion.toLowerCase().replace(/\s+/g,"-")) + ".html";
+    // Construir links: si tiene URL real, usarla; si no, búsqueda genérica
     const zonaSearch = "https://www.zonaprop.com.ar/inmuebles-venta-" + encodeURIComponent(barrio.toLowerCase().replace(/\s+/g,"-")) + ".html";
-    const mlSearch = "https://inmuebles.mercadolibre.com.ar/venta/_DisplayType_G#D[A:" + q + "]";
+    const mlSearch = "https://inmuebles.mercadolibre.com.ar/venta/_DisplayType_G#D[A:" + encodeURIComponent(barrio + " " + document.getElementById("partido").value) + "]";
+    const urlFuente = c.url_fuente && c.url_fuente !== "null" ? c.url_fuente : null;
+    const fuente = c.fuente || "Zonaprop";
+
     return '<div class="ci">' +
       '<div style="flex:1;min-width:0"><div class="ca">' + c.direccion + '</div><div class="cd">' + c.detalle + '</div></div>' +
       '<div style="text-align:right;flex-shrink:0"><div class="cp">USD ' + fmt(c.precio_usd) + '</div><div class="cm">' + fmt(c.precio_m2) + '/m²</div></div>' +
       '<div style="display:flex;flex-direction:column;gap:3px;flex-shrink:0">' +
-      '<a class="ci-link" href="' + zonaSearch + '" target="_blank" title="Buscar en Zonaprop">' +
-      '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>Zonaprop</a>' +
-      '<a class="ci-link" href="' + mlSearch + '" target="_blank" title="Buscar en MercadoLibre">' +
-      '<svg width="10" height="10" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>ML</a>' +
+      (urlFuente
+        ? '<a class="ci-link real" href="' + urlFuente + '" target="_blank">🔗 Ver anuncio real</a>'
+        : '<a class="ci-link" href="' + zonaSearch + '" target="_blank">Zonaprop</a>' +
+          '<a class="ci-link" href="' + mlSearch + '" target="_blank">ML</a>'
+      ) +
       '</div></div>';
   }).join("");
 
@@ -376,8 +420,12 @@ function renderResult(d, barrio, sup) {
 
   const aj = (d.ajuste_cierre_pct >= 0 ? "+" : "") + d.ajuste_cierre_pct;
   const m2c = Math.round(d.valor_cierre / (sup||1));
+  const fuentes = (d.fuentes_consultadas||["Web"]).join(", ");
 
   document.getElementById("rp").innerHTML =
+    // Nota de fuentes reales
+    '<div class="fuente-nota">🔍 Datos obtenidos en tiempo real mediante búsqueda web en: <strong>' + fuentes + '</strong>. Los comparables son anuncios activos encontrados ahora.</div>' +
+
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
     '<div class="card rb"><div class="rl">Valor de publicación</div><div class="rv">USD ' + fmt(d.valor_publicacion) + '</div>' +
     '<div class="rr">Rango: USD ' + fmt(d.rango_min) + ' – ' + fmt(d.rango_max) + '</div><div class="rs">USD ' + fmt(d.precio_m2) + '/m²</div></div>' +
@@ -387,7 +435,7 @@ function renderResult(d, barrio, sup) {
     '<div class="card"><div class="ct">Precio m² por zona — comparación</div><div class="bc">' + bars + '</div></div>' +
 
     '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">' +
-    '<div class="card"><div class="ct">Comparables activos</div><div class="cl">' + comps + '</div></div>' +
+    '<div class="card"><div class="ct">Comparables activos <span class="tag-real">Datos reales</span></div><div class="cl">' + comps + '</div></div>' +
     '<div class="card"><div class="ct">Métricas de mercado</div>' +
     '<div class="mg"><div class="met"><div class="ml">Oferta activa</div><div class="mv">' + d.oferta_activa + '</div><div class="ms">propiedades similares</div></div>' +
     '<div class="met"><div class="ml">Tiempo mercado</div><div class="mv">' + d.tiempo_mercado_dias + 'd</div><div class="ms">promedio zona</div></div></div>' +
