@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
   <title>Tasación referencial — Mercado Libre (demo)</title>
   <meta name="description" content="Promedio $/m² con datos públicos de Mercado Libre y enlaces reales." />
   <style>
@@ -187,14 +188,70 @@
     </section>
 
     <footer>
-      Compatible con GitHub Pages (la API permite CORS). Repo: activá Pages en rama <code>main</code> carpeta <code>/docs</code>.
+      GitHub Pages: si Mercado Libre devuelve <strong>403</strong> desde el navegador, esta página reintenta por un proxy CORS público (solo lectura).
+      Repo: Pages en rama <code>main</code>, carpeta <code>/docs</code>.
     </footer>
   </div>
 
   <script>
     const MLA = "https://api.mercadolibre.com";
 
+    /** Evita 403 desde github.io y reintenta vía proxy (solo si hace falta). */
+    let lastFetchUsedProxy = false;
+
     function $(id) { return document.getElementById(id); }
+
+    async function parseJsonResponse(r) {
+      const txt = await r.text();
+      return JSON.parse(txt);
+    }
+
+    async function fetchJson(url) {
+      const directOpts = {
+        credentials: "omit",
+        referrerPolicy: "no-referrer",
+        headers: { Accept: "application/json" },
+      };
+
+      let status = 0;
+      try {
+        const r = await fetch(url, directOpts);
+        status = r.status;
+        if (r.ok) {
+          return await parseJsonResponse(r);
+        }
+      } catch {
+        status = 0;
+      }
+
+      const tryProxy = status === 403 || status === 401 || status === 429 || status === 0;
+      if (!tryProxy) {
+        throw new Error("HTTP " + status + " — " + url);
+      }
+
+      const proxyUrls = [
+        (u) => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
+        (u) => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u),
+        (u) => "https://corsproxy.io/?" + encodeURIComponent(u),
+      ];
+      const proxyOpts = { credentials: "omit", referrerPolicy: "no-referrer" };
+
+      for (const build of proxyUrls) {
+        try {
+          const r = await fetch(build(url), proxyOpts);
+          if (!r.ok) continue;
+          lastFetchUsedProxy = true;
+          return await parseJsonResponse(r);
+        } catch {
+          continue;
+        }
+      }
+
+      throw new Error(
+        "HTTP " + status + " — no se pudo leer la API ni por proxy. Probá más tarde o desde tu PC sin GitHub Pages. — " +
+          url
+      );
+    }
 
     function normHeaders(attrs) {
       const byId = {};
@@ -299,9 +356,15 @@
       return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
     }
 
-    function setLoading(on) {
+    function setLoading(on, extra) {
       $("btn").disabled = on;
-      $("status").textContent = on ? "Consultando API…" : "";
+      if (on) {
+        $("status").textContent = extra || "Consultando API…";
+      } else if (lastFetchUsedProxy) {
+        $("status").textContent = "Datos vía proxy CORS (compat. GitHub Pages)";
+      } else {
+        $("status").textContent = "";
+      }
     }
 
     function showError(msg) {
@@ -370,14 +433,19 @@
       const limit = Math.min(50, Math.max(10, Number($("limit").value || 50)));
       const enrich = $("enrich").checked;
 
-      setLoading(true);
+      lastFetchUsedProxy = false;
+      setLoading(true, "Consultando API…");
       try {
         const raw = await searchAll(q, zona, max, limit);
         const merged = await enrichSequential(raw, enrich);
         render(merged);
       } catch (e) {
         console.error(e);
-        showError("No se pudo completar la búsqueda. Si estás offline o la API falla, probá de nuevo. " + (e.message || ""));
+        showError(
+          "No se pudo completar la búsqueda. " +
+            (e.message ||
+              "Si Mercado Libre o los proxies públicos fallan, probá de nuevo más tarde o abrí este HTML en tu PC (doble clic).")
+        );
       } finally {
         setLoading(false);
       }
