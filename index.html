@@ -1,482 +1,823 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="referrer" content="no-referrer" />
-  <title>Tasación referencial — Mercado Libre (demo)</title>
-  <meta name="description" content="Promedio $/m² con datos públicos de Mercado Libre y enlaces reales." />
-  <style>
-    :root {
-      --bg: #0f1419;
-      --panel: #1a2332;
-      --text: #e8eef7;
-      --muted: #9fb0c8;
-      --accent: #3483fa;
-      --accent-hover: #2968c8;
-      --border: #2d3a4f;
-      --ok: #00a650;
-      --warn: #f73;
-      --radius: 12px;
-      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: var(--font);
-      background: radial-gradient(1200px 600px at 10% -10%, #1e3a5f 0%, transparent 55%), var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.45;
-    }
-    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 18px 48px; }
-    header { margin-bottom: 24px; }
-    h1 { font-size: 1.45rem; font-weight: 650; margin: 0 0 8px; letter-spacing: -0.02em; }
-    .sub { color: var(--muted); font-size: 0.95rem; margin: 0; max-width: 62ch; }
-    .alert {
-      margin-top: 14px;
-      padding: 12px 14px;
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      background: rgba(52, 131, 250, 0.08);
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-    .alert strong { color: var(--text); }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 18px;
-      margin-bottom: 18px;
-    }
-    .grid {
-      display: grid;
-      gap: 12px;
-      grid-template-columns: 1fr;
-    }
-    @media (min-width: 720px) {
-      .grid.form { grid-template-columns: 2fr 1fr 100px 120px; align-items: end; }
-    }
-    label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 0.95rem;
-    }
-    input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
-    .row-check { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 0.9rem; color: var(--muted); }
-    .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
-    button {
-      appearance: none;
-      border: none;
-      border-radius: 8px;
-      padding: 11px 18px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      cursor: pointer;
-      background: var(--accent);
-      color: #fff;
-      transition: background 0.15s;
-    }
-    button:hover:not(:disabled) { background: var(--accent-hover); }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-    .ghost {
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--border);
-    }
-    .ghost:hover:not(:disabled) { background: rgba(255,255,255,0.06); }
-    .stats {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      margin-bottom: 14px;
-    }
-    .stat {
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: rgba(0,0,0,0.2);
-    }
-    .stat .k { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    .stat .v { font-size: 1.25rem; font-weight: 700; margin-top: 4px; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
-    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
-    th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    tr:hover td { background: rgba(255,255,255,0.03); }
-    a.link { color: var(--accent); word-break: break-all; }
-    .thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; background: var(--border); }
-    .badge { font-size: 0.72rem; padding: 3px 8px; border-radius: 999px; background: rgba(0,166,80,0.15); color: var(--ok); }
-    .err { color: var(--warn); font-size: 0.9rem; margin-top: 8px; }
-    footer { margin-top: 28px; font-size: 0.8rem; color: var(--muted); }
-    .overflow { overflow-x: auto; }
-    .mono { font-variant-numeric: tabular-nums; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACM · Análisis Comparativo de Mercado</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e; --ink2: #2d2d4e; --gold: #c9a84c; --gold-light: #f0d98a;
+    --cream: #faf8f2; --cream2: #f2ede0; --green: #2d6a4f; --green-light: #e8f5ee;
+    --red-light: #fdecea; --red: #b94040; --border: #ddd5c0;
+    --shadow: 0 4px 24px rgba(26,26,46,0.10); --radius: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); color: var(--ink); min-height: 100vh; }
+
+  header { background: var(--ink); padding: 22px 40px; display: flex; align-items: center; gap: 18px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 16px rgba(0,0,0,0.25); }
+  .logo-mark { width: 42px; height: 42px; background: var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); flex-shrink: 0; }
+  header h1 { font-family: 'DM Serif Display', serif; color: var(--cream); font-size: 21px; }
+  header h1 span { color: var(--gold); }
+  .subtitle { color: #7779aa; font-size: 11px; font-weight: 300; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+  .header-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+  .btn-reset { background: transparent; border: 1px solid #444466; color: #7779aa; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif; transition: all .2s; }
+  .btn-reset:hover { border-color: var(--gold); color: var(--gold); }
+
+  .container { max-width: 1280px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  .steps-nav { display: flex; margin-bottom: 32px; background: white; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+  .step-btn { flex: 1; padding: 15px 10px; border: none; background: transparent; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; color: #999; display: flex; flex-direction: column; align-items: center; gap: 5px; border-right: 1px solid var(--border); transition: all .2s; }
+  .step-btn:last-child { border-right: none; }
+  .step-btn.active { background: var(--ink); color: var(--gold); }
+  .step-num { width: 24px; height: 24px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; transition: all .2s; }
+  .step-btn.active .step-num { background: var(--gold); color: var(--ink); }
+  .step-label { font-size: 11px; text-align: center; line-height: 1.3; }
+
+  .section { display: none; }
+  .section.active { display: block; animation: fadeIn .3s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+  .card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 26px 30px; margin-bottom: 18px; box-shadow: var(--shadow); }
+  .card-title { font-family: 'DM Serif Display', serif; font-size: 19px; color: var(--ink2); margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+  .card-title .icon { width: 30px; height: 30px; background: var(--cream2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px; }
+  .card-desc { color: #999; font-size: 13px; margin-bottom: 20px; }
+
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(185px,1fr)); gap: 13px; }
+  .form-grid.cols-3 { grid-template-columns: repeat(3,1fr); }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1/-1; }
+  label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #999; }
+  input[type="text"], input[type="number"], input[type="url"], select, textarea { border: 1.5px solid var(--border); border-radius: 8px; padding: 9px 13px; font-family: 'DM Sans',sans-serif; font-size: 14px; color: var(--ink); background: var(--cream); transition: border-color .2s; width: 100%; }
+  input:focus, select:focus, textarea:focus { outline: none; border-color: var(--gold); background: white; }
+  textarea { resize: vertical; min-height: 62px; }
+  .input-prefix { position: relative; }
+  .input-prefix span { position: absolute; left: 11px; top: 50%; transform: translateY(-50%); color: #bbb; font-size: 13px; pointer-events: none; }
+  .input-prefix input { padding-left: 26px; }
+  .divider { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+
+  /* ── URL FETCH BOX ── */
+  .fetch-box { background: linear-gradient(135deg,#1a1a2e 0%,#2d2d4e 100%); border-radius: 10px; padding: 16px 18px; margin-bottom: 16px; display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+  .fetch-box .fg { flex: 1; min-width: 240px; }
+  .fetch-box label { color: var(--gold); font-size: 10px; }
+  .fetch-box input { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.15); color: white; }
+  .fetch-box input::placeholder { color: rgba(255,255,255,.3); }
+  .fetch-box input:focus { background: rgba(255,255,255,.12); border-color: var(--gold); }
+  .btn-fetch { background: var(--gold); color: var(--ink); border: none; padding: 9px 20px; border-radius: 8px; font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: all .2s; white-space: nowrap; display: flex; align-items: center; gap: 6px; height: 39px; flex-shrink: 0; }
+  .btn-fetch:hover { background: var(--gold-light); }
+  .btn-fetch:disabled { opacity: .5; cursor: not-allowed; }
+  .fetch-status { font-size: 12px; margin-top: 8px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .fetch-status.loading { background: rgba(201,168,76,.15); color: var(--gold); display: flex; align-items: center; gap: 8px; }
+  .fetch-status.success { background: var(--green-light); color: var(--green); display: block; }
+  .fetch-status.error { background: var(--red-light); color: var(--red); display: block; }
+  .spinner { width: 14px; height: 14px; border: 2px solid rgba(201,168,76,.3); border-top-color: var(--gold); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .autofilled { border-color: var(--gold) !important; background: #fffbe8 !important; transition: border-color .3s, background .3s; }
+
+  /* COMPARABLE */
+  .comparable-block { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 12px; transition: box-shadow .2s; }
+  .comparable-block:hover { box-shadow: 0 2px 12px rgba(0,0,0,.08); }
+  .comp-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
+  .comp-num { width: 27px; height: 27px; background: var(--ink); color: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+  .comp-title { font-size: 13px; font-weight: 600; color: var(--ink2); flex: 1; }
+  .comp-title small { font-weight: 300; color: #aaa; margin-left: 5px; font-size: 11px; }
+  .cerrada-label { display: flex; align-items: center; gap: 5px; font-size: 12px; cursor: pointer; color: var(--green); font-weight: 600; white-space: nowrap; }
+  .btn-remove { background: transparent; border: 1px solid #ddd; color: #ccc; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; font-size: 15px; display: flex; align-items: center; justify-content: center; transition: all .2s; flex-shrink: 0; }
+  .btn-remove:hover { border-color: var(--red); color: var(--red); }
+
+  /* POND */
+  .pond-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .pond-table th { background: var(--ink); color: var(--gold); padding: 9px 12px; font-weight: 500; text-align: center; font-size: 11px; letter-spacing: .04em; }
+  .pond-table th:first-child { text-align: left; border-radius: 8px 0 0 0; }
+  .pond-table th:last-child { border-radius: 0 8px 0 0; }
+  .pond-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: center; vertical-align: middle; }
+  .pond-table td:first-child { text-align: left; font-weight: 500; font-size: 11px; color: var(--ink2); }
+  .pond-table tr:last-child td { border-bottom: none; }
+  .pond-table tr:nth-child(even) td { background: #fafaf7; }
+  .pond-table select { padding: 5px 8px; font-size: 11px; min-width: 105px; background: white; }
+
+  /* RESULTS */
+  .result-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 18px; }
+  .result-card { background: white; border: 1px solid var(--border); border-radius: var(--radius); padding: 22px; text-align: center; box-shadow: var(--shadow); }
+  .result-card.highlight { background: var(--ink); border-color: var(--ink); }
+  .result-card.highlight .rc-label { color: #7779aa; }
+  .result-card.highlight .rc-value { color: var(--gold); }
+  .result-card.highlight .rc-sub { color: #555577; }
+  .rc-label { font-size: 10px; text-transform: uppercase; letter-spacing: .08em; color: #aaa; margin-bottom: 8px; font-weight: 700; }
+  .rc-value { font-family: 'DM Serif Display',serif; font-size: 28px; color: var(--ink); line-height: 1; }
+  .rc-unit { font-size: 12px; font-weight: 300; color: #999; }
+  .rc-sub { font-size: 11px; color: #bbb; margin-top: 6px; }
+
+  .breakdown-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+  .breakdown-table th { background: var(--cream2); color: var(--ink2); padding: 9px 13px; font-weight: 700; text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .06em; border-bottom: 2px solid var(--border); }
+  .breakdown-table td { padding: 9px 13px; border-bottom: 1px solid #f0ece0; color: var(--ink2); }
+  .breakdown-table td.num { text-align: right; font-weight: 500; }
+  .breakdown-table td.gold { color: var(--gold); font-weight: 700; }
+  .breakdown-table tr:last-child td { border-bottom: none; font-weight: 700; background: #faf8f0; }
+
+  .comp-result-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 12px; }
+  .comp-result-table th { background: var(--ink2); color: var(--cream); padding: 8px 11px; font-weight: 500; font-size: 10px; text-align: center; letter-spacing: .04em; }
+  .comp-result-table th:first-child { text-align: left; }
+  .comp-result-table td { padding: 8px 11px; border-bottom: 1px solid var(--border); text-align: center; color: var(--ink2); }
+  .comp-result-table td:first-child { text-align: left; font-weight: 500; }
+  .comp-result-table tr:nth-child(even) td { background: #fafaf7; }
+
+  .btn-primary { background: var(--gold); color: var(--ink); border: none; padding: 12px 26px; border-radius: 8px; font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(201,168,76,.3); }
+  .btn-secondary { background: white; color: var(--ink); border: 1.5px solid var(--border); padding: 11px 22px; border-radius: 8px; font-family: 'DM Sans',sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: 7px; }
+  .btn-secondary:hover { border-color: var(--ink); }
+  .btn-add { background: var(--green-light); color: var(--green); border: 1.5px dashed #9ec9b4; padding: 10px 20px; border-radius: 8px; font-family: 'DM Sans',sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; width: 100%; transition: all .2s; margin-top: 6px; }
+  .btn-add:hover { background: #d4eedf; border-style: solid; }
+  .actions-row { display: flex; gap: 10px; align-items: center; margin-top: 6px; flex-wrap: wrap; }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+  .badge-gold { background: #fff4d4; color: #a07a20; }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .tip { font-size: 11px; color: #aaa; font-style: italic; margin-top: 4px; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11px; color: #888; margin-top: 12px; padding: 10px 14px; background: var(--cream2); border-radius: 8px; }
+  .legend span { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .empty-state { text-align: center; padding: 36px 20px; color: #bbb; }
+  .empty-state .big-icon { font-size: 44px; margin-bottom: 10px; }
+
+  @media (max-width: 768px) {
+    header { padding: 14px 16px; }
+    .container { padding: 14px 10px 60px; }
+    .form-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+    .result-grid { grid-template-columns: 1fr; }
+    .card { padding: 16px 14px; }
+    .fetch-box { flex-direction: column; }
+  }
+  @media print {
+    header { position: relative; background: #1a1a2e !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .steps-nav, .actions-row, .btn-reset, .fetch-box { display: none !important; }
+    .section { display: block !important; }
+    .card { break-inside: avoid; box-shadow: none; border: 1px solid #ddd; }
+    body { background: white; }
+  }
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <header>
-      <h1>Tasación referencial ($/m²)</h1>
-      <p class="sub">
-        Datos públicos de la API de Mercado Libre Argentina (sin usuario ni contraseña).
-        Los enlaces son los <strong>permalink</strong> oficiales de cada publicación.
-      </p>
-      <div class="alert">
-        <strong>Seguridad:</strong> no pegues tu <em>Client Secret</em> en HTML ni en GitHub.
-        Este demo no usa credenciales: la búsqueda es pública. Si expusiste el secreto, regeneralo en el panel de Developers.
-      </div>
-    </header>
 
-    <section class="card">
-      <div class="grid form">
-        <div>
-          <label for="q">Búsqueda</label>
-          <input id="q" type="text" value="departamento venta" autocomplete="off" />
-        </div>
-        <div>
-          <label for="zona">Zona / barrio (opcional)</label>
-          <input id="zona" type="text" placeholder="Ej: Morón · Palermo · mejor sin comas" autocomplete="off" />
-        </div>
-        <div>
-          <label for="max">Máx. resultados</label>
-          <input id="max" type="number" min="10" max="400" step="10" value="120" />
-        </div>
-        <div>
-          <label for="limit">Por página</label>
-          <input id="limit" type="number" min="10" max="50" value="50" />
-        </div>
-      </div>
-      <div class="row-check">
-        <input id="enrich" type="checkbox" checked />
-        <label for="enrich" style="margin:0;text-transform:none;font-size:0.9rem;">Completar m² con GET /items si falta en el listado (más pedidos, mejor cobertura)</label>
-      </div>
-      <div class="actions">
-        <button id="btn" type="button">Buscar</button>
-        <button id="clear" type="button" class="ghost">Limpiar tabla</button>
-        <span id="status" class="sub" style="margin:0;"></span>
-      </div>
-      <p id="error" class="err" hidden></p>
-    </section>
+<header>
+  <div class="logo-mark">A</div>
+  <div>
+    <h1>ACM · <span>Análisis Comparativo</span> de Mercado</h1>
+    <div class="subtitle">Valuación Inmobiliaria Profesional · Powered by Grok AI</div>
+  </div>
+  <div class="header-right">
+    <button class="btn-reset" onclick="resetAll()">↺ Nuevo análisis</button>
+  </div>
+</header>
 
-    <section class="card" id="summary" hidden>
-      <div class="stats">
-        <div class="stat"><div class="k">Publicaciones (API)</div><div class="v mono" id="st-total">—</div></div>
-        <div class="stat"><div class="k">Con precio + m²</div><div class="v mono" id="st-n">—</div></div>
-        <div class="stat"><div class="k">Promedio</div><div class="v mono" id="st-avg">—</div></div>
-        <div class="stat"><div class="k">Mediana</div><div class="v mono" id="st-med">—</div></div>
-      </div>
-      <p id="hint" class="sub" style="margin: 0 0 14px; font-size: 0.88rem;" hidden></p>
-      <div class="overflow">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th></th>
-              <th>Título</th>
-              <th>Precio</th>
-              <th>m²</th>
-              <th>$/m²</th>
-              <th>Link real</th>
-            </tr>
-          </thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-    </section>
+<div class="container">
+  <nav class="steps-nav">
+    <button class="step-btn active" id="nav-1" onclick="goTo(1)"><span class="step-num">1</span><span class="step-label">Propiedad<br>a Valuar</span></button>
+    <button class="step-btn" id="nav-2" onclick="goTo(2)"><span class="step-num">2</span><span class="step-label">Comparables</span></button>
+    <button class="step-btn" id="nav-3" onclick="goTo(3)"><span class="step-num">3</span><span class="step-label">Ponderación</span></button>
+    <button class="step-btn" id="nav-4" onclick="goTo(4)"><span class="step-num">4</span><span class="step-label">Resultados</span></button>
+  </nav>
 
-    <footer>
-      GitHub Pages: si Mercado Libre devuelve <strong>403</strong> desde el navegador, esta página reintenta por un proxy CORS público (solo lectura).
-      Repo: Pages en rama <code>main</code>, carpeta <code>/docs</code>.
-    </footer>
+  <!-- PASO 1 -->
+  <div class="section active" id="section-1">
+    <div class="card">
+      <div class="card-title"><span class="icon">🏡</span> Propiedad a Valuar</div>
+      <div class="card-desc">Pegá el link del portal inmobiliario y Grok AI completa los datos automáticamente. También podés ingresar los datos a mano.</div>
+
+      <div class="fetch-box">
+        <div class="fg">
+          <label>🔗 Link de ZonaProp / ArgeProp / MercadoLibre Inmuebles</label>
+          <input type="url" id="s1-url" placeholder="https://www.zonaprop.com.ar/propiedades/...">
+        </div>
+        <button class="btn-fetch" id="s1-btn" onclick="fetchProp('s1',null)">
+          <span id="s1-fetch-icon">✦</span> Traer datos con IA
+        </button>
+      </div>
+      <div class="fetch-status" id="s1-status"></div>
+
+      <div class="form-grid cols-3" style="margin-top:16px;">
+        <div class="form-group">
+          <label>Tipología</label>
+          <select id="s1-tipo"><option value="">Seleccionar...</option><option>Casa</option><option>PH</option><option>Departamento</option><option>Duplex</option><option>Otro</option></select>
+        </div>
+        <div class="form-group"><label>Localidad</label><input type="text" id="s1-localidad" placeholder="Ej: Castelar, GBA"></div>
+        <div class="form-group"><label>Barrio</label><input type="text" id="s1-barrio" placeholder="Ej: Castelar Norte"></div>
+        <div class="form-group full"><label>Dirección</label><input type="text" id="s1-dir" placeholder="Ej: Rivadavia 1234"></div>
+      </div>
+      <hr class="divider">
+      <div style="margin-bottom:10px;font-size:11px;font-weight:700;color:var(--ink2);">SUPERFICIES (m²)</div>
+      <div class="form-grid">
+        <div class="form-group"><label>Cubierta ×1,00</label><input type="number" id="s1-cub" placeholder="0" min="0" oninput="calcHomogSujeto()"></div>
+        <div class="form-group"><label>Semicubierta ×0,50</label><input type="number" id="s1-semi" placeholder="0" min="0" oninput="calcHomogSujeto()"></div>
+        <div class="form-group"><label>Balcón ×0,33</label><input type="number" id="s1-balc" placeholder="0" min="0" oninput="calcHomogSujeto()"></div>
+        <div class="form-group"><label>Descubierta ×0,10</label><input type="number" id="s1-desc" placeholder="0" min="0" oninput="calcHomogSujeto()"></div>
+        <div class="form-group"><label>Sup. Homogeneizada</label><input type="number" id="s1-homog" readonly style="background:#f5f2e8;font-weight:700;color:var(--gold);"></div>
+      </div>
+      <hr class="divider">
+      <div class="form-grid cols-3">
+        <div class="form-group"><label>Antigüedad (años)</label><input type="number" id="s1-ant" placeholder="0" min="0"></div>
+        <div class="form-group"><label>Ambientes</label><input type="number" id="s1-amb" placeholder="0" min="0"></div>
+        <div class="form-group"><label>Dormitorios</label><input type="number" id="s1-dorm" placeholder="0" min="0"></div>
+        <div class="form-group"><label>Baños</label><input type="number" id="s1-ban" placeholder="0" min="0"></div>
+        <div class="form-group"><label>Cocheras</label><input type="number" id="s1-coch" placeholder="0" min="0"></div>
+        <div class="form-group"><label>Precio cochera (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="s1-coch-precio" placeholder="0" min="0"></div></div>
+        <div class="form-group"><label>Precio pedido (USD)</label><div class="input-prefix"><span>$</span><input type="number" id="s1-precio" placeholder="0" min="0"></div></div>
+      </div>
+      <div class="form-group" style="margin-top:14px;"><label>Comentarios</label><textarea id="s1-obs" placeholder="Características especiales, estado de conservación..."></textarea></div>
+    </div>
+    <div class="actions-row"><button class="btn-primary" onclick="goTo(2)">Continuar → Comparables</button></div>
   </div>
 
-  <script>
-    const MLA = "https://api.mercadolibre.com";
+  <!-- PASO 2 -->
+  <div class="section" id="section-2">
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span> Propiedades Comparables</div>
+      <div class="card-desc">Pegá el link de cada comparable — Grok AI extrae precio, superficie y características automáticamente. Hasta 10 propiedades.</div>
+      <div id="comparables-container"></div>
+      <button class="btn-add" onclick="addComparable()">+ Agregar comparable</button>
+      <div class="legend" style="margin-top:14px;">
+        <span><span class="legend-dot" style="background:var(--gold)"></span>Oferta activa</span>
+        <span><span class="legend-dot" style="background:var(--green)"></span>Venta cerrada</span>
+        <span><span class="legend-dot" style="background:#3a7bd5"></span>Auto-completado con IA ✦</span>
+      </div>
+    </div>
+    <div class="actions-row">
+      <button class="btn-secondary" onclick="goTo(1)">← Volver</button>
+      <button class="btn-primary" onclick="goTo(3)">Continuar → Ponderación</button>
+    </div>
+  </div>
 
-    /** Evita 403 desde github.io y reintenta vía proxy (solo si hace falta). */
-    let lastFetchUsedProxy = false;
+  <!-- PASO 3 -->
+  <div class="section" id="section-3">
+    <div class="card">
+      <div class="card-title"><span class="icon">⚖️</span> Ponderación de Variables</div>
+      <div class="card-desc">Compará cada comparable vs. la propiedad a valuar. "Superior" = el comparable tiene esa característica mejor que el sujeto (ajusta su valor al alza).</div>
+      <div style="overflow-x:auto;">
+        <table class="pond-table" id="pond-table">
+          <thead><tr><th style="min-width:155px;">Variable</th><th style="min-width:70px;">Escala</th></tr></thead>
+          <tbody id="pond-body"></tbody>
+        </table>
+      </div>
+      <div class="legend" style="margin-top:14px;">
+        <span><span class="legend-dot" style="background:#3a7bd5"></span>Superior ×1,05</span>
+        <span><span class="legend-dot" style="background:var(--green)"></span>Alto ×1,025</span>
+        <span><span class="legend-dot" style="background:#888"></span>Similar ×1,00</span>
+        <span><span class="legend-dot" style="background:var(--gold)"></span>Bajo ×0,975</span>
+        <span><span class="legend-dot" style="background:var(--red)"></span>Inferior ×0,90</span>
+      </div>
+    </div>
+    <div class="actions-row">
+      <button class="btn-secondary" onclick="goTo(2)">← Volver</button>
+      <button class="btn-primary" onclick="calcular();goTo(4);">Calcular Valuación →</button>
+    </div>
+  </div>
 
-    function $(id) { return document.getElementById(id); }
+  <!-- PASO 4 -->
+  <div class="section" id="section-4">
+    <div id="result-content">
+      <div class="card"><div class="empty-state"><div class="big-icon">📊</div><p>Completá los pasos anteriores para ver los resultados.</p></div></div>
+    </div>
+  </div>
+</div>
 
-    /** Quitar comas y espacios raros; ML busca como texto libre en el sitio. */
-    function normalizeZona(z) {
-      if (!z || !String(z).trim()) return "";
-      return String(z)
-        .replace(/,/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-    }
+<script>
+// ═══════════════════════════════════════
+// CONFIG GROK
+// ═══════════════════════════════════════
+const GROK_KEY = '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';
+const GROK_URL = 'https://api.x.ai/v1/chat/completions';
+const GROK_MOD = 'grok-2-latest'; // tiene live search integrada
 
-    async function parseJsonResponse(r) {
-      const txt = await r.text();
-      return JSON.parse(txt);
-    }
+// ═══════════════════════════════════════
+// ESTADO
+// ═══════════════════════════════════════
+let comparables = [], compCount = 0;
 
-    async function fetchJson(url) {
-      const directOpts = {
-        credentials: "omit",
-        referrerPolicy: "no-referrer",
-        headers: { Accept: "application/json" },
-      };
+const POND_VARS = [
+  {key:'ubicacion',     label:'Ubicación'},
+  {key:'antiguedad',    label:'Antigüedad'},
+  {key:'calidad',       label:'Calidad Constructiva'},
+  {key:'mantenimiento', label:'Mantenimiento'},
+  {key:'comodidades',   label:'Comodidades'},
+  {key:'estacion',      label:'Estacionamiento'},
+  {key:'ban_dorm',      label:'Relación Baños/Dormitorios'},
+  {key:'revalorizacion',label:'Revalorización del Mercado'},
+];
+const POND_F = {Superior:1.05, Alto:1.025, Similar:1.00, Bajo:0.975, Inferior:0.90};
+const POND_L = {Superior:'×1,05', Alto:'×1,025', Similar:'×1,00', Bajo:'×0,975', Inferior:'×0,90'};
 
-      let status = 0;
-      try {
-        const r = await fetch(url, directOpts);
-        status = r.status;
-        if (r.ok) {
-          return await parseJsonResponse(r);
-        }
-      } catch {
-        status = 0;
-      }
+// ═══════════════════════════════════════
+// NAVEGACION
+// ═══════════════════════════════════════
+function goTo(n) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.step-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + n).classList.add('active');
+  document.getElementById('nav-' + n).classList.add('active');
+  if (n === 3) buildPondTable();
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
 
-      const tryProxy = status === 403 || status === 401 || status === 429 || status === 0;
-      if (!tryProxy) {
-        throw new Error("HTTP " + status + " — " + url);
-      }
+// ═══════════════════════════════════════
+// GROK — FETCH DATOS DE URL
+// ═══════════════════════════════════════
+async function fetchProp(prefix, compId) {
+  const urlId  = prefix === 's1' ? 's1-url' : `c${compId}-url`;
+  const statId = prefix === 's1' ? 's1-status' : `c${compId}-status`;
+  const iconId = prefix === 's1' ? 's1-fetch-icon' : `c${compId}-fetch-icon`;
+  const btnId  = prefix === 's1' ? 's1-btn' : `c${compId}-btn`;
 
-      const proxyUrls = [
-        (u) => "https://api.allorigins.win/raw?url=" + encodeURIComponent(u),
-        (u) => "https://api.codetabs.com/v1/proxy?quest=" + encodeURIComponent(u),
-        (u) => "https://corsproxy.io/?" + encodeURIComponent(u),
-      ];
-      const proxyOpts = { credentials: "omit", referrerPolicy: "no-referrer" };
+  const url    = document.getElementById(urlId)?.value.trim() || '';
+  const statEl = document.getElementById(statId);
+  const iconEl = document.getElementById(iconId);
+  const btnEl  = document.getElementById(btnId);
 
-      for (const build of proxyUrls) {
-        try {
-          const r = await fetch(build(url), proxyOpts);
-          if (!r.ok) continue;
-          lastFetchUsedProxy = true;
-          return await parseJsonResponse(r);
-        } catch {
-          continue;
-        }
-      }
+  if (!url) { alert('Ingresá una URL primero.'); return; }
 
-      throw new Error(
-        "HTTP " + status + " — no se pudo leer la API ni por proxy. Probá más tarde o desde tu PC sin GitHub Pages. — " +
-          url
-      );
-    }
+  statEl.className = 'fetch-status loading';
+  statEl.innerHTML = '<span class="spinner"></span> Grok AI está leyendo el aviso…';
+  if (btnEl) btnEl.disabled = true;
+  if (iconEl) iconEl.textContent = '…';
 
-    function normHeaders(attrs) {
-      const byId = {};
-      for (const a of attrs || []) {
-        const id = a.id;
-        if (id) byId[id.toUpperCase()] = a;
-      }
-      return byId;
-    }
+  const systemPrompt = `Sos un asistente especializado en portales inmobiliarios argentinos (ZonaProp, ArgeProp, MercadoLibre Inmuebles). 
+Cuando el usuario te da una URL, la visitás con tu capacidad de búsqueda web en tiempo real y extraés los datos del aviso.
+Respondés ÚNICAMENTE con un objeto JSON válido y nada más. Sin markdown, sin texto explicativo, sin bloques de código.`;
 
-    function attrM2(attributes) {
-      const byId = normHeaders(attributes);
-      for (const key of ["TOTAL_SURFACE", "COVERED_AREA"]) {
-        const a = byId[key];
-        if (!a) continue;
-        const vs = a.value_struct;
-        if (vs && vs.number != null) {
-          const n = Number(vs.number);
-          if (!Number.isNaN(n) && n > 0) return n;
-        }
-        const raw = String(a.value_name || "");
-        const m = raw.match(/([\d.,]+)/);
-        if (m) {
-          const n = parseFloat(m[1].replace(/\./g, "").replace(",", "."));
-          if (!Number.isNaN(n) && n > 0) return n;
-        }
-      }
-      return null;
-    }
+  const userPrompt = `Visitá esta URL y extraé todos los datos del aviso inmobiliario:
+${url}
 
-    function mergeItem(compact, detail) {
-      const out = { ...compact, ...detail };
-      const ca = compact.attributes || [];
-      const da = detail.attributes || [];
-      const map = {};
-      for (const a of ca.concat(da)) {
-        const id = a.id;
-        if (id) map[id] = a;
-      }
-      out.attributes = Object.values(map);
-      return out;
-    }
+Devolvé EXACTAMENTE este JSON (null si no encontrás el dato):
+{
+  "tipologia": "Casa|PH|Departamento|Duplex|Otro",
+  "localidad": "string",
+  "barrio": "string",
+  "direccion": "string",
+  "precio": number,
+  "moneda": "USD|ARS",
+  "sup_cubierta": number,
+  "sup_semicubierta": number,
+  "sup_balcon": number,
+  "sup_descubierta": number,
+  "sup_total": number,
+  "antiguedad": number,
+  "ambientes": number,
+  "dormitorios": number,
+  "banos": number,
+  "cocheras": number,
+  "precio_cochera": number,
+  "inmobiliaria": "string",
+  "dias_publicado": number,
+  "obs": "string con las características más relevantes del aviso en 1-2 frases"
+}`;
 
-    async function searchPage(qRaw, zona, offset, limit) {
-      const z = normalizeZona(zona || "");
-      const q = z ? (qRaw + " " + z).trim() : qRaw.trim();
-      const u = new URL(MLA + "/sites/MLA/search");
-      u.searchParams.set("q", q);
-      u.searchParams.set("offset", String(offset));
-      u.searchParams.set("limit", String(limit));
-      return fetchJson(u.toString());
-    }
-
-    async function searchAll(q, zona, maxResults, pageLimit) {
-      const items = [];
-      let offset = 0;
-      while (items.length < maxResults) {
-        const data = await searchPage(q, zona, offset, pageLimit);
-        const batch = data.results || [];
-        if (!batch.length) break;
-        items.push(...batch);
-        const total = Number((data.paging || {}).total || 0);
-        offset += batch.length;
-        if (offset >= total || batch.length < pageLimit) break;
-      }
-      return items.slice(0, maxResults);
-    }
-
-    async function enrichSequential(items, useEnrich) {
-      const out = [];
-      for (const it of items) {
-        let cur = it;
-        if (useEnrich && it && it.id && attrM2(it.attributes) == null) {
-          try {
-            const detail = await fetchJson(MLA + "/items/" + encodeURIComponent(it.id));
-            cur = mergeItem(it, detail);
-          } catch (e) { /* seguir sin detalle */ }
-          await new Promise((r) => setTimeout(r, 40));
-        }
-        out.push(cur);
-      }
-      return out;
-    }
-
-    function formatArs(n) {
-      try {
-        return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
-      } catch {
-        return "$ " + Math.round(n).toLocaleString("es-AR");
-      }
-    }
-
-    function median(xs) {
-      if (!xs.length) return null;
-      const s = [...xs].sort((a, b) => a - b);
-      const m = Math.floor(s.length / 2);
-      return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
-    }
-
-    function setLoading(on, extra) {
-      $("btn").disabled = on;
-      if (on) {
-        $("status").textContent = extra || "Consultando API…";
-      } else if (lastFetchUsedProxy) {
-        $("status").textContent = "Datos vía proxy CORS (compat. GitHub Pages)";
-      } else {
-        $("status").textContent = "";
-      }
-    }
-
-    function showError(msg) {
-      const el = $("error");
-      el.hidden = !msg;
-      el.textContent = msg || "";
-    }
-
-    function render(rows) {
-      const tbody = $("tbody");
-      tbody.innerHTML = "";
-      const ppmValues = [];
-
-      rows.forEach((it, i) => {
-        const price = it.price != null ? Number(it.price) : null;
-        const m2 = attrM2(it.attributes);
-        const ppm = price != null && m2 && m2 > 0 ? price / m2 : null;
-        if (ppm != null && Number.isFinite(ppm)) ppmValues.push(ppm);
-
-        const tr = document.createElement("tr");
-        const thumb = (it.thumbnail || "").replace(/^http:/, "https:");
-        tr.innerHTML = `
-          <td class="mono">${i + 1}</td>
-          <td>${thumb ? `<img class="thumb" src="${thumb}" alt="" loading="lazy" />` : ""}</td>
-          <td>${escapeHtml((it.title || "").slice(0, 140))}${(it.title || "").length > 140 ? "…" : ""}</td>
-          <td class="mono">${price != null ? formatArs(price) : "—"}</td>
-          <td class="mono">${m2 != null ? m2.toLocaleString("es-AR", { maximumFractionDigits: 2 }) : "—"}</td>
-          <td class="mono">${ppm != null ? formatArs(ppm) : "—"}</td>
-          <td>${it.permalink ? `<a class="link" href="${escapeAttr(it.permalink)}" target="_blank" rel="noopener noreferrer">Abrir publicación</a>` : "—"}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      const totalPub = rows.length;
-      const n = ppmValues.length;
-      const avg = n ? ppmValues.reduce((a, b) => a + b, 0) / n : null;
-      const med = n ? median(ppmValues) : null;
-
-      $("st-total").textContent = String(totalPub);
-      $("st-n").textContent = n ? String(n) : "0";
-      $("st-avg").textContent = avg != null ? formatArs(avg) + " / m²" : "—";
-      $("st-med").textContent = med != null ? formatArs(med) + " / m²" : "—";
-
-      const hintEl = $("hint");
-      if (totalPub === 0) {
-        hintEl.hidden = false;
-        hintEl.textContent =
-          "La API no devolvió ninguna publicación con ese texto. Probá la zona más corta (ej. solo «Morón» o «Morón Buenos Aires» sin coma), " +
-          "revisá ortografía (Morón lleva tilde), o cambiá la búsqueda principal (ej. «depto venta», «ph venta»).";
-      } else if (n === 0) {
-        hintEl.hidden = false;
-        hintEl.textContent =
-          "Hay " +
-          totalPub +
-          " avisos pero ninguno trae superficie reconocida en los datos devueltos " +
-          "(marcá «Completar m²» o probá otro tipo de propiedad). El promedio necesita precio y m².";
-      } else {
-        hintEl.hidden = true;
-        hintEl.textContent = "";
-      }
-      $("summary").hidden = false;
-    }
-
-    function escapeHtml(s) {
-      return String(s)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-    function escapeAttr(s) {
-      return escapeHtml(s).replace(/'/g, "&#39;");
-    }
-
-    $("clear").addEventListener("click", () => {
-      $("tbody").innerHTML = "";
-      $("summary").hidden = true;
-      $("hint").hidden = true;
-      showError("");
+  try {
+    const resp = await fetch(GROK_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROK_KEY}`
+      },
+      body: JSON.stringify({
+        model: GROK_MOD,
+        messages: [
+          {role: 'system', content: systemPrompt},
+          {role: 'user',   content: userPrompt}
+        ],
+        temperature: 0,
+        max_tokens: 700
+      })
     });
 
-    $("btn").addEventListener("click", async () => {
-      showError("");
-      const q = $("q").value || "departamento";
-      const zona = normalizeZona($("zona").value);
-      const max = Math.min(400, Math.max(10, Number($("max").value || 120)));
-      const limit = Math.min(50, Math.max(10, Number($("limit").value || 50)));
-      const enrich = $("enrich").checked;
+    if (!resp.ok) {
+      const e = await resp.json().catch(() => ({}));
+      throw new Error(e.error?.message || `HTTP ${resp.status}`);
+    }
 
-      lastFetchUsedProxy = false;
-      setLoading(true, "Consultando API…");
-      try {
-        const raw = await searchAll(q, zona, max, limit);
-        const merged = await enrichSequential(raw, enrich);
-        render(merged);
-      } catch (e) {
-        console.error(e);
-        showError(
-          "No se pudo completar la búsqueda. " +
-            (e.message ||
-              "Si Mercado Libre o los proxies públicos fallan, probá de nuevo más tarde o abrí este HTML en tu PC (doble clic).")
-        );
-      } finally {
-        setLoading(false);
-      }
+    const data = await resp.json();
+    const raw  = data.choices?.[0]?.message?.content || '';
+
+    // Extraer JSON del response
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('No se recibió un JSON válido de Grok.');
+    const d = JSON.parse(match[0]);
+
+    fillFields(prefix, compId, d);
+
+    statEl.className = 'fetch-status success';
+    statEl.innerHTML = '✓ Datos extraídos correctamente por Grok AI. Revisá y ajustá si es necesario.';
+
+  } catch(err) {
+    statEl.className = 'fetch-status error';
+    statEl.innerHTML = '✗ ' + (err.message || 'Error al consultar Grok AI. Verificá la URL o ingresá los datos manualmente.');
+    console.error('Grok error:', err);
+  } finally {
+    if (btnEl) btnEl.disabled = false;
+    if (iconEl) iconEl.textContent = '✦';
+  }
+}
+
+// ═══════════════════════════════════════
+// RELLENAR CAMPOS
+// ═══════════════════════════════════════
+function fillFields(prefix, compId, d) {
+  const pulse = el => {
+    if (!el) return;
+    el.classList.add('autofilled');
+    setTimeout(() => el.classList.remove('autofilled'), 2000);
+  };
+
+  const set = (id, val) => {
+    if (val === null || val === undefined || val === '') return;
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = val;
+    pulse(el);
+  };
+
+  const setSelect = (id, val, map) => {
+    const el = document.getElementById(id);
+    if (!el || !val) return;
+    const mapped = map ? (map[val] || val) : val;
+    for (const opt of el.options) {
+      if (opt.value === mapped) { el.value = mapped; pulse(el); return; }
+    }
+  };
+
+  const tipoMap = {Casa:'Casa',PH:'PH',Departamento:'Departamento',Depto:'Departamento',Duplex:'Duplex',Otro:'Otro'};
+
+  if (prefix === 's1') {
+    setSelect('s1-tipo', d.tipologia, tipoMap);
+    set('s1-localidad', d.localidad);
+    set('s1-barrio',    d.barrio);
+    set('s1-dir',       d.direccion);
+    set('s1-precio',    d.precio);
+    set('s1-cub',       d.sup_cubierta);
+    set('s1-semi',      d.sup_semicubierta);
+    set('s1-balc',      d.sup_balcon);
+    set('s1-desc',      d.sup_descubierta);
+    set('s1-ant',       d.antiguedad);
+    set('s1-amb',       d.ambientes);
+    set('s1-dorm',      d.dormitorios);
+    set('s1-ban',       d.banos);
+    set('s1-coch',      d.cocheras);
+    set('s1-coch-precio', d.precio_cochera);
+    set('s1-obs',       d.obs);
+    calcHomogSujeto();
+  } else {
+    const id = compId;
+    setSelect(`c${id}-tipo`,   d.tipologia, tipoMap);
+    setSelect(`c${id}-moneda`, d.moneda, null);
+    set(`c${id}-inmob`,      d.inmobiliaria);
+    set(`c${id}-localidad`,  d.localidad);
+    set(`c${id}-barrio`,     d.barrio);
+    set(`c${id}-dir`,        d.direccion);
+    set(`c${id}-dias`,       d.dias_publicado);
+    set(`c${id}-precio`,     d.precio);
+    set(`c${id}-cub`,        d.sup_cubierta);
+    set(`c${id}-semi`,       d.sup_semicubierta);
+    set(`c${id}-balc`,       d.sup_balcon);
+    set(`c${id}-desc`,       d.sup_descubierta);
+    set(`c${id}-ant`,        d.antiguedad);
+    set(`c${id}-amb`,        d.ambientes);
+    set(`c${id}-dorm`,       d.dormitorios);
+    set(`c${id}-ban`,        d.banos);
+    set(`c${id}-coch`,       d.cocheras);
+    set(`c${id}-cochPrecio`, d.precio_cochera);
+    set(`c${id}-obs`,        d.obs);
+    updateDirLabel(id);
+    saveComp(id);
+  }
+}
+
+// ═══════════════════════════════════════
+// PASO 1
+// ═══════════════════════════════════════
+function calcHomogSujeto() {
+  const v = id => parseFloat(document.getElementById(id)?.value) || 0;
+  const h = v('s1-cub')*1 + v('s1-semi')*0.5 + v('s1-balc')*0.33 + v('s1-desc')*0.1;
+  const el = document.getElementById('s1-homog');
+  if (el) el.value = h > 0 ? h.toFixed(2) : '';
+}
+
+// ═══════════════════════════════════════
+// PASO 2 — COMPARABLES
+// ═══════════════════════════════════════
+function addComparable() {
+  if (comparables.length >= 10) { alert('Máximo 10 comparables.'); return; }
+  compCount++;
+  const id = compCount;
+  const obj = {
+    id, url:'', dias:0, inmob:'', tipo:'', localidad:'', barrio:'',
+    direccion:'', moneda:'USD', precio:0, cub:0, semi:0, balc:0,
+    desc:0, ant:0, amb:0, dorm:0, ban:0, coch:0, cochPrecio:0,
+    cerrada:false, obs:'', pond:{}
+  };
+  POND_VARS.forEach(v => obj.pond[v.key] = 'Similar');
+  comparables.push(obj);
+
+  const div = document.createElement('div');
+  div.className = 'comparable-block';
+  div.id = 'comp-block-' + id;
+  div.innerHTML = compHTML(id, comparables.length);
+  document.getElementById('comparables-container').appendChild(div);
+}
+
+function compHTML(id, num) {
+  return `
+  <div class="comp-header">
+    <span class="comp-num">${num}</span>
+    <span class="comp-title">Comparable ${num}<small id="comp-dir-label-${id}"></small></span>
+    <label class="cerrada-label"><input type="checkbox" id="c${id}-cerrada" onchange="saveComp(${id})"> Venta cerrada</label>
+    <button class="btn-remove" onclick="removeComp(${id})">×</button>
+  </div>
+
+  <div class="fetch-box" style="margin-bottom:13px;">
+    <div class="fg">
+      <label>🔗 Link del portal (ZonaProp / ArgeProp / MercadoLibre)</label>
+      <input type="url" id="c${id}-url" placeholder="https://..." oninput="saveComp(${id})">
+    </div>
+    <button class="btn-fetch" id="c${id}-btn" onclick="fetchProp('comp',${id})">
+      <span id="c${id}-fetch-icon">✦</span> Traer datos
+    </button>
+  </div>
+  <div class="fetch-status" id="c${id}-status"></div>
+
+  <div class="form-grid">
+    <div class="form-group full"><label>Dirección</label><input type="text" id="c${id}-dir" placeholder="Calle y número" oninput="saveComp(${id});updateDirLabel(${id})"></div>
+    <div class="form-group"><label>Inmobiliaria</label><input type="text" id="c${id}-inmob" placeholder="Nombre" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Tipología</label>
+      <select id="c${id}-tipo" onchange="saveComp(${id})"><option value="">Sel...</option><option>Casa</option><option>PH</option><option>Departamento</option><option>Duplex</option><option>Otro</option></select>
+    </div>
+    <div class="form-group"><label>Localidad</label><input type="text" id="c${id}-localidad" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Barrio</label><input type="text" id="c${id}-barrio" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Días publicado</label><input type="number" id="c${id}-dias" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+  </div>
+  <hr class="divider" style="margin:11px 0;">
+  <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:9px;">PRECIO</div>
+  <div class="form-grid cols-3">
+    <div class="form-group"><label>Moneda</label><select id="c${id}-moneda" onchange="saveComp(${id})"><option value="USD">USD</option><option value="ARS">ARS</option></select></div>
+    <div class="form-group"><label>Precio</label><div class="input-prefix"><span>$</span><input type="number" id="c${id}-precio" placeholder="0" min="0" oninput="saveComp(${id})"></div></div>
+    <div class="form-group"><label>Precio cochera</label><div class="input-prefix"><span>$</span><input type="number" id="c${id}-cochPrecio" placeholder="0" min="0" oninput="saveComp(${id})"></div></div>
+  </div>
+  <hr class="divider" style="margin:11px 0;">
+  <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:9px;">SUPERFICIES (m²)</div>
+  <div class="form-grid">
+    <div class="form-group"><label>Cubierta ×1,00</label><input type="number" id="c${id}-cub" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Semicubierta ×0,50</label><input type="number" id="c${id}-semi" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Balcón ×0,33</label><input type="number" id="c${id}-balc" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Descubierta ×0,10</label><input type="number" id="c${id}-desc" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+  </div>
+  <hr class="divider" style="margin:11px 0;">
+  <div style="font-size:11px;font-weight:700;color:var(--ink2);margin-bottom:9px;">CARACTERÍSTICAS</div>
+  <div class="form-grid">
+    <div class="form-group"><label>Antigüedad (años)</label><input type="number" id="c${id}-ant" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Ambientes</label><input type="number" id="c${id}-amb" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Dormitorios</label><input type="number" id="c${id}-dorm" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Baños</label><input type="number" id="c${id}-ban" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+    <div class="form-group"><label>Cocheras</label><input type="number" id="c${id}-coch" placeholder="0" min="0" oninput="saveComp(${id})"></div>
+  </div>
+  <div class="form-group" style="margin-top:11px;"><label>Observaciones</label><textarea id="c${id}-obs" placeholder="Características destacadas..." oninput="saveComp(${id})"></textarea></div>`;
+}
+
+function saveComp(id) {
+  const obj = comparables.find(c => c.id === id);
+  if (!obj) return;
+  const g = (sid, parse) => {
+    const el = document.getElementById(sid);
+    if (!el) return parse ? 0 : '';
+    return parse ? (parseFloat(el.value) || 0) : el.value;
+  };
+  obj.url       = g(`c${id}-url`);
+  obj.inmob     = g(`c${id}-inmob`);
+  obj.localidad = g(`c${id}-localidad`);
+  obj.barrio    = g(`c${id}-barrio`);
+  obj.obs       = g(`c${id}-obs`);
+  obj.direccion = g(`c${id}-dir`);
+  obj.tipo      = g(`c${id}-tipo`);
+  obj.moneda    = g(`c${id}-moneda`);
+  obj.dias      = g(`c${id}-dias`, true);
+  obj.precio    = g(`c${id}-precio`, true);
+  obj.cub       = g(`c${id}-cub`, true);
+  obj.semi      = g(`c${id}-semi`, true);
+  obj.balc      = g(`c${id}-balc`, true);
+  obj.desc      = g(`c${id}-desc`, true);
+  obj.ant       = g(`c${id}-ant`, true);
+  obj.amb       = g(`c${id}-amb`, true);
+  obj.dorm      = g(`c${id}-dorm`, true);
+  obj.ban       = g(`c${id}-ban`, true);
+  obj.coch      = g(`c${id}-coch`, true);
+  obj.cochPrecio= g(`c${id}-cochPrecio`, true);
+  obj.cerrada   = document.getElementById(`c${id}-cerrada`)?.checked || false;
+}
+
+function updateDirLabel(id) {
+  const v = document.getElementById(`c${id}-dir`)?.value || '';
+  const l = document.getElementById(`comp-dir-label-${id}`);
+  if (l) l.textContent = v ? ` · ${v}` : '';
+}
+
+function removeComp(id) {
+  if (!confirm('¿Eliminar este comparable?')) return;
+  comparables = comparables.filter(c => c.id !== id);
+  document.getElementById('comp-block-' + id)?.remove();
+  document.querySelectorAll('.comparable-block').forEach((b, i) => {
+    const n = b.querySelector('.comp-num');
+    if (n) n.textContent = i + 1;
+  });
+}
+
+// ═══════════════════════════════════════
+// PASO 3 — PONDERACION
+// ═══════════════════════════════════════
+function buildPondTable() {
+  comparables.forEach(c => saveComp(c.id));
+  const valid = comparables.filter(c => c.precio > 0);
+  const head  = document.querySelector('#pond-table thead tr');
+  const body  = document.getElementById('pond-body');
+
+  head.innerHTML = '<th style="min-width:155px;">Variable</th><th style="min-width:70px;">Escala</th>';
+  valid.forEach((c, i) => {
+    const lbl = c.direccion || `Comp.${i+1}`;
+    head.innerHTML += `<th title="${lbl}">${trunc(lbl,12)}${c.cerrada?' ✔':''}</th>`;
+  });
+
+  body.innerHTML = '';
+  POND_VARS.forEach(v => {
+    const tr = document.createElement('tr');
+    let row = `<td>${v.label}</td><td style="font-size:10px;color:#bbb;">Sup→Inf</td>`;
+    valid.forEach(c => {
+      const sel = c.pond[v.key] || 'Similar';
+      row += `<td><select onchange="setPond(${c.id},'${v.key}',this.value)">
+        ${Object.keys(POND_F).map(o => `<option value="${o}"${o===sel?' selected':''}>${o} (${POND_L[o]})</option>`).join('')}
+      </select></td>`;
     });
-  </script>
+    tr.innerHTML = row;
+    body.appendChild(tr);
+  });
+
+  if (!valid.length) {
+    body.innerHTML = '<tr><td colspan="20" style="text-align:center;color:#aaa;padding:20px;">Agregá comparables con precio en el paso anterior.</td></tr>';
+  }
+}
+
+function setPond(id, key, val) {
+  const obj = comparables.find(c => c.id === id);
+  if (obj) obj.pond[key] = val;
+}
+
+function trunc(s, n) { return s.length > n ? s.slice(0, n) + '…' : s; }
+
+// ═══════════════════════════════════════
+// PASO 4 — CALCULAR
+// ═══════════════════════════════════════
+function calcular() {
+  comparables.forEach(c => saveComp(c.id));
+  const valid = comparables.filter(c => c.precio > 0 && (c.cub + c.semi + c.balc + c.desc) > 0);
+
+  const gv = id => parseFloat(document.getElementById(id)?.value) || 0;
+  const gs = id => document.getElementById(id)?.value || '';
+
+  const s1 = {
+    tipo: gs('s1-tipo'), localidad: gs('s1-localidad'),
+    barrio: gs('s1-barrio'), dir: gs('s1-dir'),
+    cub: gv('s1-cub'), semi: gv('s1-semi'),
+    balc: gv('s1-balc'), desc: gv('s1-desc'),
+    cochPrecio: gv('s1-coch-precio'), precio: gv('s1-precio'),
+  };
+  s1.homog = s1.cub*1 + s1.semi*0.5 + s1.balc*0.33 + s1.desc*0.1;
+
+  if (!valid.length) {
+    document.getElementById('result-content').innerHTML = `<div class="card"><div class="empty-state"><div class="big-icon">⚠️</div><p>No hay comparables con precio y superficie cargados. Volvé al paso 2.</p></div></div>`;
+    return;
+  }
+
+  const rows = valid.map(c => {
+    const homog = c.cub*1 + c.semi*0.5 + c.balc*0.33 + c.desc*0.1;
+    const neto  = c.precio - (c.cochPrecio || 0);
+    const vu    = homog > 0 ? neto / homog : 0;
+    let factor  = 1;
+    POND_VARS.forEach(v => { factor *= POND_F[c.pond[v.key] || 'Similar']; });
+    return {comp:c, homog, neto, vu, factor, vuAdj: vu * factor};
+  });
+
+  const vus   = rows.map(r => r.vuAdj).filter(v => v > 0);
+  const vuProm = vus.length ? vus.reduce((a,b) => a+b, 0) / vus.length : 0;
+  const vuMin  = vus.length ? Math.min(...vus) : 0;
+  const vProm  = s1.homog > 0 ? s1.homog * vuProm + s1.cochPrecio : 0;
+  const vComp  = s1.homog > 0 ? s1.homog * vuMin  + s1.cochPrecio : 0;
+  const vSug   = vComp * 0.95;
+
+  const fmt  = n => n > 0 ? 'USD ' + Math.round(n).toLocaleString('es-AR') : '—';
+  const fmtN = n => n > 0 ? Math.round(n).toLocaleString('es-AR') : '—';
+
+  document.getElementById('result-content').innerHTML = `
+  <div class="card">
+    <div class="card-title"><span class="icon">🏡</span> Propiedad Valuada</div>
+    <div style="font-size:14px;color:#666;margin-top:4px;">${s1.dir||'—'}${s1.localidad?' · '+s1.localidad:''}${s1.barrio?' · '+s1.barrio:''}</div>
+    <div style="margin-top:8px;font-size:12px;color:#999;">
+      Sup. Cubierta: <b>${s1.cub} m²</b> &nbsp;·&nbsp; Sup. Homogeneizada: <b>${s1.homog.toFixed(1)} m²</b>
+      ${s1.precio > 0 ? ` &nbsp;·&nbsp; Precio pedido: <b>${fmt(s1.precio)}</b>` : ''}
+    </div>
+  </div>
+
+  <div class="result-grid">
+    <div class="result-card">
+      <div class="rc-label">Valor Unitario Promedio</div>
+      <div class="rc-value">${fmtN(vuProm)} <span class="rc-unit">USD/m²</span></div>
+      <div class="rc-sub">${vus.length} comparables ajustados</div>
+    </div>
+    <div class="result-card">
+      <div class="rc-label">Valor de Mercado Promedio</div>
+      <div class="rc-value" style="font-size:22px;">${fmt(vProm)}</div>
+      <div class="rc-sub">VU promedio × sup. homogeneizada</div>
+    </div>
+    <div class="result-card highlight">
+      <div class="rc-label">💡 Precio Sugerido Competitivo</div>
+      <div class="rc-value">${fmt(vSug)}</div>
+      <div class="rc-sub">Valor mínimo ajustado − 5%</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🔢</span> Detalle por Comparable</div>
+    <div style="overflow-x:auto;">
+      <table class="comp-result-table">
+        <thead><tr><th>#</th><th>Dirección</th><th>Precio</th><th>Sup.Homog.</th><th>VU Bruto</th><th>Factor Pond.</th><th>VU Ajustado</th><th>Estado</th></tr></thead>
+        <tbody>${rows.map((r,i) => `<tr>
+          <td>${i+1}</td>
+          <td>${r.comp.direccion||'—'}</td>
+          <td class="num">USD ${r.comp.precio.toLocaleString('es-AR')}</td>
+          <td class="num">${r.homog.toFixed(1)} m²</td>
+          <td class="num">${fmtN(r.vu)} USD/m²</td>
+          <td class="num" style="color:${r.factor>=1?'var(--green)':'var(--red)'};">${r.factor.toFixed(4)}</td>
+          <td class="num" style="color:var(--gold);font-weight:700;">${fmtN(r.vuAdj)} USD/m²</td>
+          <td><span class="badge ${r.comp.cerrada?'badge-green':'badge-gold'}">${r.comp.cerrada?'Cerrada':'Oferta'}</span></td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📐</span> Desglose del Valor</div>
+    <table class="breakdown-table">
+      <thead><tr><th>Superficie</th><th>m²</th><th>Factor</th><th>m² Homog.</th><th>VU Comp.</th><th>Subtotal</th></tr></thead>
+      <tbody>
+        <tr><td>Cubierta</td><td class="num">${s1.cub}</td><td class="num">×1,00</td><td class="num">${(s1.cub).toFixed(1)}</td><td class="num">${fmtN(vuMin)}</td><td class="num gold">USD ${Math.round(s1.cub*vuMin).toLocaleString('es-AR')}</td></tr>
+        <tr><td>Semicubierta</td><td class="num">${s1.semi}</td><td class="num">×0,50</td><td class="num">${(s1.semi*.5).toFixed(1)}</td><td class="num">${fmtN(vuMin)}</td><td class="num gold">USD ${Math.round(s1.semi*.5*vuMin).toLocaleString('es-AR')}</td></tr>
+        <tr><td>Balcón</td><td class="num">${s1.balc}</td><td class="num">×0,33</td><td class="num">${(s1.balc*.33).toFixed(1)}</td><td class="num">${fmtN(vuMin)}</td><td class="num gold">USD ${Math.round(s1.balc*.33*vuMin).toLocaleString('es-AR')}</td></tr>
+        <tr><td>Descubierta</td><td class="num">${s1.desc}</td><td class="num">×0,10</td><td class="num">${(s1.desc*.1).toFixed(1)}</td><td class="num">${fmtN(vuMin)}</td><td class="num gold">USD ${Math.round(s1.desc*.1*vuMin).toLocaleString('es-AR')}</td></tr>
+        ${s1.cochPrecio > 0 ? `<tr><td>Cochera</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num gold">USD ${Math.round(s1.cochPrecio).toLocaleString('es-AR')}</td></tr>` : ''}
+        <tr><td><b>TOTAL</b></td><td class="num"><b>${s1.cub+s1.semi+s1.balc+s1.desc} m²</b></td><td></td><td class="num"><b>${s1.homog.toFixed(1)} m²</b></td><td></td><td class="num" style="font-size:15px;"><b>${fmt(vComp)}</b></td></tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:18px;padding:20px 24px;background:var(--ink);border-radius:10px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;">
+      <div>
+        <div style="color:#5558a0;font-size:10px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;">Precio Sugerido Competitivo al Mercado (−5%)</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:38px;color:var(--gold);margin-top:4px;">${fmt(vSug)}</div>
+      </div>
+      <div style="text-align:right;">
+        <div style="color:#5558a0;font-size:11px;">Valor de Mercado Promedio</div>
+        <div style="font-size:20px;color:white;font-weight:600;">${fmt(vProm)}</div>
+        <div style="color:#5558a0;font-size:11px;margin-top:3px;">VU promedio: ${fmtN(vuProm)} USD/m²</div>
+      </div>
+    </div>
+
+    ${s1.precio > 0 ? `
+    <div style="margin-top:12px;padding:12px 16px;background:${s1.precio>vProm?'var(--red-light)':'var(--green-light)'};border-radius:8px;font-size:13px;color:${s1.precio>vProm?'var(--red)':'var(--green)'};">
+      <b>Precio pedido vs. mercado:</b> USD ${s1.precio.toLocaleString('es-AR')}
+      ${s1.precio > vProm
+        ? ` → <b>${(((s1.precio-vProm)/vProm)*100).toFixed(1)}% por encima del valor de mercado</b>`
+        : ` → <b>${(((vProm-s1.precio)/vProm)*100).toFixed(1)}% por debajo del valor de mercado</b>`}
+    </div>` : ''}
+  </div>
+
+  <div class="actions-row">
+    <button class="btn-secondary" onclick="goTo(3)">← Ajustar ponderación</button>
+    <button class="btn-primary" onclick="window.print()">🖨 Imprimir / PDF</button>
+  </div>`;
+}
+
+// ═══════════════════════════════════════
+// RESET
+// ═══════════════════════════════════════
+function resetAll() {
+  if (!confirm('¿Reiniciar todo el análisis?')) return;
+  comparables = []; compCount = 0;
+  document.getElementById('comparables-container').innerHTML = '';
+  ['s1-tipo','s1-localidad','s1-barrio','s1-dir','s1-cub','s1-semi','s1-balc',
+   's1-desc','s1-homog','s1-ant','s1-amb','s1-dorm','s1-ban','s1-coch',
+   's1-coch-precio','s1-precio','s1-obs','s1-url'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  const st = document.getElementById('s1-status');
+  if (st) st.className = 'fetch-status';
+  document.getElementById('result-content').innerHTML = `<div class="card"><div class="empty-state"><div class="big-icon">📊</div><p>Completá los pasos anteriores para ver los resultados.</p></div></div>`;
+  goTo(1);
+}
+
+// Init
+addComparable();
+</script>
 </body>
 </html>
