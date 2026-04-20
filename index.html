@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tasación referencial — Mercado Libre (demo)</title>
+  <meta name="description" content="Promedio $/m² con datos públicos de Mercado Libre y enlaces reales." />
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --text: #e8eef7;
+      --muted: #9fb0c8;
+      --accent: #3483fa;
+      --accent-hover: #2968c8;
+      --border: #2d3a4f;
+      --ok: #00a650;
+      --warn: #f73;
+      --radius: 12px;
+      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--font);
+      background: radial-gradient(1200px 600px at 10% -10%, #1e3a5f 0%, transparent 55%), var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.45;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 24px 18px 48px; }
+    header { margin-bottom: 24px; }
+    h1 { font-size: 1.45rem; font-weight: 650; margin: 0 0 8px; letter-spacing: -0.02em; }
+    .sub { color: var(--muted); font-size: 0.95rem; margin: 0; max-width: 62ch; }
+    .alert {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: rgba(52, 131, 250, 0.08);
+      font-size: 0.88rem;
+      color: var(--muted);
+    }
+    .alert strong { color: var(--text); }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+    .grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 720px) {
+      .grid.form { grid-template-columns: 2fr 1fr 100px 120px; align-items: end; }
+    }
+    label { display: block; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 6px; }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+    input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+    .row-check { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 0.9rem; color: var(--muted); }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-top: 14px; }
+    button {
+      appearance: none;
+      border: none;
+      border-radius: 8px;
+      padding: 11px 18px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
+      transition: background 0.15s;
+    }
+    button:hover:not(:disabled) { background: var(--accent-hover); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    .ghost {
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .ghost:hover:not(:disabled) { background: rgba(255,255,255,0.06); }
+    .stats {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      margin-bottom: 14px;
+    }
+    .stat {
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.2);
+    }
+    .stat .k { font-size: 0.72rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat .v { font-size: 1.25rem; font-weight: 700; margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { padding: 10px 8px; text-align: left; border-bottom: 1px solid var(--border); vertical-align: top; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    tr:hover td { background: rgba(255,255,255,0.03); }
+    a.link { color: var(--accent); word-break: break-all; }
+    .thumb { width: 44px; height: 44px; object-fit: cover; border-radius: 8px; background: var(--border); }
+    .badge { font-size: 0.72rem; padding: 3px 8px; border-radius: 999px; background: rgba(0,166,80,0.15); color: var(--ok); }
+    .err { color: var(--warn); font-size: 0.9rem; margin-top: 8px; }
+    footer { margin-top: 28px; font-size: 0.8rem; color: var(--muted); }
+    .overflow { overflow-x: auto; }
+    .mono { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Tasación referencial ($/m²)</h1>
+      <p class="sub">
+        Datos públicos de la API de Mercado Libre Argentina (sin usuario ni contraseña).
+        Los enlaces son los <strong>permalink</strong> oficiales de cada publicación.
+      </p>
+      <div class="alert">
+        <strong>Seguridad:</strong> no pegues tu <em>Client Secret</em> en HTML ni en GitHub.
+        Este demo no usa credenciales: la búsqueda es pública. Si expusiste el secreto, regeneralo en el panel de Developers.
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="grid form">
+        <div>
+          <label for="q">Búsqueda</label>
+          <input id="q" type="text" value="departamento venta" autocomplete="off" />
+        </div>
+        <div>
+          <label for="zona">Zona / barrio (opcional)</label>
+          <input id="zona" type="text" placeholder="Ej: Palermo, Rosario…" autocomplete="off" />
+        </div>
+        <div>
+          <label for="max">Máx. resultados</label>
+          <input id="max" type="number" min="10" max="400" step="10" value="120" />
+        </div>
+        <div>
+          <label for="limit">Por página</label>
+          <input id="limit" type="number" min="10" max="50" value="50" />
+        </div>
+      </div>
+      <div class="row-check">
+        <input id="enrich" type="checkbox" checked />
+        <label for="enrich" style="margin:0;text-transform:none;font-size:0.9rem;">Completar m² con GET /items si falta en el listado (más pedidos, mejor cobertura)</label>
+      </div>
+      <div class="actions">
+        <button id="btn" type="button">Buscar</button>
+        <button id="clear" type="button" class="ghost">Limpiar tabla</button>
+        <span id="status" class="sub" style="margin:0;"></span>
+      </div>
+      <p id="error" class="err" hidden></p>
+    </section>
+
+    <section class="card" id="summary" hidden>
+      <div class="stats">
+        <div class="stat"><div class="k">Muestra con precio y m²</div><div class="v mono" id="st-n">—</div></div>
+        <div class="stat"><div class="k">Promedio</div><div class="v mono" id="st-avg">—</div></div>
+        <div class="stat"><div class="k">Mediana</div><div class="v mono" id="st-med">—</div></div>
+      </div>
+      <div class="overflow">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th></th>
+              <th>Título</th>
+              <th>Precio</th>
+              <th>m²</th>
+              <th>$/m²</th>
+              <th>Link real</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      Compatible con GitHub Pages (la API permite CORS). Repo: activá Pages en rama <code>main</code> carpeta <code>/docs</code>.
+    </footer>
+  </div>
+
+  <script>
+    const MLA = "https://api.mercadolibre.com";
+
+    function $(id) { return document.getElementById(id); }
+
+    function normHeaders(attrs) {
+      const byId = {};
+      for (const a of attrs || []) {
+        const id = a.id;
+        if (id) byId[id.toUpperCase()] = a;
+      }
+      return byId;
+    }
+
+    function attrM2(attributes) {
+      const byId = normHeaders(attributes);
+      for (const key of ["TOTAL_SURFACE", "COVERED_AREA"]) {
+        const a = byId[key];
+        if (!a) continue;
+        const vs = a.value_struct;
+        if (vs && vs.number != null) {
+          const n = Number(vs.number);
+          if (!Number.isNaN(n) && n > 0) return n;
+        }
+        const raw = String(a.value_name || "");
+        const m = raw.match(/([\d.,]+)/);
+        if (m) {
+          const n = parseFloat(m[1].replace(/\./g, "").replace(",", "."));
+          if (!Number.isNaN(n) && n > 0) return n;
+        }
+      }
+      return null;
+    }
+
+    function mergeItem(compact, detail) {
+      const out = { ...compact, ...detail };
+      const ca = compact.attributes || [];
+      const da = detail.attributes || [];
+      const map = {};
+      for (const a of ca.concat(da)) {
+        const id = a.id;
+        if (id) map[id] = a;
+      }
+      out.attributes = Object.values(map);
+      return out;
+    }
+
+    async function fetchJson(url) {
+      const r = await fetch(url);
+      if (!r.ok) throw new Error("HTTP " + r.status + " — " + url);
+      return r.json();
+    }
+
+    async function searchPage(qRaw, zona, offset, limit) {
+      const q = zona ? (qRaw + " " + zona).trim() : qRaw.trim();
+      const u = new URL(MLA + "/sites/MLA/search");
+      u.searchParams.set("q", q);
+      u.searchParams.set("offset", String(offset));
+      u.searchParams.set("limit", String(limit));
+      return fetchJson(u.toString());
+    }
+
+    async function searchAll(q, zona, maxResults, pageLimit) {
+      const items = [];
+      let offset = 0;
+      while (items.length < maxResults) {
+        const data = await searchPage(q, zona, offset, pageLimit);
+        const batch = data.results || [];
+        if (!batch.length) break;
+        items.push(...batch);
+        const total = Number((data.paging || {}).total || 0);
+        offset += batch.length;
+        if (offset >= total || batch.length < pageLimit) break;
+      }
+      return items.slice(0, maxResults);
+    }
+
+    async function enrichSequential(items, useEnrich) {
+      const out = [];
+      for (const it of items) {
+        let cur = it;
+        if (useEnrich && it && it.id && attrM2(it.attributes) == null) {
+          try {
+            const detail = await fetchJson(MLA + "/items/" + encodeURIComponent(it.id));
+            cur = mergeItem(it, detail);
+          } catch (e) { /* seguir sin detalle */ }
+          await new Promise((r) => setTimeout(r, 40));
+        }
+        out.push(cur);
+      }
+      return out;
+    }
+
+    function formatArs(n) {
+      try {
+        return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
+      } catch {
+        return "$ " + Math.round(n).toLocaleString("es-AR");
+      }
+    }
+
+    function median(xs) {
+      if (!xs.length) return null;
+      const s = [...xs].sort((a, b) => a - b);
+      const m = Math.floor(s.length / 2);
+      return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+    }
+
+    function setLoading(on) {
+      $("btn").disabled = on;
+      $("status").textContent = on ? "Consultando API…" : "";
+    }
+
+    function showError(msg) {
+      const el = $("error");
+      el.hidden = !msg;
+      el.textContent = msg || "";
+    }
+
+    function render(rows) {
+      const tbody = $("tbody");
+      tbody.innerHTML = "";
+      const ppmValues = [];
+
+      rows.forEach((it, i) => {
+        const price = it.price != null ? Number(it.price) : null;
+        const m2 = attrM2(it.attributes);
+        const ppm = price != null && m2 && m2 > 0 ? price / m2 : null;
+        if (ppm != null && Number.isFinite(ppm)) ppmValues.push(ppm);
+
+        const tr = document.createElement("tr");
+        const thumb = (it.thumbnail || "").replace(/^http:/, "https:");
+        tr.innerHTML = `
+          <td class="mono">${i + 1}</td>
+          <td>${thumb ? `<img class="thumb" src="${thumb}" alt="" loading="lazy" />` : ""}</td>
+          <td>${escapeHtml((it.title || "").slice(0, 140))}${(it.title || "").length > 140 ? "…" : ""}</td>
+          <td class="mono">${price != null ? formatArs(price) : "—"}</td>
+          <td class="mono">${m2 != null ? m2.toLocaleString("es-AR", { maximumFractionDigits: 2 }) : "—"}</td>
+          <td class="mono">${ppm != null ? formatArs(ppm) : "—"}</td>
+          <td>${it.permalink ? `<a class="link" href="${escapeAttr(it.permalink)}" target="_blank" rel="noopener noreferrer">Abrir publicación</a>` : "—"}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      const n = ppmValues.length;
+      const avg = n ? ppmValues.reduce((a, b) => a + b, 0) / n : null;
+      const med = n ? median(ppmValues) : null;
+
+      $("st-n").textContent = n ? String(n) : "0";
+      $("st-avg").textContent = avg != null ? formatArs(avg) + " / m²" : "—";
+      $("st-med").textContent = med != null ? formatArs(med) + " / m²" : "—";
+      $("summary").hidden = false;
+    }
+
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+    function escapeAttr(s) {
+      return escapeHtml(s).replace(/'/g, "&#39;");
+    }
+
+    $("clear").addEventListener("click", () => {
+      $("tbody").innerHTML = "";
+      $("summary").hidden = true;
+      showError("");
+    });
+
+    $("btn").addEventListener("click", async () => {
+      showError("");
+      const q = $("q").value || "departamento";
+      const zona = $("zona").value.trim();
+      const max = Math.min(400, Math.max(10, Number($("max").value || 120)));
+      const limit = Math.min(50, Math.max(10, Number($("limit").value || 50)));
+      const enrich = $("enrich").checked;
+
+      setLoading(true);
+      try {
+        const raw = await searchAll(q, zona, max, limit);
+        const merged = await enrichSequential(raw, enrich);
+        render(merged);
+      } catch (e) {
+        console.error(e);
+        showError("No se pudo completar la búsqueda. Si estás offline o la API falla, probá de nuevo. " + (e.message || ""));
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+</html>
