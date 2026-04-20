@@ -1,0 +1,32 @@
+{
+  "name": "tasador-inmobiliario",
+  "version": "1.0.0",
+  "description": "Sistema inteligente de tasación de propiedades con análisis de Mercado Libre, ZonaProp y ArgenProp",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 8080 -o",
+    "dev": "npx http-server -p 8080 -o -c-1"
+  },
+  "keywords": [
+    "real-estate",
+    "tasacion",
+    "inmobiliaria",
+    "argentina",
+    "ai",
+    "groq",
+    "react"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TU_USUARIO/tasador-inmobiliario.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TU_USUARIO/tasador-inmobiliario/issues"
+  },
+  "homepage": "https://github.com/TU_USUARIO/tasador-inmobiliario#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}
