@@ -121,7 +121,7 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Tasación referenciaaaaaaaaaaaaaaal ($/m²)</h1>
+      <h1>Tasación referencial ($/m²)</h1>
       <p class="sub">
         Datos públicos de la API de Mercado Libre Argentina (sin usuario ni contraseña).
         Los enlaces son los <strong>permalink</strong> oficiales de cada publicación.
@@ -140,7 +140,7 @@
         </div>
         <div>
           <label for="zona">Zona / barrio (opcional)</label>
-          <input id="zona" type="text" placeholder="Ej: Palermo, Rosario…" autocomplete="off" />
+          <input id="zona" type="text" placeholder="Ej: Morón · Palermo · mejor sin comas" autocomplete="off" />
         </div>
         <div>
           <label for="max">Máx. resultados</label>
@@ -165,10 +165,12 @@
 
     <section class="card" id="summary" hidden>
       <div class="stats">
-        <div class="stat"><div class="k">Muestra con precio y m²</div><div class="v mono" id="st-n">—</div></div>
+        <div class="stat"><div class="k">Publicaciones (API)</div><div class="v mono" id="st-total">—</div></div>
+        <div class="stat"><div class="k">Con precio + m²</div><div class="v mono" id="st-n">—</div></div>
         <div class="stat"><div class="k">Promedio</div><div class="v mono" id="st-avg">—</div></div>
         <div class="stat"><div class="k">Mediana</div><div class="v mono" id="st-med">—</div></div>
       </div>
+      <p id="hint" class="sub" style="margin: 0 0 14px; font-size: 0.88rem;" hidden></p>
       <div class="overflow">
         <table>
           <thead>
@@ -200,6 +202,15 @@
     let lastFetchUsedProxy = false;
 
     function $(id) { return document.getElementById(id); }
+
+    /** Quitar comas y espacios raros; ML busca como texto libre en el sitio. */
+    function normalizeZona(z) {
+      if (!z || !String(z).trim()) return "";
+      return String(z)
+        .replace(/,/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
 
     async function parseJsonResponse(r) {
       const txt = await r.text();
@@ -296,7 +307,8 @@
     }
 
     async function searchPage(qRaw, zona, offset, limit) {
-      const q = zona ? (qRaw + " " + zona).trim() : qRaw.trim();
+      const z = normalizeZona(zona || "");
+      const q = z ? (qRaw + " " + z).trim() : qRaw.trim();
       const u = new URL(MLA + "/sites/MLA/search");
       u.searchParams.set("q", q);
       u.searchParams.set("offset", String(offset));
@@ -392,13 +404,33 @@
         tbody.appendChild(tr);
       });
 
+      const totalPub = rows.length;
       const n = ppmValues.length;
       const avg = n ? ppmValues.reduce((a, b) => a + b, 0) / n : null;
       const med = n ? median(ppmValues) : null;
 
+      $("st-total").textContent = String(totalPub);
       $("st-n").textContent = n ? String(n) : "0";
       $("st-avg").textContent = avg != null ? formatArs(avg) + " / m²" : "—";
       $("st-med").textContent = med != null ? formatArs(med) + " / m²" : "—";
+
+      const hintEl = $("hint");
+      if (totalPub === 0) {
+        hintEl.hidden = false;
+        hintEl.textContent =
+          "La API no devolvió ninguna publicación con ese texto. Probá la zona más corta (ej. solo «Morón» o «Morón Buenos Aires» sin coma), " +
+          "revisá ortografía (Morón lleva tilde), o cambiá la búsqueda principal (ej. «depto venta», «ph venta»).";
+      } else if (n === 0) {
+        hintEl.hidden = false;
+        hintEl.textContent =
+          "Hay " +
+          totalPub +
+          " avisos pero ninguno trae superficie reconocida en los datos devueltos " +
+          "(marcá «Completar m²» o probá otro tipo de propiedad). El promedio necesita precio y m².";
+      } else {
+        hintEl.hidden = true;
+        hintEl.textContent = "";
+      }
       $("summary").hidden = false;
     }
 
@@ -416,13 +448,14 @@
     $("clear").addEventListener("click", () => {
       $("tbody").innerHTML = "";
       $("summary").hidden = true;
+      $("hint").hidden = true;
       showError("");
     });
 
     $("btn").addEventListener("click", async () => {
       showError("");
       const q = $("q").value || "departamento";
-      const zona = $("zona").value.trim();
+      const zona = normalizeZona($("zona").value);
       const max = Math.min(400, Math.max(10, Number($("max").value || 120)));
       const limit = Math.min(50, Math.max(10, Number($("limit").value || 50)));
       const enrich = $("enrich").checked;
