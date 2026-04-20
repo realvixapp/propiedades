@@ -286,7 +286,8 @@
 // ═══════════════════════════════════════
 const GROK_KEY = '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';
 const GROK_URL = 'https://api.x.ai/v1/chat/completions';
-const GROK_MOD = 'grok-2-latest'; // tiene live search integrada
+/** Identificador válido según docs.x.ai (grok-2-latest y aliases viejos suelen devolver HTTP 400) */
+const GROK_MOD = 'grok-4-1-fast-non-reasoning';
 
 // ═══════════════════════════════════════
 // ESTADO
@@ -389,8 +390,16 @@ Devolvé EXACTAMENTE este JSON (null si no encontrás el dato):
     });
 
     if (!resp.ok) {
-      const e = await resp.json().catch(() => ({}));
-      throw new Error(e.error?.message || `HTTP ${resp.status}`);
+      const rawErr = await resp.text();
+      let msg = `HTTP ${resp.status}`;
+      try {
+        const e = JSON.parse(rawErr);
+        msg = e.error?.message || e.message || msg;
+        if (e.error?.code) msg += ` (${e.error.code})`;
+      } catch (_) {
+        if (rawErr) msg += ': ' + rawErr.slice(0, 200);
+      }
+      throw new Error(msg);
     }
 
     const data = await resp.json();
