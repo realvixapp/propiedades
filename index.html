@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ACM · Aná</title>
+<title>ACM · Análisis Comparativo de Mercado</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -24,6 +24,15 @@
   .header-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
   .btn-reset { background: transparent; border: 1px solid #444466; color: #7779aa; padding: 7px 16px; border-radius: 6px; cursor: pointer; font-size: 13px; font-family: 'DM Sans', sans-serif; transition: all .2s; }
   .btn-reset:hover { border-color: var(--gold); color: var(--gold); }
+
+  .api-modal { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(26,26,46,.55); align-items: center; justify-content: center; padding: 16px; }
+  .api-modal.open { display: flex; }
+  .api-modal-inner { background: white; border-radius: var(--radius); padding: 24px 26px; max-width: 420px; width: 100%; box-shadow: var(--shadow); border: 1px solid var(--border); }
+  .api-modal-inner h3 { font-family: 'DM Serif Display', serif; font-size: 18px; margin-bottom: 10px; color: var(--ink2); }
+  .api-modal-help { font-size: 13px; color: #888; margin-bottom: 14px; line-height: 1.45; }
+  .api-modal-help a { color: var(--green); font-weight: 600; }
+  #api-key-input { font-family: ui-monospace, monospace; font-size: 13px; }
+  .api-modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; flex-wrap: wrap; }
 
   .container { max-width: 1280px; margin: 0 auto; padding: 32px 24px 80px; }
 
@@ -166,9 +175,23 @@
     <div class="subtitle">Valuación Inmobiliaria Profesional · Powered by Grok AI</div>
   </div>
   <div class="header-right">
-    <button class="btn-reset" onclick="resetAll()">↺ Nuevo análisis</button>
+    <button type="button" class="btn-reset" onclick="openApiModal()" title="Configurar clave de x.ai">🔑 API x.ai</button>
+    <button type="button" class="btn-reset" onclick="resetAll()">↺ Nuevo análisis</button>
   </div>
 </header>
+
+<div id="api-modal" class="api-modal" aria-hidden="true" onclick="if(event.target===this)closeApiModal()">
+  <div class="api-modal-inner" onclick="event.stopPropagation()">
+    <h3>Clave API de Grok (x.ai)</h3>
+    <p class="api-modal-help">Creá una clave en <a href="https://console.x.ai/team/default/api-keys" target="_blank" rel="noopener">console.x.ai → API keys</a>. Se guarda solo en este navegador (localStorage), no en el servidor.</p>
+    <label for="api-key-input" style="display:block;margin-bottom:6px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#999;">Clave API (x.ai)</label>
+    <input type="password" id="api-key-input" autocomplete="off" spellcheck="false" placeholder="xai-… o gsk_…">
+    <div class="api-modal-actions">
+      <button type="button" class="btn-secondary" onclick="closeApiModal()">Cancelar</button>
+      <button type="button" class="btn-primary" onclick="saveApiKeyAndClose()">Guardar</button>
+    </div>
+  </div>
+</div>
 
 <div class="container">
   <nav class="steps-nav">
@@ -282,12 +305,65 @@
 
 <script>
 // ═══════════════════════════════════════
-// CONFIG GROK
+// CONFIG GROK (clave solo en este navegador — ver botón «API x.ai»)
 // ═══════════════════════════════════════
-const GROK_KEY = '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';
-const GROK_URL = 'https://api.x.ai/v1/chat/completions';
-/** Identificador válido según docs.x.ai (grok-2-latest y aliases viejos suelen devolver HTTP 400) */
-const GROK_MOD = 'grok-4-1-fast-non-reasoning';
+const LS_XAI_KEY = 'acm_xai_api_key';
+function getXaiApiKey() {
+  try {
+    const k = localStorage.getItem(LS_XAI_KEY);
+    if (k && k.trim()) return k.trim();
+  } catch (_) {}
+  if (typeof window.ACM_XAI_API_KEY === 'string' && window.ACM_XAI_API_KEY.trim())
+    return window.ACM_XAI_API_KEY.trim();
+  return '';
+}
+function openApiModal() {
+  const m = document.getElementById('api-modal');
+  const inp = document.getElementById('api-key-input');
+  if (inp) inp.value = '';
+  if (m) { m.classList.add('open'); m.setAttribute('aria-hidden', 'false'); }
+}
+function closeApiModal() {
+  const m = document.getElementById('api-modal');
+  if (m) { m.classList.remove('open'); m.setAttribute('aria-hidden', 'true'); }
+}
+function saveApiKeyAndClose() {
+  const inp = document.getElementById('api-key-input');
+  const v = (inp && inp.value) ? inp.value.trim() : '';
+  if (!v) { alert('Pegá la clave que copiaste de console.x.ai (empieza con xai- o gsk_).'); return; }
+  try {
+    localStorage.setItem(LS_XAI_KEY, v);
+  } catch (e) {
+    alert('No se pudo guardar (¿modo privado sin almacenamiento?).'); return;
+  }
+  closeApiModal();
+  alert('Clave guardada en este navegador. Probá de nuevo «Traer datos con IA».');
+}
+const GROK_URL = 'https://api.x.ai/v1/responses';
+/** Responses API + web_search (chat completions ya no tiene “live search” recomendado). Consola → modelos habilitados. */
+const GROK_MOD = 'grok-4.20-reasoning';
+
+/** Texto final desde JSON de /v1/responses (formato distinto a chat/completions). */
+function extractXaiResponseText(data) {
+  if (!data) return '';
+  const legacy = data.choices?.[0]?.message?.content;
+  if (typeof legacy === 'string') return legacy;
+  const out = data.output;
+  if (!Array.isArray(out)) return typeof data.output_text === 'string' ? data.output_text : '';
+  const parts = [];
+  for (const block of out) {
+    if (!block || typeof block !== 'object') continue;
+    const arr = block.content;
+    if (Array.isArray(arr)) {
+      for (const c of arr) {
+        if (c && typeof c.text === 'string') parts.push(c.text);
+      }
+    } else if (typeof block.text === 'string') {
+      parts.push(block.text);
+    }
+  }
+  return parts.length ? parts.join('\n') : '';
+}
 
 // ═══════════════════════════════════════
 // ESTADO
@@ -335,6 +411,13 @@ async function fetchProp(prefix, compId) {
 
   if (!url) { alert('Ingresá una URL primero.'); return; }
 
+  const GROK_KEY = getXaiApiKey();
+  if (!GROK_KEY) {
+    statEl.className = 'fetch-status error';
+    statEl.innerHTML = '✗ Falta la clave API de x.ai. Arriba a la derecha pulsá <b>🔑 API x.ai</b>, pegá tu clave desde <a href="https://console.x.ai/team/default/api-keys" target="_blank" rel="noopener" style="color:inherit;font-weight:700;">console.x.ai</a> y Guardar.';
+    return;
+  }
+
   statEl.className = 'fetch-status loading';
   statEl.innerHTML = '<span class="spinner"></span> Grok AI está leyendo el aviso…';
   if (btnEl) btnEl.disabled = true;
@@ -380,12 +463,14 @@ Devolvé EXACTAMENTE este JSON (null si no encontrás el dato):
       },
       body: JSON.stringify({
         model: GROK_MOD,
-        messages: [
-          {role: 'system', content: systemPrompt},
-          {role: 'user',   content: userPrompt}
+        input: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
         ],
+        tools: [{ type: 'web_search' }],
         temperature: 0,
-        max_tokens: 700
+        max_output_tokens: 1200,
+        stream: false
       })
     });
 
@@ -394,16 +479,24 @@ Devolvé EXACTAMENTE este JSON (null si no encontrás el dato):
       let msg = `HTTP ${resp.status}`;
       try {
         const e = JSON.parse(rawErr);
-        msg = e.error?.message || e.message || msg;
-        if (e.error?.code) msg += ` (${e.error.code})`;
+        const base = typeof e.error === 'string'
+          ? e.error
+          : (e.error?.message || e.detail || e.message || msg);
+        msg = base;
+        const code = typeof e.error === 'object' && e.error?.code ? e.error.code : e.code;
+        if (code && String(code) !== String(msg)) msg += ` (${code})`;
       } catch (_) {
         if (rawErr) msg += ': ' + rawErr.slice(0, 200);
       }
+      if (/incorrect api key/i.test(msg))
+        msg = 'Clave API inválida o revocada. Abrí 🔑 API x.ai y pegá una clave nueva desde console.x.ai.';
       throw new Error(msg);
     }
 
     const data = await resp.json();
-    const raw  = data.choices?.[0]?.message?.content || '';
+    const raw  = extractXaiResponseText(data);
+    if (!raw || !String(raw).trim())
+      throw new Error('Respuesta vacía del modelo (formato Responses). Reintentá o probá otro modelo en la consola x.ai.');
 
     // Extraer JSON del response
     const match = raw.match(/\{[\s\S]*\}/);
