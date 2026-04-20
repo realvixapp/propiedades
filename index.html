@@ -295,12 +295,6 @@
       return out;
     }
 
-    async function fetchJson(url) {
-      const r = await fetch(url);
-      if (!r.ok) throw new Error("HTTP " + r.status + " — " + url);
-      return r.json();
-    }
-
     async function searchPage(qRaw, zona, offset, limit) {
       const q = zona ? (qRaw + " " + zona).trim() : qRaw.trim();
       const u = new URL(MLA + "/sites/MLA/search");
