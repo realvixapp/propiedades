@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extractor de Propiedades (Legal - API)</title>
+<style>
+  body { 
+    font-family: system-ui, -apple-system, sans-serif; 
+    max-width: 600px; 
+    margin: 40px auto; 
+    padding: 0 20px;
+    background: #f5f5f5;
+  }
+  .container {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  h1 { 
+    margin: 0 0 10px 0; 
+    color: #1a1a1a;
+    font-size: 24px;
+  }
+  .info-box {
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    padding: 12px 16px;
+    margin: 16px 0;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .info-box a {
+    color: #1976d2;
+    font-weight: 600;
+  }
+  label { 
+    display: block; 
+    font-size: 13px; 
+    font-weight: 600;
+    margin-top: 16px; 
+    color: #333;
+    margin-bottom: 6px;
+  }
+  input { 
+    width: 100%; 
+    padding: 10px 12px; 
+    box-sizing: border-box;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+  }
+  input:focus {
+    outline: none;
+    border-color: #2196f3;
+  }
+  input[readonly] {
+    background: #f9f9f9;
+    color: #666;
+  }
+  button { 
+    width: 100%;
+    margin-top: 20px; 
+    padding: 12px 20px; 
+    cursor: pointer; 
+    font-weight: 600;
+    background: #2196f3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 15px;
+    transition: background 0.2s;
+  }
+  button:hover {
+    background: #1976d2;
+  }
+  button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  .status { 
+    display: none; 
+    margin-top: 16px; 
+    padding: 12px 16px; 
+    border-radius: 6px; 
+    font-size: 14px;
+    font-weight: 500;
+  }
+  .status.loading { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+    background: #fff3cd; 
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+  .status.success { 
+    display: block; 
+    background: #d4edda; 
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  .status.error { 
+    display: block; 
+    background: #f8d7da; 
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  .spinner { 
+    width: 16px; 
+    height: 16px; 
+    border: 3px solid #f3f3f3; 
+    border-top-color: #856404; 
+    border-radius: 50%; 
+    animation: spin 0.8s linear infinite; 
+  }
+  @keyframes spin { 
+    to { transform: rotate(360deg); } 
+  }
+  code { 
+    background: #f0f0f0; 
+    padding: 2px 6px; 
+    border-radius: 3px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+  }
+  .config-section {
+    background: #fffbf0;
+    border: 2px dashed #ffb74d;
+    padding: 16px;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+  .config-section h3 {
+    margin: 0 0 10px 0;
+    color: #e65100;
+    font-size: 16px;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏠 Extractor de Propiedades</h1>
+    <p style="color: #666; font-size: 14px; margin: 5px 0 0 0;">Solución 100% legal usando APIs</p>
+
+    <div class="info-box">
+      <strong>📋 Cómo obtener tu API Key gratis:</strong><br>
+      1. Andá a <a href="https://www.scraperapi.com/signup" target="_blank">ScraperAPI.com</a><br>
+      2. Creá cuenta gratis (1,000 requests/mes)<br>
+      3. Copiá tu API key del dashboard<br>
+      4. Pegala acá abajo ⬇️
+    </div>
+
+    <div class="config-section">
+      <h3>⚙️ Configuración</h3>
+      <label for="apikey">Tu API Key de ScraperAPI</label>
+      <input type="text" id="apikey" placeholder="Pegá tu API key acá" autocomplete="off">
+      <p style="font-size: 12px; color: #666; margin: 8px 0 0 0;">
+        Tu API key se guarda solo en tu navegador, no se envía a ningún servidor.
+      </p>
+    </div>
+
+    <label for="url">URL del aviso (ZonaProp, Argenprop, MercadoLibre)</label>
+    <input type="url" id="url" placeholder="https://www.zonaprop.com.ar/propiedades/...">
+
+    <button type="button" onclick="extraerDatos()" id="btnExtraer">🔍 Extraer Datos</button>
+
+    <div id="status" class="status"></div>
+
+    <div style="margin-top: 24px; padding-top: 24px; border-top: 2px solid #f0f0f0;">
+      <h3 style="margin: 0 0 16px 0; color: #333; font-size: 16px;">📝 Datos extraídos</h3>
+      
+      <label for="direccion">Dirección</label>
+      <input type="text" id="direccion" readonly>
+
+      <label for="precio">Precio</label>
+      <input type="text" id="precio" readonly>
+
+      <label for="ambientes">Ambientes</label>
+      <input type="text" id="ambientes" readonly>
+
+      <label for="dormitorios">Dormitorios</label>
+      <input type="text" id="dormitorios" readonly>
+
+      <label for="banos">Baños</label>
+      <input type="text" id="banos" readonly>
+
+      <label for="superficie">Superficie</label>
+      <input type="text" id="superficie" readonly>
+
+      <label for="expensas">Expensas</label>
+      <input type="text" id="expensas" readonly>
+    </div>
+  </div>
+
+<script>
+// Guardar/cargar API key desde localStorage
+const API_KEY_STORAGE = 'scraperapi_key';
+
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem(API_KEY_STORAGE);
+  if (saved) document.getElementById('apikey').value = saved;
+});
+
+document.getElementById('apikey').addEventListener('input', (e) => {
+  localStorage.setItem(API_KEY_STORAGE, e.target.value.trim());
+});
+
+async function extraerDatos() {
+  const urlEl = document.getElementById('url');
+  const apiKeyEl = document.getElementById('apikey');
+  const statusEl = document.getElementById('status');
+  const btnExtraer = document.getElementById('btnExtraer');
+  
+  const url = urlEl.value.trim();
+  const apiKey = apiKeyEl.value.trim();
+
+  // Validaciones
+  if (!apiKey) {
+    alert('⚠️ Necesitás ingresar tu API key de ScraperAPI');
+    apiKeyEl.focus();
+    return;
+  }
+
+  if (!url) {
+    alert('⚠️ Pegá la URL del aviso');
+    urlEl.focus();
+    return;
+  }
+
+  // Validar que sea una URL de inmuebles argentina
+  const validDomains = ['zonaprop.com.ar', 'argenprop.com', 'mercadolibre.com.ar'];
+  const isValid = validDomains.some(domain => url.includes(domain));
+  
+  if (!isValid) {
+    alert('⚠️ Solo URLs de ZonaProp, Argenprop o MercadoLibre Argentina');
+    return;
+  }
+
+  // Mostrar loading
+  statusEl.className = 'status loading';
+  statusEl.innerHTML = '<span class="spinner"></span> Extrayendo datos de la propiedad...';
+  btnExtraer.disabled = true;
+
+  try {
+    // Llamar a ScraperAPI (esto es 100% legal)
+    const scraperUrl = `https://api.scraperapi.com?api_key=${apiKey}&url=${encodeURIComponent(url)}`;
+    
+    const response = await fetch(scraperUrl);
+    
+    if (!response.ok) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    }
+
+    const html = await response.text();
+    
+    // Parsear el HTML
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    
+    // Extraer datos según el portal
+    let datos = {};
+    
+    if (url.includes('zonaprop.com.ar')) {
+      datos = extraerZonaProp(doc);
+    } else if (url.includes('argenprop.com')) {
+      datos = extraerArgenProp(doc);
+    } else if (url.includes('mercadolibre.com.ar')) {
+      datos = extraerMercadoLibre(doc);
+    }
+
+    // Llenar formulario
+    const set = (id, val) => {
+      const el = document.getElementById(id);
+      if (el && val) el.value = val;
+    };
+
+    set('direccion', datos.direccion || '');
+    set('precio', datos.precio || '');
+    set('ambientes', datos.ambientes || '');
+    set('dormitorios', datos.dormitorios || '');
+    set('banos', datos.banos || '');
+    set('superficie', datos.superficie || '');
+    set('expensas', datos.expensas || '');
+
+    // Mostrar éxito
+    statusEl.className = 'status success';
+    statusEl.innerHTML = '✅ Datos extraídos correctamente';
+
+  } catch (error) {
+    console.error('Error:', error);
+    statusEl.className = 'status error';
+    statusEl.innerHTML = `❌ Error: ${error.message}`;
+  } finally {
+    btnExtraer.disabled = false;
+  }
+}
+
+// Función para extraer datos de ZonaProp
+function extraerZonaProp(doc) {
+  const datos = {};
+  
+  // Dirección
+  const direccionEl = doc.querySelector('h1.title, h1[class*="title"], .location-title');
+  if (direccionEl) datos.direccion = direccionEl.textContent.trim();
+  
+  // Precio
+  const precioEl = doc.querySelector('.price-value, [class*="price"]');
+  if (precioEl) {
+    const precio = precioEl.textContent.replace(/[^\d]/g, '');
+    datos.precio = precio;
+  }
+  
+  // Características
+  const features = doc.querySelectorAll('.features-item, [class*="feature"]');
+  features.forEach(f => {
+    const text = f.textContent.toLowerCase();
+    if (text.includes('ambiente')) datos.ambientes = extraerNumero(text);
+    if (text.includes('dormitorio')) datos.dormitorios = extraerNumero(text);
+    if (text.includes('baño')) datos.banos = extraerNumero(text);
+    if (text.includes('m²') || text.includes('m2')) datos.superficie = extraerNumero(text) + ' m²';
+  });
+  
+  return datos;
+}
+
+// Función para extraer datos de ArgenProp
+function extraerArgenProp(doc) {
+  const datos = {};
+  
+  const direccionEl = doc.querySelector('.titlebar__address, h1');
+  if (direccionEl) datos.direccion = direccionEl.textContent.trim();
+  
+  const precioEl = doc.querySelector('.titlebar__price, [class*="price"]');
+  if (precioEl) {
+    datos.precio = precioEl.textContent.replace(/[^\d]/g, '');
+  }
+  
+  // Características
+  const props = doc.querySelectorAll('.property-features li, .caracteristicas li');
+  props.forEach(p => {
+    const text = p.textContent.toLowerCase();
+    if (text.includes('ambiente')) datos.ambientes = extraerNumero(text);
+    if (text.includes('dormitorio')) datos.dormitorios = extraerNumero(text);
+    if (text.includes('baño')) datos.banos = extraerNumero(text);
+    if (text.includes('m²')) datos.superficie = extraerNumero(text) + ' m²';
+  });
+  
+  return datos;
+}
+
+// Función para extraer datos de MercadoLibre
+function extraerMercadoLibre(doc) {
+  const datos = {};
+  
+  const direccionEl = doc.querySelector('.ui-pdp-title');
+  if (direccionEl) datos.direccion = direccionEl.textContent.trim();
+  
+  const precioEl = doc.querySelector('.ui-pdp-price__second-line .andes-money-amount__fraction');
+  if (precioEl) {
+    datos.precio = precioEl.textContent.replace(/\./g, '');
+  }
+  
+  // Características en tabla
+  const rows = doc.querySelectorAll('.andes-table__row');
+  rows.forEach(row => {
+    const label = row.querySelector('.andes-table__header')?.textContent.toLowerCase() || '';
+    const value = row.querySelector('.andes-table__column--value')?.textContent || '';
+    
+    if (label.includes('ambiente')) datos.ambientes = extraerNumero(value);
+    if (label.includes('dormitorio')) datos.dormitorios = extraerNumero(value);
+    if (label.includes('baño')) datos.banos = extraerNumero(value);
+    if (label.includes('superficie')) datos.superficie = value.trim();
+  });
+  
+  return datos;
+}
+
+// Helper para extraer números del texto
+function extraerNumero(texto) {
+  const match = texto.match(/\d+/);
+  return match ? match[0] : '';
+}
+</script>
+</body>
+</html>
