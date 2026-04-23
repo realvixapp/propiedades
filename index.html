@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PlanoAR Studio — Crea tu experiencia AR</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+  --ink: #0c0c0e;
+  --paper: #f2ede6;
+  --cream: #e8e1d4;
+  --accent: #e8401c;
+  --accent2: #1c6ee8;
+  --gold: #c9a84c;
+  --muted: #9a9080;
+  --border: #d4ccc0;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+}
+
+/* GRAIN */
+body::after {
+  content:'';
+  position:fixed; inset:0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events:none; z-index:9999; opacity:.6;
+}
+
+/* HEADER */
+header {
+  padding: 20px 40px;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom: 1px solid var(--border);
+  background: var(--paper);
+  position:sticky; top:0; z-index:100;
+}
+
+.logo {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:1.8rem; letter-spacing:0.05em;
+  color: var(--ink);
+}
+.logo span { color:var(--accent); }
+
+.logo-sub {
+  font-family:'Space Mono', monospace;
+  font-size:0.6rem; color:var(--muted);
+  letter-spacing:0.15em; margin-top:-4px;
+}
+
+.header-tag {
+  font-family:'Space Mono', monospace;
+  font-size:0.65rem; color:var(--accent);
+  border:1px solid var(--accent);
+  padding:4px 10px; border-radius:2px;
+  letter-spacing:0.1em;
+}
+
+/* HERO */
+.hero {
+  max-width:900px; margin:0 auto;
+  padding:60px 40px 40px;
+  display:grid; grid-template-columns:1fr 1fr; gap:60px;
+  align-items:start;
+}
+
+.hero-left {}
+
+.tag-line {
+  font-family:'Space Mono', monospace;
+  font-size:0.65rem; color:var(--muted);
+  letter-spacing:0.2em; text-transform:uppercase;
+  margin-bottom:16px;
+  display:flex; align-items:center; gap:8px;
+}
+.tag-line::before {
+  content:''; width:24px; height:1px; background:var(--accent);
+}
+
+h1 {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:clamp(2.8rem,6vw,4.5rem);
+  line-height:0.95;
+  letter-spacing:0.02em;
+  margin-bottom:20px;
+}
+h1 em { color:var(--accent); font-style:normal; }
+
+.hero-desc {
+  font-size:0.95rem; color:var(--muted);
+  line-height:1.7; font-weight:300;
+  margin-bottom:32px;
+  max-width:380px;
+}
+
+/* FLOW STEPS */
+.flow {
+  display:flex; flex-direction:column; gap:0;
+}
+.flow-item {
+  display:flex; gap:16px;
+  padding:14px 0;
+  border-bottom:1px solid var(--border);
+}
+.flow-item:last-child { border-bottom:none; }
+.flow-num {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:2rem; color:var(--cream);
+  line-height:1; min-width:36px;
+  transition: color 0.3s;
+}
+.flow-item:hover .flow-num { color:var(--accent); }
+.flow-text strong {
+  display:block; font-size:0.85rem; font-weight:700;
+  margin-bottom:2px;
+}
+.flow-text span {
+  font-size:0.78rem; color:var(--muted);
+  font-family:'Space Mono', monospace;
+}
+
+/* MAIN CARD */
+.main-card {
+  background: var(--ink);
+  border-radius:4px;
+  overflow:hidden;
+  position:relative;
+}
+
+.card-header {
+  padding:20px 24px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  display:flex; align-items:center; justify-content:space-between;
+}
+.card-title {
+  font-family:'Space Mono', monospace;
+  font-size:0.7rem; color:rgba(255,255,255,0.4);
+  letter-spacing:0.1em;
+}
+.card-dots { display:flex; gap:6px; }
+.card-dots span {
+  width:8px; height:8px; border-radius:50%;
+  background:rgba(255,255,255,0.15);
+}
+.card-dots span:first-child { background:#e8401c; }
+.card-dots span:nth-child(2) { background:#c9a84c; }
+.card-dots span:nth-child(3) { background:#4ce850; }
+
+.card-body { padding:24px; }
+
+/* UPLOAD */
+.upload-zone {
+  border:1.5px dashed rgba(255,255,255,0.15);
+  border-radius:4px;
+  padding:36px 20px;
+  text-align:center;
+  cursor:pointer;
+  transition:all 0.3s;
+  background:rgba(255,255,255,0.02);
+  position:relative; overflow:hidden;
+}
+.upload-zone::before {
+  content:'';
+  position:absolute; inset:0;
+  background:radial-gradient(circle at 50% 50%, rgba(232,64,28,0.08) 0%, transparent 70%);
+  opacity:0; transition:opacity 0.3s;
+}
+.upload-zone:hover { border-color:var(--accent); }
+.upload-zone:hover::before { opacity:1; }
+.upload-zone.drag { border-color:var(--gold); background:rgba(201,168,76,0.05); }
+
+.upload-icon-wrap {
+  width:52px; height:52px;
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:4px;
+  display:flex; align-items:center; justify-content:center;
+  margin:0 auto 14px;
+  font-size:1.4rem;
+  background:rgba(255,255,255,0.04);
+}
+.upload-zone h3 {
+  color:rgba(255,255,255,0.9);
+  font-size:0.9rem; font-weight:600;
+  margin-bottom:6px;
+}
+.upload-zone p {
+  color:rgba(255,255,255,0.3);
+  font-size:0.72rem;
+  font-family:'Space Mono', monospace;
+}
+#fileInput { display:none; }
+
+/* PREVIEW */
+#previewBlock { display:none; }
+.preview-img-wrap {
+  border-radius:4px; overflow:hidden;
+  border:1px solid rgba(255,255,255,0.08);
+  margin-bottom:12px;
+  position:relative;
+}
+.preview-img-wrap img {
+  width:100%; height:160px;
+  object-fit:cover; display:block;
+}
+.preview-meta {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 12px;
+  background:rgba(255,255,255,0.04);
+  border-radius:4px;
+  margin-bottom:12px;
+}
+.preview-icon {
+  width:32px; height:32px;
+  background:rgba(232,64,28,0.15);
+  border-radius:3px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.9rem;
+}
+.preview-name { color:rgba(255,255,255,0.8); font-size:0.8rem; font-weight:600; }
+.preview-size { color:rgba(255,255,255,0.3); font-size:0.7rem; font-family:'Space Mono',monospace; }
+.change-btn {
+  background:none; border:none; color:rgba(255,255,255,0.3);
+  font-size:0.65rem; font-family:'Space Mono',monospace;
+  cursor:pointer; margin-left:auto; letter-spacing:0.05em;
+  text-decoration:underline;
+}
+.change-btn:hover { color:var(--accent); }
+
+/* ANALYZE BTN */
+.btn-analyze {
+  width:100%;
+  padding:14px;
+  background:var(--accent);
+  color:#fff; border:none;
+  border-radius:3px;
+  font-family:'Bebas Neue', sans-serif;
+  font-size:1.1rem; letter-spacing:0.08em;
+  cursor:pointer; transition:all 0.2s;
+}
+.btn-analyze:hover { background:#d03518; transform:translateY(-1px); }
+.btn-analyze:active { transform:translateY(0); }
+.btn-analyze:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+
+/* PROGRESS */
+#progressBlock { display:none; }
+.progress-bar-wrap {
+  height:2px; background:rgba(255,255,255,0.08);
+  border-radius:1px; margin:16px 0;
+  overflow:hidden;
+}
+.progress-bar-fill {
+  height:100%; width:0%;
+  background:linear-gradient(90deg, var(--accent), var(--gold));
+  border-radius:1px;
+  transition:width 0.4s ease;
+}
+.progress-steps { display:flex; flex-direction:column; gap:8px; }
+.p-step {
+  display:flex; align-items:center; gap:10px;
+  font-size:0.75rem; color:rgba(255,255,255,0.25);
+  font-family:'Space Mono',monospace;
+  transition:color 0.3s;
+}
+.p-step.active { color:var(--gold); }
+.p-step.done { color:rgba(255,255,255,0.5); }
+.p-dot {
+  width:6px; height:6px; border-radius:50%;
+  background:rgba(255,255,255,0.1); flex-shrink:0;
+  transition:background 0.3s;
+}
+.p-step.active .p-dot { background:var(--gold); box-shadow:0 0 6px var(--gold); }
+.p-step.done .p-dot { background:var(--accent); }
+
+/* QR RESULT */
+#resultBlock { display:none; }
+.qr-section {
+  text-align:center; padding:8px 0 16px;
+}
+.qr-frame {
+  width:160px; height:160px;
+  margin:0 auto 14px;
+  background:#fff;
+  border-radius:4px;
+  padding:10px;
+  display:flex; align-items:center; justify-content:center;
+}
+.qr-frame canvas { width:140px !important; height:140px !important; }
+.qr-label {
+  font-family:'Space Mono', monospace;
+  font-size:0.65rem; color:rgba(255,255,255,0.35);
+  letter-spacing:0.12em; margin-bottom:16px;
+}
+.rooms-detected {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:6px; margin-bottom:16px;
+}
+.room-chip {
+  padding:8px 10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:3px;
+  display:flex; align-items:center; gap:8px;
+}
+.room-chip span:first-child { font-size:1rem; }
+.room-chip-name { font-size:0.72rem; font-weight:600; color:rgba(255,255,255,0.8); }
+.room-chip-area { font-size:0.65rem; color:rgba(255,255,255,0.3); font-family:'Space Mono',monospace; }
+
+.btn-reupload {
+  width:100%;
+  padding:11px;
+  background:transparent;
+  color:rgba(255,255,255,0.3);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:3px;
+  font-family:'Space Mono',monospace;
+  font-size:0.7rem; letter-spacing:0.08em;
+  cursor:pointer; transition:all 0.2s;
+  margin-top:8px;
+}
+.btn-reupload:hover { border-color:rgba(255,255,255,0.3); color:rgba(255,255,255,0.6); }
+
+/* BOTTOM */
+.bottom-section {
+  max-width:900px; margin:0 auto;
+  padding:0 40px 60px;
+}
+.divider {
+  border:none; border-top:1px solid var(--border);
+  margin-bottom:32px;
+}
+.tech-note {
+  display:flex; gap:24px; align-items:center;
+  font-size:0.78rem; color:var(--muted);
+}
+.tech-tag {
+  font-family:'Space Mono', monospace;
+  font-size:0.65rem;
+  border:1px solid var(--border);
+  padding:4px 10px; border-radius:2px;
+  color:var(--ink);
+}
+
+@media (max-width:680px) {
+  .hero { grid-template-columns:1fr; gap:32px; padding:32px 20px 24px; }
+  header { padding:16px 20px; }
+  .bottom-section { padding:0 20px 40px; }
+  h1 { font-size:3rem; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Plano<span>AR</span></div>
+    <div class="logo-sub">IMAGE TRACKING · WEBAR</div>
+  </div>
+  <div class="header-tag">STUDIO v1.0</div>
+</header>
+
+<section class="hero">
+  <div class="hero-left">
+    <div class="tag-line">Image Tracking AR</div>
+    <h1>Tu plano<br>en <em>realidad</em><br>aumentada</h1>
+    <p class="hero-desc">
+      Sube tu plano JPG, la IA lo analiza, genera el modelo 3D y crea un QR. 
+      Imprímelo, escanea el QR con el celular y apunta la cámara al plano — el edificio aparece encima.
+    </p>
+
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-num">01</div>
+        <div class="flow-text">
+          <strong>Sube tu plano JPG</strong>
+          <span>Claude Vision lo analiza automáticamente</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-num">02</div>
+        <div class="flow-text">
+          <strong>Obtén tu QR único</strong>
+          <span>Imprime el plano + el QR juntos</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-num">03</div>
+        <div class="flow-text">
+          <strong>Escanea y apunta</strong>
+          <span>La cámara detecta el plano y superpone el 3D</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-num">04</div>
+        <div class="flow-text">
+          <strong>Cambia el modo de vista</strong>
+          <span>Paredes 3D · Habitaciones coloreadas · Rayos-X</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="main-card">
+      <div class="card-header">
+        <div class="card-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="card-title">PLANO_AR_STUDIO.app</div>
+      </div>
+      <div class="card-body">
+
+        <!-- UPLOAD -->
+        <div id="uploadBlock">
+          <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon-wrap">🏗️</div>
+            <h3>Sube tu plano</h3>
+            <p>JPG · PNG · Plano de planta</p>
+            <input type="file" id="fileInput" accept="image/*">
+          </div>
+        </div>
+
+        <!-- PREVIEW -->
+        <div id="previewBlock">
+          <div class="preview-img-wrap">
+            <img id="previewImg" src="" alt="Plano">
+          </div>
+          <div class="preview-meta">
+            <div class="preview-icon">🏠</div>
+            <div>
+              <div class="preview-name" id="fileName">—</div>
+              <div class="preview-size" id="fileSize">—</div>
+            </div>
+            <button class="change-btn" onclick="resetAll()">cambiar</button>
+          </div>
+          <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()">
+            Analizar con IA →
+          </button>
+        </div>
+
+        <!-- PROGRESS -->
+        <div id="progressBlock">
+          <div style="color:rgba(255,255,255,0.5); font-size:0.8rem; font-weight:600; margin-bottom:8px;">
+            Procesando plano…
+          </div>
+          <div class="progress-bar-wrap">
+            <div class="progress-bar-fill" id="progressFill"></div>
+          </div>
+          <div class="progress-steps">
+            <div class="p-step" id="ps1"><div class="p-dot"></div>Leyendo imagen del plano</div>
+            <div class="p-step" id="ps2"><div class="p-dot"></div>Detectando habitaciones con Claude Vision</div>
+            <div class="p-step" id="ps3"><div class="p-dot"></div>Generando geometría 3D</div>
+            <div class="p-step" id="ps4"><div class="p-dot"></div>Compilando datos para AR</div>
+            <div class="p-step" id="ps5"><div class="p-dot"></div>Generando código QR</div>
+          </div>
+        </div>
+
+        <!-- RESULT -->
+        <div id="resultBlock">
+          <div class="qr-section">
+            <div class="qr-frame">
+              <canvas id="qrCanvas"></canvas>
+            </div>
+            <div class="qr-label">ESCANEA CON EL CELULAR · APUNTA AL PLANO</div>
+          </div>
+          <div class="rooms-detected" id="roomsGrid"></div>
+          <button class="btn-analyze" onclick="openARPreview()" style="margin-bottom:8px;">
+            🥽 Preview AR en pantalla
+          </button>
+          <button class="btn-reupload" onclick="resetAll()">↑ Subir otro plano</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="bottom-section">
+  <hr class="divider">
+  <div class="tech-note">
+    <span>Tecnología:</span>
+    <span class="tech-tag">MindAR.js</span>
+    <span class="tech-tag">Three.js</span>
+    <span class="tech-tag">Claude Vision</span>
+    <span class="tech-tag">WebXR</span>
+    <span style="margin-left:auto; font-size:0.72rem;">Sin descargas · 100% navegador</span>
+  </div>
+</div>
+
+<!-- QR LIBRARY -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+let uploadedDataUrl = null;
+let floorplanData = null;
+
+// ── UPLOAD ──────────────────────────────────────────────────────────────────
+const uploadZone = document.getElementById('uploadZone');
+const fileInput  = document.getElementById('fileInput');
+
+uploadZone.addEventListener('click', () => fileInput.click());
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault(); uploadZone.classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f && f.type.startsWith('image/')) handleFile(f);
+});
+fileInput.addEventListener('change', e => { if (e.target.files[0]) handleFile(e.target.files[0]); });
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    uploadedDataUrl = e.target.result;
+    document.getElementById('previewImg').src = uploadedDataUrl;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = (file.size/1024).toFixed(1)+' KB';
+    show('previewBlock'); hide('uploadBlock');
+  };
+  reader.readAsDataURL(file);
+}
+
+function resetAll() {
+  uploadedDataUrl = null; floorplanData = null;
+  fileInput.value = '';
+  hide('previewBlock'); hide('progressBlock'); hide('resultBlock');
+  show('uploadBlock');
+}
+
+// ── ANALYSIS ────────────────────────────────────────────────────────────────
+async function startAnalysis() {
+  hide('previewBlock'); show('progressBlock');
+  const steps = ['ps1','ps2','ps3','ps4','ps5'];
+  const progPct = [15, 35, 55, 75, 95];
+
+  steps.forEach((id, i) => {
+    setTimeout(() => {
+      if (i>0) setStep(steps[i-1],'done');
+      setStep(id,'active');
+      document.getElementById('progressFill').style.width = progPct[i]+'%';
+    }, i * 900);
+  });
+
+  try {
+    floorplanData = await analyzeWithClaude(uploadedDataUrl);
+  } catch(err) {
+    console.warn('Claude API error, using fallback', err);
+    floorplanData = getFallback();
+  }
+
+  setTimeout(() => {
+    setStep('ps5','done');
+    document.getElementById('progressFill').style.width = '100%';
+    setTimeout(() => { hide('progressBlock'); showResult(); }, 400);
+  }, steps.length * 900 + 200);
+}
+
+function setStep(id, state) {
+  document.getElementById(id).className = 'p-step ' + state;
+}
+
+async function analyzeWithClaude(dataUrl) {
+  const base64    = dataUrl.split(',')[1];
+  const mediaType = dataUrl.split(';')[0].split(':')[1];
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json' },
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1000,
+      messages:[{
+        role:'user',
+        content:[
+          { type:'image', source:{ type:'base64', media_type:mediaType, data:base64 } },
+          { type:'text', text:`Analiza este plano arquitectónico. Responde SOLO con JSON válido sin markdown:
+{
+  "totalArea": número en m2,
+  "description": "descripción en 1 oración",
+  "rooms": [
+    { "name": "nombre en español", "emoji": "emoji", "area": número,
+      "x": 0-9, "y": 0-9, "w": 1-5, "h": 1-5,
+      "color": "#hexcolor" }
+  ],
+  "walls": [
+    { "x1":0-10,"y1":0-10,"x2":0-10,"y2":0-10 }
+  ]
+}
+Detecta todas las habitaciones. Coordenadas en grilla 10x10. Máx 8 habitaciones, 20 paredes.
+Asigna colores distintivos: sala=#4a90e2, cocina=#e2a04a, dormitorio=#4ae2a0, baño=#e24a90, comedor=#a04ae2, pasillo=#e2e24a, otro=#808080.
+Si imagen ilegible, genera un apartamento típico de 2 dormitorios.` }
+        ]
+      }]
+    })
+  });
+
+  const data = await res.json();
+  const text = data.content[0].text.replace(/```json|```/g,'').trim();
+  return JSON.parse(text);
+}
+
+function getFallback() {
+  return {
+    totalArea:78,
+    description:'Apartamento de 2 dormitorios con sala, cocina y baño',
+    rooms:[
+      {name:'Sala',       emoji:'🛋️', area:22, x:0,   y:0,   w:4,   h:3,   color:'#4a90e2'},
+      {name:'Comedor',    emoji:'🍽️', area:12, x:0,   y:3,   w:4,   h:2,   color:'#a04ae2'},
+      {name:'Cocina',     emoji:'🍳', area:10, x:0,   y:5,   w:3.5, h:2,   color:'#e2a04a'},
+      {name:'Dormitorio 1',emoji:'🛏️',area:16, x:4,   y:0,   w:3.5, h:2.8, color:'#4ae2a0'},
+      {name:'Dormitorio 2',emoji:'🛏️',area:12, x:4,   y:2.8, w:3,   h:2.5, color:'#4ae2a0'},
+      {name:'Baño',       emoji:'🚿', area:5,  x:7.5, y:0,   w:2.5, h:2.2, color:'#e24a90'},
+      {name:'Pasillo',    emoji:'🚪', area:4,  x:4,   y:5.5, w:6,   h:1.5, color:'#e2e24a'},
+    ],
+    walls:[
+      {x1:0,y1:0,x2:10,y2:0},{x1:10,y1:0,x2:10,y2:7},
+      {x1:0,y1:7,x2:10,y2:7},{x1:0,y1:0,x2:0,y2:7},
+      {x1:4,y1:0,x2:4,y2:5.5},{x1:0,y1:3,x2:4,y2:3},
+      {x1:0,y1:5,x2:4,y2:5},{x1:7.5,y1:0,x2:7.5,y2:3.5},
+      {x1:4,y1:2.8,x2:7.5,y2:2.8},{x1:4,y1:5.5,x2:10,y2:5.5}
+    ]
+  };
+}
+
+// ── RESULT ──────────────────────────────────────────────────────────────────
+function showResult() {
+  show('resultBlock');
+
+  // Rooms grid
+  const grid = document.getElementById('roomsGrid');
+  grid.innerHTML = '';
+  floorplanData.rooms.forEach(r => {
+    grid.innerHTML += `
+      <div class="room-chip">
+        <span>${r.emoji}</span>
+        <div>
+          <div class="room-chip-name">${r.name}</div>
+          <div class="room-chip-area">~${r.area}m²</div>
+        </div>
+      </div>`;
+  });
+
+  // Build AR URL with embedded data
+  const arData = encodeURIComponent(JSON.stringify(floorplanData));
+  const imgData = encodeURIComponent(uploadedDataUrl);
+  // Store in sessionStorage key and pass key in URL (data too large for URL)
+  const key = 'planoar_' + Date.now();
+  try {
+    sessionStorage.setItem(key + '_fp', JSON.stringify(floorplanData));
+    sessionStorage.setItem(key + '_img', uploadedDataUrl);
+  } catch(e) {}
+
+  // The AR page URL — same origin, ar.html
+  const arUrl = location.href.replace('index.html','').replace(/\/?$','/') + 'ar.html?key=' + key;
+
+  // Generate QR
+  const qrEl = document.getElementById('qrCanvas');
+  qrEl.innerHTML = '';
+  new QRCode(qrEl, {
+    text: arUrl,
+    width: 140, height: 140,
+    colorDark: '#0c0c0e', colorLight: '#ffffff',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  // Store globally for preview button
+  window._arUrl = arUrl;
+}
+
+function openARPreview() {
+  if (window._arUrl) window.open(window._arUrl, '_blank');
+}
+
+function show(id) { document.getElementById(id).style.display = 'block'; }
+function hide(id) { document.getElementById(id).style.display = 'none'; }
+</script>
+</body>
+</html>
