@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Resumen Completo de Tasaciones — Primer Parcial</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --crema: #fdf6ec;
+    --cafe: #5c3d1e;
+    --cafe-claro: #8b5e3c;
+    --dorado: #c9924a;
+    --dorado-claro: #f0c07a;
+    --verde: #3d6b4f;
+    --rojo: #8b2c2c;
+    --gris: #f5efe6;
+    --borde: #d4b896;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background-color: var(--crema);
+    color: var(--cafe);
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    line-height: 1.85;
+    padding-bottom: 60px;
+  }
+  header {
+    background: linear-gradient(135deg, var(--cafe) 0%, var(--cafe-claro) 100%);
+    color: var(--crema);
+    text-align: center;
+    padding: 50px 30px 40px;
+    border-bottom: 6px solid var(--dorado);
+  }
+  header h1 { font-family: 'Playfair Display', serif; font-size: 2.5rem; margin-bottom: 10px; }
+  header p { font-size: 1rem; opacity: 0.85; font-style: italic; max-width: 650px; margin: 0 auto; }
+  .fuentes {
+    max-width: 860px;
+    margin: 22px auto 0;
+    background: #fff8ee;
+    border: 1.5px solid var(--borde);
+    border-radius: 10px;
+    padding: 14px 22px;
+    font-size: 0.88rem;
+    color: var(--cafe-claro);
+  }
+  .fuentes strong { color: var(--cafe); }
+  .indice {
+    background: var(--gris);
+    border: 2px solid var(--borde);
+    border-radius: 12px;
+    padding: 24px 30px;
+    max-width: 860px;
+    margin: 20px auto 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 30px;
+  }
+  .indice-titulo {
+    grid-column: 1/-1;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--cafe);
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--borde);
+    padding-bottom: 8px;
+  }
+  .indice a { color: var(--cafe-claro); text-decoration: none; font-size: 0.93rem; transition: color 0.2s; }
+  .indice a:hover { color: var(--dorado); text-decoration: underline; }
+  .contenido { max-width: 860px; margin: 36px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
+  .tarjeta {
+    background: white;
+    border: 1.5px solid var(--borde);
+    border-radius: 14px;
+    padding: 28px 32px;
+    box-shadow: 0 2px 10px rgba(92,61,30,0.07);
+    scroll-margin-top: 20px;
+  }
+  .tarjeta h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--cafe);
+    border-left: 5px solid var(--dorado);
+    padding-left: 14px;
+    margin-bottom: 16px;
+    line-height: 1.3;
+  }
+  .tarjeta p, .tarjeta li { font-size: 0.97rem; color: #3b2a18; line-height: 1.85; }
+  .tarjeta ul, .tarjeta ol { padding-left: 22px; margin-top: 8px; }
+  .tarjeta ul li, .tarjeta ol li { margin-bottom: 7px; }
+  strong { color: var(--cafe); }
+  em { color: var(--cafe-claro); }
+  .nota-tia {
+    background: linear-gradient(135deg, #fff8e7, #fdefc8);
+    border: 1.5px dashed var(--dorado);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-style: italic;
+    font-size: 0.92rem;
+    color: #6b4a1a;
+  }
+  .nota-tia::before { content: "👵 Para entenderlo fácil: "; font-style: normal; font-weight: 600; color: var(--dorado); }
+  .formula {
+    background: var(--gris);
+    border-left: 4px solid var(--verde);
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    font-family: monospace;
+    font-size: 0.93rem;
+    color: var(--verde);
+    white-space: pre-wrap;
+  }
+  .cita {
+    background: #f0ece6;
+    border-left: 4px solid var(--cafe-claro);
+    border-radius: 6px;
+    padding: 10px 16px;
+    margin: 10px 0;
+    font-size: 0.91rem;
+    font-style: italic;
+    color: var(--cafe);
+  }
+  .tag {
+    display: inline-block;
+    background: var(--dorado-claro);
+    color: var(--cafe);
+    border-radius: 20px;
+    padding: 2px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+  }
+  .grilla-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .grilla-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .mini-card { background: var(--gris); border: 1px solid var(--borde); border-radius: 10px; padding: 14px; }
+  .mini-card strong { display: block; color: var(--dorado); font-size: 0.9rem; margin-bottom: 4px; }
+  .mini-card p { font-size: 0.88rem; }
+  .separador { text-align: center; color: var(--borde); font-size: 1.3rem; letter-spacing: 6px; margin: 4px 0 12px; }
+  footer { text-align: center; font-size: 0.85rem; color: var(--cafe-claro); margin-top: 20px; font-style: italic; }
+  @media(max-width:620px){
+    header h1 { font-size: 1.8rem; }
+    .indice, .grilla-2, .grilla-3 { grid-template-columns: 1fr; }
+    .tarjeta { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📋 Resumen Completo de Tasaciones</h1>
+  <p>Primer Parcial · Todos los temas unificados de los 4 archivos · Con explicaciones simples</p>
+</header>
+
+<div class="contenido">
+
+<div class="fuentes">
+  <strong>📁 Fuentes incluidas:</strong> ① Apunte escaneado a mano (CamScanner) &nbsp;·&nbsp; ② Resumen del Primer Parcial (PDF) &nbsp;·&nbsp; ③ Documento de definiciones propias (DOCX) &nbsp;·&nbsp; ④ Apunte adicional con técnicas avanzadas
+</div>
+
+<!-- ÍNDICE -->
+<div class="indice">
+  <div class="indice-titulo">📌 Índice de temas</div>
+  <a href="#t1">1. ¿Qué es tasar?</a>
+  <a href="#t2">2. Finalidad de la tasación</a>
+  <a href="#t3">3. Valor vs. Precio</a>
+  <a href="#t4">4. Tipos de valor</a>
+  <a href="#t5">5. Teoría del valor</a>
+  <a href="#t6">6. Oferta y demanda</a>
+  <a href="#t7">7. Bienes — tipos económicos</a>
+  <a href="#t8">8. Bienes inmuebles — tipos legales</a>
+  <a href="#t9">9. Los 7 principios del valor</a>
+  <a href="#t10">10. Métodos de tasación</a>
+  <a href="#t11">11. Técnicas de comparación de mercado</a>
+  <a href="#t12">12. Etapas operativas</a>
+  <a href="#t13">13. FOT, FOS y Densidad</a>
+  <a href="#t14">14. Depreciación</a>
+  <a href="#t15">15. Frente y fondo del lote</a>
+  <a href="#t16">16. Lote en esquina</a>
+  <a href="#t17">17. Tabla Ross-Heidecke</a>
+  <a href="#t18">18. Valor Plotage</a>
+  <a href="#t19">19. Dominio e Inhibición</a>
+  <a href="#t20">20. Reserva y Seña</a>
+  <a href="#t21">21. Ley 10.973 / 14.085</a>
+  <a href="#t22">22. Obligaciones del martillero</a>
+  <a href="#t23">23. Causales de sanción</a>
+  <a href="#t24">24. Quiénes no pueden ejercer</a>
+</div>
+
+<!-- ── 1 ── -->
+<div class="tarjeta" id="t1">
+  <span class="tag">Concepto base</span>
+  <h2>1. ¿Qué es tasar?</h2>
+  <p><strong>Definición económica:</strong> Estimación técnica y objetiva del valor económico de un bien, expresada en dinero, mediante criterio profesional y balance técnico. Intervienen factores <strong>objetivos</strong> (ubicación, superficie, estado del bien) y <strong>subjetivos</strong> (criterio y experiencia del tasador).</p>
+  <p style="margin-top:10px;"><strong>Según el diccionario:</strong> Apreciar, poner precio, evaluar las cosas; juzgar o creer.</p>
+  <p style="margin-top:10px;"><strong>Elementos clave de una tasación:</strong> ubicación, estado y antigüedad del inmueble, superficie total y construida, y análisis comparativo de mercado (precios de propiedades similares en la zona).</p>
+  <div class="nota-tia">Es como cuando una persona que conoce bien el barrio y los precios te dice cuánto vale tu casa si la quisieras vender hoy. No es adivinar: es calcular con conocimiento y datos reales.</div>
+</div>
+
+<!-- ── 2 ── -->
+<div class="tarjeta" id="t2">
+  <span class="tag">Finalidad</span>
+  <h2>2. Finalidad de la tasación</h2>
+  <p>Toda tasación tiene un propósito concreto. Los principales motivos son:</p>
+  <ul>
+    <li><strong>Compraventa:</strong> saber cuánto pedir o cuánto pagar.</li>
+    <li><strong>Garantía hipotecaria / préstamo:</strong> el banco necesita saber el valor antes de prestar.</li>
+    <li><strong>Seguro:</strong> para asegurar el inmueble por el monto correcto.</li>
+    <li><strong>División de bienes:</strong> herencias, divorcios, disolución de sociedad.</li>
+    <li><strong>Inversiones:</strong> decidir si conviene comprar un inmueble.</li>
+    <li><strong>Expropiación:</strong> cuando el Estado toma un bien privado.</li>
+    <li><strong>Daños / siniestros:</strong> accidentes, incendios, inundaciones.</li>
+  </ul>
+  <div class="nota-tia">Si fallecés y tus hijos heredan tu casa, necesitan una tasación para saber cuánto vale y dividirlo en partes iguales. Sin tasación, habría discusiones.</div>
+</div>
+
+<!-- ── 3 ── -->
+<div class="tarjeta" id="t3">
+  <span class="tag">Conceptos clave</span>
+  <h2>3. Diferencia entre Valor y Precio</h2>
+  <p><strong>Valor:</strong> Estimación, opinión profesional de lo que un bien <em>debería</em> valer en un mercado y momento determinado. Puede ser objetivo o subjetivo. Es lo que el tasador calcula.</p>
+  <p style="margin-top:8px;"><strong>Precio:</strong> Es un hecho concreto y real. La cantidad de dinero que efectivamente se pagó en una transacción. Es lo que acordaron comprador y vendedor.</p>
+  <div class="formula">Valor = estimación de lo que debería valer (opinión profesional)
+Precio = lo que efectivamente se pagó (hecho real)</div>
+  <p>La relación clave: el <strong>valor percibido debe superar al precio</strong> para que haya incentivo de compra y satisfacción. Precio y valor no siempre coinciden.</p>
+  <div class="nota-tia">Una botella de agua tiene un valor bajo en el supermercado. Pero si estás perdida en el desierto, su valor se dispara. El precio es lo que pagaste; el valor es lo que creés que vale según las circunstancias.</div>
+</div>
+
+<!-- ── 4 ── -->
+<div class="tarjeta" id="t4">
+  <span class="tag">Tipos de valor</span>
+  <h2>4. Tipos de Valor de un Inmueble</h2>
+  <div class="grilla-2">
+    <div class="mini-card">
+      <strong>🏷️ Valor en plaza</strong>
+      <p>Precio que se obtendría en condiciones normales de mercado, sin apuros, en negociación libre. Es el más usado. <em>(A.I.R.E.A.)</em></p>
+    </div>
+    <div class="mini-card">
+      <strong>🔧 Valor de reposición / reproducción</strong>
+      <p>Importe necesario para reconstruir el inmueble si se destruyera hoy (incendio, terremoto). El costo de reposición con desgaste equivale al valor físico. <em>(McMichael)</em></p>
+    </div>
+    <div class="mini-card">
+      <strong>🏦 Valor de préstamo</strong>
+      <p>Usado por tasadores para fines hipotecarios. Vale lo que vale su fuente. <em>(McMichael)</em></p>
+    </div>
+    <div class="mini-card">
+      <strong>🛡️ Valor de seguro</strong>
+      <p>Importe que asume la aseguradora. Generalmente NO incluye el terreno, solo las mejoras (construcción). <em>(McMichael)</em></p>
+    </div>
+    <div class="mini-card">
+      <strong>⚖️ Valor de liquidación / remate</strong>
+      <p>Precio de venta forzosa en situación de litigio o ejecución judicial. Suele ser inferior al de plaza. <em>(McMichael)</em></p>
+    </div>
+    <div class="mini-card">
+      <strong>⏱️ Valor de realización inmediata</strong>
+      <p>Valor de plaza reducido un porcentaje para facilitar venta rápida. Es <strong>arbitrario y subjetivo</strong>, depende del bien y la urgencia.</p>
+    </div>
+  </div>
+  <p style="margin-top:14px;"><strong>Valor de tasación:</strong> El precio fijado por uno o varios tasadores como reflejo de su opinión respecto al valor en plaza de una propiedad determinada, baldía o con mejoras. <em>(McMichael)</em></p>
+  <div class="nota-tia">Tu misma casa puede tener distintos "valores" según para qué: uno si la vendés tranquila, otro si te urge vender, otro para el banco, otro para el seguro. Es el mismo inmueble, distintos enfoques.</div>
+</div>
+
+<!-- ── 5 ── -->
+<div class="tarjeta" id="t5">
+  <span class="tag">Teoría</span>
+  <h2>5. Teoría del Valor</h2>
+  <ul>
+    <li><strong>Actualidad:</strong> Valora el presente del inmueble tal como está hoy, sin considerar mejoras potenciales futuras.</li>
+    <li><strong>Aptitud:</strong> Considera solo el potencial a futuro del bien (qué podría llegar a ser o usarse).</li>
+  </ul>
+  <div class="nota-tia">Si tenés un terreno vacío en zona que está creciendo: por "actualidad" vale lo que está hoy; por "aptitud" vale también lo que puede llegar a valer si construís un edificio. El tasador decide cuál aplicar.</div>
+</div>
+
+<!-- ── 6 ── -->
+<div class="tarjeta" id="t6">
+  <span class="tag">Mercado</span>
+  <h2>6. Oferta y Demanda</h2>
+  <p>Son los <strong>principales reguladores del precio</strong> en el mercado inmobiliario y en cualquier mercado:</p>
+  <ul>
+    <li>➕ Más oferta (muchos inmuebles disponibles) → <strong>baja el precio</strong></li>
+    <li>➕ Más demanda (mucha gente quiere comprar) → <strong>sube el precio</strong></li>
+    <li>⚖️ Cuando se equilibran, el precio tiende a estabilizarse.</li>
+  </ul>
+  <div class="nota-tia">Como el pan en la panadería: si sobra pan, lo rebajan. Si queda poco y hay fila, cobran lo que quieren. En el mercado inmobiliario pasa exactamente igual.</div>
+</div>
+
+<!-- ── 7 ── -->
+<div class="tarjeta" id="t7">
+  <span class="tag">Economía</span>
+  <h2>7. Tipos de Bienes (desde el punto de vista económico)</h2>
+  <p>Un <strong>bien</strong> es lo que existe en cantidad limitada y sirve para satisfacer necesidades humanas. Se clasifican en 4 categorías:</p>
+  <div class="grilla-2">
+    <div class="mini-card"><strong>Consumo / Producción</strong><p>Los de consumo satisfacen necesidades directas. Los de producción se usan para fabricar otros bienes.</p></div>
+    <div class="mini-card"><strong>Duraderos / No duraderos</strong><p>Duraderos: se usan muchas veces (una casa). No duraderos: se agotan con el uso (comida).</p></div>
+    <div class="mini-card"><strong>Complementarios / Sustitutivos</strong><p>Complementarios: se usan juntos (auto y nafta). Sustitutivos: uno reemplaza al otro (taxi vs. auto propio).</p></div>
+    <div class="mini-card"><strong>Materiales / Inmateriales</strong><p>Materiales: productos físicos. Inmateriales: servicios (una tasación en sí es un servicio).</p></div>
+  </div>
+  <div class="nota-tia">Un inmueble es un bien duradero, material, y puede ser de consumo (vivienda propia) o de producción (local comercial). Saber esto ayuda a entender por qué se tasa distinto según el uso.</div>
+</div>
+
+<!-- ── 8 ── -->
+<div class="tarjeta" id="t8">
+  <span class="tag">Código Civil</span>
+  <h2>8. Bienes Inmuebles — Tipos legales (CC argentino)</h2>
+  <p>Los inmuebles son cosas <strong>fijas en un lugar</strong>; no se pueden mover por sí mismas. El Código Civil los clasifica en:</p>
+  <ul>
+    <li><strong>Por naturaleza (Art. 2314):</strong> Inmovilizados por sí solos. Ej.: la tierra, ríos, minerales, vegetales, napas subterráneas, minas de petróleo.</li>
+    <li><strong>Por accesión física (Art. 2315):</strong> Cosas muebles adheridas al suelo con carácter de <em>perpetuidad</em>. Ej.: edificios, pozos, galerías de minas, molinos.</li>
+    <li><strong>Por destino (Art. 2316):</strong> Muebles colocados intencionalmente por el propietario al servicio permanente del inmueble. Ej.: mesas, sillas, herramientas de campo, maquinaria agrícola — siempre que sean del propietario y estén en relación permanente con el inmueble.</li>
+  </ul>
+  <div class="nota-tia">Tu casa es inmueble "por naturaleza" (el suelo) y "por accesión" (lo construido). Las sillas de tu comedor son muebles, pero si las pusiste definitivamente para el negocio que tenés en ese inmueble, legalmente se consideran parte del inmueble.</div>
+</div>
+
+<!-- ── 9 ── -->
+<div class="tarjeta" id="t9">
+  <span class="tag">Principios</span>
+  <h2>9. Los 7 Principios que Determinan el Valor</h2>
+  <ul>
+    <li><strong>1. Sustitución:</strong> Nadie paga más por una propiedad si puede encontrar otra similar más barata cerca, en mercado razonable de libre oferta y demanda. Es la base de la comparación.</li>
+    <li><strong>2. Más alto y mejor uso:</strong> Una propiedad alcanza su mayor valor cuando se le da el uso más rentable que permiten las normas legales y sus condiciones físicas. Ej.: un terreno vale más como edificio de dptos que como casa.</li>
+    <li><strong>3. Oferta y demanda:</strong> El factor individual más importante. Determina el valor según la cantidad de propiedades similares disponibles vs. compradores en el mercado.</li>
+    <li><strong>4. Equilibrio:</strong> El valor es más estable cuando hay proporción entre oferta y demanda, y entre distintos usos (viviendas, comercios, industrias). La tendencia natural es a más oferta que compradores.</li>
+    <li><strong>5. Cambio:</strong> El valor no es permanente. Cambia por factores físicos (deterioro, mejoras, clima) o económicos (crisis, inflación, nuevas políticas públicas).</li>
+    <li><strong>6. Progresión y regresión (conformidad):</strong> Una propiedad inferior mejora su valor al estar en un buen entorno (<em>progresión</em>). Una propiedad superior pierde valor si está en un entorno deteriorado (<em>regresión</em>).</li>
+    <li><strong>7. Ciclo de vida:</strong> Las zonas y propiedades pasan por: <strong>Crecimiento</strong> (mejoras, demanda crece) → <strong>Equilibrio</strong> (máximo valor) → <strong>Declinación</strong> (mayor mantenimiento, pérdida de valor) → posible <strong>Revitalización</strong> (recuperación parcial). El mayor valor se da en la etapa de equilibrio.</li>
+  </ul>
+  <p style="margin-top:10px;"><em>Las mejoras impactan en el valor por su <strong>incidencia</strong>, no necesariamente en forma proporcional a su costo.</em></p>
+  <div class="nota-tia">Principio 6: Poné una mansión en un barrio humilde y valdrá menos de lo esperado (regresión). Poné una casita modesta en un barrio exclusivo y valdrá más de lo que parece (progresión). El vecindario "contagia" el valor.</div>
+</div>
+
+<!-- ── 10 ── -->
+<div class="tarjeta" id="t10">
+  <span class="tag">Métodos</span>
+  <h2>10. Métodos de Tasación</h2>
+
+  <p><strong>Clasificación general:</strong></p>
+  <ul>
+    <li><strong>Separativos:</strong> Se valoran por separado el terreno y las construcciones.</li>
+    <li><strong>De conjunto:</strong> El inmueble se valora como unidad integral, por su renta o utilidad total.</li>
+    <li><strong>Específicos:</strong> Analizan características propias del bien (calidad, antigüedad, estado, ubicación).</li>
+    <li><strong>Comparativos:</strong> Se examinan antecedentes de bienes semejantes en el mercado.</li>
+    <li><strong>Empírico:</strong> Basado en experiencia del tasador, comparaciones intrínsecas/extrínsecas y estadística.</li>
+  </ul>
+
+  <p style="margin-top:12px;"><strong>Clasificación moderna:</strong></p>
+  <ul>
+    <li><strong>Directa (comparativa):</strong> Comparación directa con ventas reales de terrenos, casas o departamentos similares. El más usado y confiable.</li>
+    <li><strong>Indirecta (por rentabilidad):</strong> Capitalización de rentas — se calcula la renta, se aplica tasa de interés y se obtiene el valor presente.</li>
+  </ul>
+
+  <div class="separador">· · ·</div>
+
+  <p><strong>a) Comparación de mercado</strong> — Mínimo 3 inmuebles similares. Se ajustan diferencias de fecha, ubicación, condiciones físicas y condiciones de venta. Basada en el principio de sustitución.</p>
+  <div class="formula">Precio comparable ± ajustes = Valor indicado del sujeto</div>
+
+  <p><strong>b) Valuación del lote</strong> — Por comparación con ventas reales en la misma cuadra/vecindad, reducidas a un "lote patrón", con coeficientes de frente-fondo, ubicación, fecha y factores particulares.</p>
+
+  <p style="margin-top:10px;"><strong>c) Cálculo de costos</strong> — Costo de reposición/reproducción de mejoras, menos depreciación (física, funcional, ambiental), más valor del terreno.</p>
+  <div class="formula">Costo de mejoras − Depreciación + Terreno = Valor de la propiedad</div>
+
+  <p><strong>d) Capitalización de rentas</strong> — Convierte la renta líquida a valor presente a una tasa equitativa. Se usa con reservas por regulación, inflación e incertidumbre económica.</p>
+  <div class="formula">Renta líquida = Renta bruta − (gastos de operación + amortización)
+Valor presente = Renta líquida ÷ Tasa de capitalización</div>
+
+  <div class="nota-tia">El método de comparación es el más común: mirás cuánto se vendieron las casas similares a la tuya en tu cuadra este año y fijás el precio. Es como cuando querés vender tu auto y buscás en internet cuánto piden por el mismo modelo y año.</div>
+</div>
+
+<!-- ── 11 ── -->
+<div class="tarjeta" id="t11">
+  <span class="tag">Técnicas de mercado</span>
+  <h2>11. Técnicas de Comparación de Mercado</h2>
+  <p>Son métodos para evaluar el bien frente al mercado. Se dividen según el objetivo:</p>
+
+  <p style="margin-top:10px;"><strong>Técnicas Cualitativas (el "por qué"):</strong></p>
+  <ul>
+    <li><strong>Focus Group:</strong> Grupos de discusión (7-8 personas) para explorar percepciones sobre un producto o zona.</li>
+    <li><strong>Entrevistas en profundidad:</strong> Conversaciones uno a uno para obtener información detallada.</li>
+    <li><strong>Observación directa / Etnografía:</strong> Registrar comportamientos reales del mercado en el entorno natural.</li>
+  </ul>
+
+  <p style="margin-top:10px;"><strong>Técnicas Cuantitativas (el "cuánto"):</strong></p>
+  <ul>
+    <li><strong>Encuestas:</strong> Cuestionarios estructurados (online, telefónicos, personales) a una muestra representativa.</li>
+    <li><strong>Encuestas de intención de compra:</strong> Miden la probabilidad de adquirir un inmueble.</li>
+    <li><strong>Análisis de datos secundarios:</strong> Revisión de informes existentes, estudios sectoriales y estadísticas oficiales.</li>
+  </ul>
+
+  <p style="margin-top:10px;"><strong>Benchmarking / Análisis competitivo:</strong></p>
+  <ul>
+    <li><strong>Benchmarking competitivo:</strong> Comparar propiedades similares con los referentes del mercado.</li>
+    <li><strong>Análisis de competidores directos/indirectos:</strong> Mapeo de fortalezas y debilidades de propiedades comparables.</li>
+  </ul>
+
+  <p style="margin-top:10px;"><strong>Requisitos de una propiedad comparable:</strong></p>
+  <ul>
+    <li>Ser similar a la propiedad sujeto.</li>
+    <li>Venta u oferta reciente.</li>
+    <li>Negociación libre, sin coerción.</li>
+    <li>Oferta confiable y sin interés particular de parte.</li>
+  </ul>
+  <div class="nota-tia">Para saber si tu casa tiene buen precio, el tasador no solo mira una; compara con varias similares vendidas recientemente en tu zona. Esas son las "propiedades comparables". Si no hay ventas recientes, es más difícil tasar.</div>
+</div>
+
+<!-- ── 12 ── -->
+<div class="tarjeta" id="t12">
+  <span class="tag">Proceso</span>
+  <h2>12. Etapas Operativas de una Tasación</h2>
+  <ol>
+    <li><strong>Recopilación de información:</strong> Valores de tierra y construcciones, precios de mercado, fechas de ventas, dimensiones, oferta y demanda, costos de materiales y mano de obra.</li>
+    <li><strong>Estudio del inmueble / terreno:</strong> Ubicación, forma y dimensiones del terreno, calidad del suelo; tipo de construcción, superficie, estado de conservación, vida útil futura estimada, calidad material, funcionalidad, adaptabilidad.</li>
+    <li><strong>Estudio del entorno / zona:</strong> Infraestructura y servicios, carácter del área (residencial, comercial, mixta), tipología edilicia, calidad urbana, densidad poblacional, nivel socioeconómico, vecinos.</li>
+    <li><strong>Cálculo del avalúo:</strong> Aplicar todos los métodos posibles (comparación, costos, rentas).</li>
+    <li><strong>Balance y análisis final:</strong> Conciliar resultados según el propósito específico de la tasación.</li>
+  </ol>
+  <div class="nota-tia">Como cuando vas al médico: te hace preguntas, te examina, mira tus antecedentes, hace análisis y al final te da el diagnóstico. La tasación sigue exactamente esos pasos, pero el "paciente" es la propiedad.</div>
+</div>
+
+<!-- ── 13 ── -->
+<div class="tarjeta" id="t13">
+  <span class="tag">Urbanismo</span>
+  <h2>13. FOT, FOS y Densidad</h2>
+  <ul>
+    <li><strong>FOT (Factor de Ocupación Total):</strong> Coeficiente urbanístico que determina la <em>superficie máxima total edificable</em> en un terreno, sumando todos los niveles. Ej.: FOT 2 en terreno de 200 m² = podés construir hasta 400 m² en total.</li>
+    <li><strong>FOS (Factor de Ocupación del Suelo):</strong> Indica qué porcentaje del terreno podés cubrir en planta baja. Ej.: FOS 0.5 = solo podés cubrir el 50% en planta baja.</li>
+    <li><strong>Densidad:</strong> Cantidad de viviendas o personas por hectárea o metro cuadrado de terreno. Varía si el terreno tiene servicios (agua, cloacas) o no los tiene.</li>
+  </ul>
+  <div class="formula">Densidad = (Superficie del lote × densidad permitida) ÷ 10.000 (manzana tipo)</div>
+  <div class="nota-tia">El FOT dice cuántos pisos totales podés hacer. El FOS dice cuánto piso de planta baja podés tapar. La municipalidad fija estas reglas para que no construyan sin control y se respeten espacios verdes y aéreos.</div>
+</div>
+
+<!-- ── 14 ── -->
+<div class="tarjeta" id="t14">
+  <span class="tag">Fórmula técnica</span>
+  <h2>14. Depreciación</h2>
+  <p>Es el <strong>desgaste o pérdida de valor</strong> de una construcción a lo largo del tiempo. Tipos:</p>
+  <ul>
+    <li><strong>Física:</strong> Deterioro por uso, rotura, desgaste natural de materiales.</li>
+    <li><strong>Funcional:</strong> El diseño ya no sirve o está mal resuelto (habitaciones sin ventilación, distribución anticuada).</li>
+    <li><strong>Ambiental / Económica (tangible):</strong> Factores externos — clima, cambios de entorno, contaminación.</li>
+  </ul>
+  <div class="formula">D = (VR − Vr) × e ÷ VP
+
+D   = Depreciación (lo que perdió de valor)
+VR  = Valor de Reposición (cuánto costaría construirlo nuevo hoy)
+Vr  = Valor Residual (lo que se rescata, generalmente 10–20% del VR)
+VP  = Vida Promedio (casas: 80 años / departamentos: 60 años)
+e   = Antigüedad (años que tiene la construcción)</div>
+  <div class="nota-tia">Como un auto: recién salido de fábrica vale mucho. Con 20 años y abolladuras, vale bastante menos. La fórmula calcula exactamente cuánto bajó el valor de la construcción por el tiempo que tiene y el uso que tuvo.</div>
+</div>
+
+<!-- ── 15 ── -->
+<div class="tarjeta" id="t15">
+  <span class="tag">Valuación del lote</span>
+  <h2>15. Frente y Fondo del Lote</h2>
+  <ul>
+    <li><strong>Frente:</strong> La parte más valiosa del lote, la que da a la calle. A mayor frente, mayor valor comercial y constructivo.</li>
+    <li><strong>Fondo:</strong> Zonas alejadas de la calle municipal. Tienen menor valor relativo.</li>
+  </ul>
+  <p style="margin-top:10px;"><strong>¿Por qué importa la relación frente-fondo?</strong> Se vincula a 3 factores principales:</p>
+  <ul>
+    <li>A. Aprovechamiento del terreno.</li>
+    <li>B. Condicionamientos constructivos (retiros, medianeras).</li>
+    <li>C. Restricciones de uso (zonificación).</li>
+  </ul>
+  <p style="margin-top:10px;"><strong>Coeficientes de homogeneización:</strong> Se aplican para igualar propiedades comparables que tienen distinto frente, fondo, forma, ubicación, destino o servicios. Se aplican coeficientes por: ubicación, medidas, frente y fondo, forma, destino y servicios.</p>
+
+  <p style="margin-top:10px;"><strong>Desde qué punto de vista se considera la ubicación de un lote:</strong> desde la ciudad, zona o barrio, núcleo, cuadra y posición en la cuadra. También se consideran estado de progreso, altimetría y factores higiénicos o mercantiles.</p>
+  <div class="nota-tia">Dos terrenos del mismo tamaño pueden valer distinto si uno tiene más metros de frente a la calle. El que da más a la calle es más visible, más comercial, más valioso. Por eso se aplican coeficientes para que la comparación sea justa.</div>
+</div>
+
+<!-- ── 16 ── -->
+<div class="tarjeta" id="t16">
+  <span class="tag">Lote especial</span>
+  <h2>16. Lote en Esquina</h2>
+  <p><strong>Desventajas en zonas residenciales:</strong></p>
+  <ul>
+    <li>Impuestos y tasas más altas.</li>
+    <li>Mayor costo de obras e infraestructura (dos frentes).</li>
+    <li>Ruido y peligro de tránsito.</li>
+  </ul>
+  <p style="margin-top:12px;"><strong>Reglas de Alfredo D. Bernard para tasar lotes en esquina:</strong></p>
+  <ol>
+    <li>Usar como frente lógico la calle con mayor valor.</li>
+    <li>Valuar como un lote medial sobre la calle principal.</li>
+    <li>Valuar como medial sobre la calle lateral.</li>
+    <li>Agregar las valorizaciones evidentes para el tasador (mayor visibilidad, accesos múltiples).</li>
+  </ol>
+  <p style="margin-top:12px;"><strong>Zonas que determinan la Tabla del Índice Valuatorio:</strong></p>
+  <ul>
+    <li>Zonas céntricas comerciales</li>
+    <li>Comercial y residencial intermedia</li>
+    <li>Familiar con pequeños comercios</li>
+    <li>Barrios en formación</li>
+  </ul>
+  <div class="nota-tia">Un negocio en esquina céntrica puede valer el doble que en el medio de la cuadra. Pero una casa de familia en esquina de barrio residencial puede ser un dolor de cabeza por el tráfico, el ruido y los impuestos más altos.</div>
+</div>
+
+<!-- ── 17 ── -->
+<div class="tarjeta" id="t17">
+  <span class="tag">Herramienta técnica</span>
+  <h2>17. Tabla de Ross-Heidecke</h2>
+  <p>Es una herramienta técnica usada para <strong>clasificar el estado de conservación de un edificio</strong> y aplicar los ajustes de depreciación correspondientes al tasar.</p>
+  <p style="margin-top:8px;"><strong>¿Cómo se usa?</strong> Se usa para clasificar el estado de la edificación y aplicar ajustes a la comparación con otras propiedades.</p>
+  <p style="margin-top:8px;"><strong>Estados de conservación:</strong></p>
+  <ul>
+    <li><strong>Excelente:</strong> Nuevo o prácticamente sin deterioro.</li>
+    <li><strong>Bueno:</strong> Buen estado general, mantenimiento normal.</li>
+    <li><strong>Regular:</strong> Algunos deterioros visibles, necesita reparaciones.</li>
+    <li><strong>Malo / Ruinoso:</strong> Deterioro importante, estructura comprometida.</li>
+  </ul>
+  <div class="nota-tia">Es como la ficha médica del edificio: excelente, bueno, regular o ruinoso. Según ese diagnóstico, el tasador aplica un "descuento" al valor por el desgaste que tiene. Una casa en ruinas vale mucho menos que una nueva aunque tengan el mismo terreno.</div>
+</div>
+
+<!-- ── 18 ── -->
+<div class="tarjeta" id="t18">
+  <span class="tag">Concepto de terreno</span>
+  <h2>18. Valor Plotage</h2>
+  <p>El <strong>Valor Plotage</strong> se refiere al valor del terreno o suelo sobre el cual se asienta una edificación. Se determina considerando:</p>
+  <ul>
+    <li>Ubicación (zona, barrio, cuadra, posición en cuadra)</li>
+    <li>Tamaño y forma del lote</li>
+    <li>Uso potencial del suelo (zonificación)</li>
+    <li>Condiciones del terreno (calidad del suelo, altimetría)</li>
+  </ul>
+  <p style="margin-top:10px;"><strong>¿Para qué sirve separar el valor del terreno?</strong></p>
+  <ul>
+    <li>Brinda una valuación más precisa del inmueble en su conjunto.</li>
+    <li>Permite a inversores evaluar el potencial de desarrollo del terreno.</li>
+    <li>Ayuda a los planificadores urbanos a tomar decisiones de zonificación.</li>
+  </ul>
+  <p style="margin-top:10px;"><strong>Método de asignación:</strong> Existe una relación proporcional entre el valor del lote y lo edificado. A mayor demanda de tierra, los valores tienden a igualarse con los del entorno.</p>
+  <div class="nota-tia">Cuando tasamos, separamos lo que vale "la tierra" de lo que vale "lo construido". Un terreno en zona norte de Buenos Aires vale mucho aunque no tenga nada construido. Eso es el plotage: el valor puro del suelo.</div>
+</div>
+
+<!-- ── 19 ── -->
+<div class="tarjeta" id="t19">
+  <span class="tag">Registros legales</span>
+  <h2>19. Informe de Dominio e Informe de Inhibición</h2>
+
+  <p><strong>Informe de Dominio:</strong> Documento oficial del Registro de la Propiedad Inmueble que detalla la <em>situación jurídica del inmueble</em>. Indica quién es el titular actual y si la propiedad tiene gravámenes: hipotecas, embargos, restricciones (bien de familia, usufructos). Se usa antes de comprar para verificar que el vendedor sea el dueño legítimo y el bien esté apto para la venta.</p>
+
+  <p style="margin-top:12px;"><strong>Informe de Inhibición</strong> (también llamado "informe de anotaciones personales"): Certifica si una <em>persona</em> (física o jurídica) tiene restricciones legales que le impidan vender, hipotecar o disponer de sus bienes. Vigente la inhibición, no puede hacer ninguna operación inmobiliaria.</p>
+
+  <p style="margin-top:10px;"><strong>Orígenes de una inhibición:</strong> Deudas impagas (juicios o ejecuciones), medidas judiciales, procesos concursales o quiebras.</p>
+
+  <p style="margin-top:10px;"><strong>Quiénes pueden pedir el informe:</strong> Titulares de derechos (dueño, usufructuario), profesionales (abogados, escribanos, martilleros), representantes con poder. Datos necesarios: apellido y nombre completo, DNI/LE/LC, apellido materno.</p>
+
+  <p style="margin-top:10px;"><strong>Cómo se levanta una inhibición:</strong></p>
+  <ol>
+    <li>Ver el juzgado interviniente.</li>
+    <li>Pagar la deuda o llegar a un acuerdo.</li>
+    <li>Pedir el levantamiento judicialmente.</li>
+    <li>Atravesar la etapa judicial.</li>
+    <li>Obtener el oficio (documento judicial que ordena el levantamiento).</li>
+    <li>Presentar el oficio en el Registro de la Propiedad correspondiente.</li>
+  </ol>
+  <p style="margin-top:8px;"><em>Modalidades del trámite:</em> simple, urgente, en el día, online o mediante colegios profesionales.</p>
+
+  <div class="nota-tia">El dominio dice "esta casa es de Juan". La inhibición dice "Juan no puede vender nada porque le deben cobrar una deuda". El martillero verifica ambas cosas antes de cualquier operación para no hacer una venta ilegal.</div>
+</div>
+
+<!-- ── 20 ── -->
+<div class="tarjeta" id="t20">
+  <span class="tag">Operaciones</span>
+  <h2>20. Reserva y Seña</h2>
+  <p><strong>Reserva:</strong> Oferta <em>unilateral y temporal</em> — generalmente 96 horas — para "congelar" la propiedad mientras el propietario analiza y acepta las condiciones. Se entrega <em>ad referéndum</em> del propietario (sujeta a su aceptación). Si el propietario no acepta, se devuelve el dinero.</p>
+
+  <p style="margin-top:10px;"><strong>Seña:</strong> Compromiso <em>bilateral y firme</em>, usualmente el <strong>10% del valor total</strong>. Penaliza el arrepentimiento de ambas partes:</p>
+  <ul>
+    <li>Si se arrepiente el <strong>comprador</strong> → pierde la seña.</li>
+    <li>Si se arrepiente el <strong>vendedor</strong> → debe devolver el doble de lo recibido.</li>
+  </ul>
+  <div class="nota-tia">La reserva es "guardame el producto, mañana decido". La seña es "ya lo compré en serio, acá está mi plata como garantía". Una vez firmada la seña, si alguno se arrepiente, pierde dinero. Por eso hay que estar seguro antes de firmar.</div>
+</div>
+
+<!-- ── 21 ── -->
+<div class="tarjeta" id="t21">
+  <span class="tag">Legislación</span>
+  <h2>21. Ley 10.973 (modificada por Ley 14.085)</h2>
+  <p>Es la ley que regula el <strong>ejercicio profesional de los Martilleros y Corredores Públicos en la Provincia de Buenos Aires</strong>. Establece derechos, deberes, sanciones y el funcionamiento del Colegio.</p>
+
+  <p style="margin-top:10px;"><strong>Consejo Superior — composición:</strong> Integrado por los <em>Presidentes de los Colegios Departamentales</em> y por un Presidente, Vicepresidente, Secretario y Tesorero elegidos entre ellos mismos.</p>
+
+  <div class="nota-tia">Es la "ley de los rematadores" de la Provincia de Buenos Aires. Sin estar matriculado (inscripto en el colegio oficial), no podés trabajar legalmente como martillero o corredor inmobiliario. Es como el médico que necesita su matrícula para atender.</div>
+</div>
+
+<!-- ── 22 ── -->
+<div class="tarjeta" id="t22">
+  <span class="tag">Deberes</span>
+  <h2>22. Obligaciones del Martillero y Corredor</h2>
+  <p><strong>5 obligaciones generales:</strong></p>
+  <ol>
+    <li>Ejercer la profesión con <strong>honestidad, veracidad y lealtad</strong>.</li>
+    <li>Guardar los <strong>secretos profesionales</strong> de sus clientes.</li>
+    <li>Cumplir las resoluciones del Colegio y del Consejo Superior.</li>
+    <li>Actualizar sus conocimientos técnicos y profesionales de forma permanente.</li>
+    <li>Evitar actos de <strong>competencia desleal</strong>.</li>
+  </ol>
+  <p style="margin-top:12px;"><strong>4 obligaciones específicas en un remate:</strong></p>
+  <ul>
+    <li>Anunciar las ventas con fecha, hora, lugar y datos del bien.</li>
+    <li>Realizar el remate en hora y lugar indicados.</li>
+    <li>Explicar en voz alta las condiciones del bien ante los presentes.</li>
+    <li>Mantener los registros exigidos por la ley nacional.</li>
+  </ul>
+  <div class="nota-tia">El martillero tiene que ser como un árbitro honesto: conocer las reglas, no hacer trampa, guardar secretos y actualizarse. Si no cumple, el Colegio lo puede sancionar.</div>
+</div>
+
+<!-- ── 23 ── -->
+<div class="tarjeta" id="t23">
+  <span class="tag">Sanciones</span>
+  <h2>23. Causales de Sanción Disciplinaria (Art. 17)</h2>
+  <p>El martillero puede ser sancionado disciplinariamente por:</p>
+  <ol>
+    <li>Falta de cumplimiento de los <strong>deberes profesionales</strong>.</li>
+    <li>Actos u omisiones contrarios a la <strong>ética profesional</strong>.</li>
+    <li>Incumplimiento de las <strong>resoluciones del Colegio</strong>.</li>
+    <li>Haber sido condenado por <strong>delitos dolosos</strong> (con intención de hacer daño).</li>
+  </ol>
+  <div class="nota-tia">Si un martillero miente, no cumple las reglas del Colegio o comete un delito adrede, lo pueden multar, suspender temporalmente o quitarle la matrícula para siempre. Como en cualquier profesión regulada.</div>
+</div>
+
+<!-- ── 24 ── -->
+<div class="tarjeta" id="t24">
+  <span class="tag">Inhabilitados</span>
+  <h2>24. Quiénes NO pueden ejercer la profesión</h2>
+  <ul>
+    <li>Los que <strong>no estén matriculados</strong> en el Colegio Profesional.</li>
+    <li>Los <strong>inhabilitados judicialmente</strong> o por sanción disciplinaria firme.</li>
+    <li>Los alcanzados por <strong>incompatibilidades</strong> previstas en la ley.</li>
+    <li><strong>Funcionarios públicos</strong> a quienes la normativa les prohíbe la intermediación inmobiliaria.</li>
+    <li><strong>Fallidos no rehabilitados</strong> (personas en quiebra que no hayan sido rehabilitadas).</li>
+    <li><strong>Condenados por delitos dolosos</strong>, hasta que sean rehabilitados legalmente.</li>
+  </ul>
+  <div class="nota-tia">No cualquiera puede ser martillero o corredor. Hay que estar anotado en el Colegio, no tener deudas de quiebra pendientes y no haber cometido delitos. Si un funcionario público ya tiene ese cargo, tampoco puede ejercer para no tener conflictos de interés.</div>
+</div>
+
+<footer>
+  <p>📚 Resumen unificado · Primer Parcial de Tasaciones · Fuentes: 4 archivos del estudiante · Todos los temas incluidos</p>
+</footer>
+
+</div><!-- fin contenido -->
+</body>
+</html>
